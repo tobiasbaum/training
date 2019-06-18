@@ -1,0 +1,82 @@
+	/**
+	 * Returns the current search string matcher.
+	 * @return a SearchMatcher or null if there is no search or if
+	 * 		 		the matcher can match empty String
+	 *
+	 * @exception IllegalArgumentException if regular expression search
+	 * is enabled, the search string or replacement string is invalid
+	 * @since version 4.1pre7
+	 */
+	public static SearchMatcher getSearchMatcher()
+		throws Exception {
+		if (matcher != null)
+			return matcher;
+
+		if (search == null || "".equals(search))
+			return null;
+
+		if (regexp)
+		{
+			Pattern re = Pattern.compile(search, 
+				PatternSearchMatcher.getFlag(ignoreCase));
+			matcher = new PatternSearchMatcher(re, ignoreCase);
+		}
+		else if(wholeWord)
+		{
+			String s = Pattern.quote(search);
+			String begin;
+			if (Character.isLetter(search.charAt(0)))
+			{
+				begin = "(?:\\b|^)";
+			}
+			else
+			{
+				begin = "(?:\\B|^)";
+			}
+			String end;
+			if (Character.isLetter(search.charAt(search.length()-1)))
+			{
+				end = "(?:\\b|$)";
+			}
+			else
+			{
+				end = "(?:\\B|$)";
+			}
+			matcher = new PatternSearchMatcher(begin+s+end, ignoreCase);
+		}
+		else
+			matcher = new BoyerMooreSearchMatcher(search, ignoreCase);
+
+		return matcher;
+	}
+<<<308,org/experiment/editor/search/SearchAndReplace.java, getSearchMatcher()
+	/**
+	 * Returns the current search string matcher.
+	 * @return a SearchMatcher or null if there is no search or if
+	 * 		 		the matcher can match empty String
+	 *
+	 * @exception IllegalArgumentException if regular expression search
+	 * is enabled, the search string or replacement string is invalid
+	 * @since version 4.1pre7
+	 */
+	public static SearchMatcher getSearchMatcher()
+		throws Exception {
+		if (matcher != null)
+			return matcher;
+
+		if (search == null || "".equals(search))
+			return null;
+
+		if (regexp)
+		{
+			Pattern re = Pattern.compile(search,
+				PatternSearchMatcher.getFlag(ignoreCase));
+			matcher = new PatternSearchMatcher(re, ignoreCase);
+		}
+		else
+			matcher = new BoyerMooreSearchMatcher(
+							search, ignoreCase, wholeWord);
+
+		return matcher;
+	}
+<<<308,org/experiment/editor/search/SearchAndReplace.java, getSearchMatcher()

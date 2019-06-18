@@ -1,0 +1,15 @@
+	public HyperSearchOperationNode(
+		String searchString, SearchMatcher searchMatcher)
+	{
+		this.searchString = searchString;
+		this.searchMatcher = searchMatcher;
+	}
+<<<51,org/experiment/editor/search/HyperSearchOperationNode.java, constructor
+	public HyperSearchOperationNode(
+		String searchString, SearchMatcher searchMatcher)
+	{
+		this.searchString = searchString;
+		this.searchMatcher = searchMatcher;
+		noWordSep = searchMatcher.getNoWordSep();
+	}
+<<<52,org/experiment/editor/search/HyperSearchOperationNode.java, constructor

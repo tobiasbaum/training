@@ -1,0 +1,19 @@
+Entire word search rewritten: Now the search is done as usual, then before returning the result it is checked to be a
+whole word, if not, the next result is searched (and checked).<br/>
+
+A whole word has the following conditions:<br/><br/>
+
+start of word :  
+<ul>
+	<li>beginning of the line</li>
+	<li>starts with a symbol or space</li>
+	<li>char before the first char is a symbol or space</li>
+</ul>
+	
+end of word:
+<ul>
+	<li>end of line</li>
+	<li>ends with a symbol or space</li>
+	<li>char next to the last char is a symbol or space</li>
+</ul>
+	

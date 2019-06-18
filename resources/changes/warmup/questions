@@ -1,0 +1,17 @@
+<fieldset class="shuffle">
+	<p>In which of these classes was a method added?</p>
+	<span class="shufflable"><input type="radio" name="methodAdded" id="methodAdded_0" value="0" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="methodAdded_0">VFSDirectoryEntryTable</label></span><br/>
+	<span class="shufflable"><input type="radio" name="methodAdded" id="methodAdded_1" value="1" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="methodAdded_1">VFSDirectoryEntryTableModel</label></span><br/>
+	<span class="shufflable"><input type="radio" name="methodAdded" id="methodAdded_2" value="2" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="methodAdded_2">VFSDirectoryEntryTable.ColumnHandler</label></span><br/>
+	<span><input type="radio" name="methodAdded" id="methodAdded_3" value="3" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="methodAdded_3">I don't know</label></span><br/>
+</fieldset><br/>
+
+<fieldset class="shuffle">
+	<p>Which of these statements is true for column identifiers in a TableColumnModelEvent?</p>
+	<span class="shufflable"><input type="radio" name="idStatement" id="idStatement_0" value="0" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="idStatement_0">They are Strings.</label></span><br/>
+	<span class="shufflable"><input type="radio" name="idStatement" id="idStatement_1" value="1" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="idStatement_1">They are zero-based integers (i.e., the smallest valid column index is 0).</label></span><br/>
+	<span class="shufflable"><input type="radio" name="idStatement" id="idStatement_2" value="2" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="idStatement_2">They are one-based integers (i.e., the smallest valid column index is 1).</label></span><br/>
+	<span><input type="radio" name="idStatement" id="idStatement_3" value="3" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="idStatement_3">I don't know</label></span><br/>
+</fieldset><br/>
+
+		

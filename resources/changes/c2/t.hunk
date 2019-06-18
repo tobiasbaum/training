@@ -1,0 +1,20 @@
+	public static class Match
+	{
+		public int start;
+		public int end;
+		public String[] substitutions;
+	}
+<<<55,org/experiment/editor/search/SearchMatcher.java
+	public static class Match
+	{
+		public int start;
+		public int end;
+		public String[] substitutions;
+
+		@Override
+		public String toString()
+		{
+			return "Mathc[" + start + ',' + end + ']';
+		}
+	}
+<<<130,org/experiment/editor/search/SearchMatcher.java

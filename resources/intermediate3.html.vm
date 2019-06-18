@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Code Review Experiment</title>
+	<meta http-equiv="X-UA-Compatible" content="chrome=1, IE=edge">
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+
+	<link type="text/css" rel="stylesheet" href="experiment.css" />
+	
+	<!-- Requires jQuery -->
+	<script src="jquery.min.js" type="text/javascript"></script>
+	<script type="text/javascript" src="experiment.js"></script>
+	
+	<script type="text/javascript">
+        $(document).ready(function () {
+        	activateLeaveWarning();
+        });
+    </script>
+</head>
+<body>
+      <form method="post">
+   		<p>Next, we will show you a final set of arithmetic and memory tasks. These tasks measure your so called "working memory span" and help us to analyze the
+   		results of the study. But they will also demand further 10 minutes of concentrated work on your side. It would be great if you could do them. However,
+   		if you don't want to take these tasks, you can choose "Skip final tasks" below.</p>
+   		
+        <button formaction="finalquestions.html" onClick="deactivateLeaveWarning()">Skip final tasks ►►</button>
+        <button formaction="wmspan.html" onClick="deactivateLeaveWarning()">Continue ►</button>
+      </form>
+</body>
+</html>

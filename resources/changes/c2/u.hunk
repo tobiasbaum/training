@@ -1,0 +1,8 @@
+<<<54,org/experiment/editor/search/SearchMatcher.java
+	/**
+	 * This should contains the noWordSep property of the edit mode of your
+	 * buffer. It contains a list of chars that should be considered as word
+	 * chars
+	 */
+	protected String noWordSep;
+<<<124,org/experiment/editor/search/SearchMatcher.java

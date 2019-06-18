@@ -1,0 +1,15 @@
+	public SearchMatcher getSearchMatcher()
+	{
+		return searchMatcher;
+	}
+<<<224,org/experiment/editor/search/HyperSearchOperationNode.java, getSearchMatcher()
+	public SearchMatcher getSearchMatcher()
+	{
+		// The searchMatcher has to remember the noWordSep property that
+		// was used because in case of HyperSearchOperationNode, the same
+		// SearchMatcher is used for several Buffers that can be of
+		// different edit modes.
+		searchMatcher.setNoWordSep(noWordSep);
+		return searchMatcher;
+	}
+<<<226,org/experiment/editor/search/HyperSearchOperationNode.java, getSearchMatcher()

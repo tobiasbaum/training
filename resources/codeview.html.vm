@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Code Review Experiment</title>
+	<meta http-equiv="X-UA-Compatible" content="chrome=1, IE=edge">
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+
+	<link type="text/css" rel="stylesheet" href="experiment.css" />
+	
+	<!-- Requires jQuery -->
+	<script src="jquery.min.js" type="text/javascript"></script>
+	
+	<!-- Requires CodeMirror -->
+	<script type="text/javascript" src="codemirror.js"></script>
+	<link type="text/css" rel="stylesheet" href="codemirror.css" />
+	
+	<!-- Requires Mergely -->
+	<script type="text/javascript" src="mergely.js"></script>
+	<link type="text/css" rel="stylesheet" href="mergely.css" />
+	
+	<script type="text/javascript" src="experiment.js"></script>
+	
+	<script type="text/javascript">
+        $(document).ready(function () {
+        	var width = $(window).width() - 50;
+			#foreach( $changePart in $diff.changeParts )
+        		initMergely('#compare$changePart.index', 
+        			$changePart.lineCount * 18.5 + 17, 
+        			$changePart.contextLineCount * 18.5, 
+        			width, 
+        			$changePart.left.startLineNumber, 
+        			'$changePart.left.contentEscaped', 
+        			$changePart.right.startLineNumber,
+        			'$changePart.right.contentEscaped',
+        			$changePart.prefixLineCount,
+        			'$changePart.prefixEscaped',
+        			'$changePart.suffixEscaped');
+			#end
+			window.onscroll = function(ev) {scrollHandler()};
+        	activateLeaveWarning();
+        	addToLog('view loaded,user agent=' + navigator.userAgent);
+			addToLog('window size ' + $(window).width() + ' x ' + $(window).height());
+			addToLog('screen size ' + screen.width + ' x ' + screen.height);
+			$('fieldset.shuffle').each(function(){
+				$(this).find('span.shufflable').shuffle()
+			})
+			setupIdleDetection();
+			setupMouseAndKeyboardLogging();
+			setAndLogCookie($index, $exp.id);
+		});
+	</script>
+</head>
+<body>
+	<h3>Commit description</h3>
+	<p>
+		$diff.description
+	</p>
+
+	<h3>Code changes</h3>
+	<i><p>Below you find the code changes to review. The old version of the code is on the left, the new version is on the right.</p>
+	<p>To add a review remark, click on the respective line number. To delete it, click on it again and delete the remark's text.
+	If a defect spans multiple lines, just mark one of those lines. If similar defects appear multiple times, please mark every occurrence.
+	If you suspect something could be a defect but are not 100% sure, it's better to add a review remark.</p>
+	<p>At several of the change parts, you can show the whole changed method by clicking on "(Show more context)".</p></i><br/><br/>
+	
+	<div id="mergely-resizer">
+		#foreach( $changePart in $diff.changeParts )
+			<table width="100%"><tr>
+			<td width="50%">$changePart.left.header</td>
+			<td>$changePart.right.header#if($changePart.hasMoreContext()) <a title="Click here to show/hide the rest of the method" style="text-decoration:underline" href="javascript:togglePrefix('#compare$changePart.index')" id="compare${changePart.index}toggleContext">(Show&nbsp;more&nbsp;context)</a>#end</td></tr></table>
+			<div id="compare$changePart.index" class="hunk">
+			</div><br/>
+		#end
+	</div>
+	
+	<div id="footer1">
+		<button id="endreview" onClick="endReview()" title="End the current review. Caution: After clicking, you cannot change your review remarks any more.">End review ►</button>
+	</div>
+	
+	<div id="footer2" style="display:none">
+		We would now like to ask some questions on the change you just reviewed:
+		
+      	<form action="intermediate${index}.html" method="post">
+			$diff.questions
+		
+			<button onClick="deactivateLeaveWarning()">Continue ►</button>
+			<input type="hidden" name="index" value="$index" />
+			<textarea id="logContent" name="logContent" style="display:none"></textarea>
+      	</form>
+	</div>
+
+	<div class="pauseButtons">	
+		<button id="descButton" onClick="toggleDescription()">Re-show introduction</button>
+		<button id="pauseButton" onClick="startPause()">&#10074;&#10074; Pause</button>
+	</div>
+	<div class="glasspane" id="glasspane" style="display:none">&nbsp;
+	<div id="descpane" style="display:none">
+      <p>Like in real life, you should <i>find as many defects as possible</i>, and you should <i>spend as little time as possible</i> on the review.
+      Unlike in real life, we are not interested in maintainability or design issues, but <i>only in correctness defects</i> ("bugs").
+      Examples for defects are code that does not work as intended under all circumstances, code that will lead to unintended exceptions, but also
+      simple typos in messages. A defect can belong to a single part of the code, but it can also be due to the incorrect interaction of several parts
+      of the code.
+      Please assume that the code compiles but has not been tested very well, if at all.</p>
+      
+      <h3>A short introduction to the software system</h3>
+      <p>All commits are from a text editor. It provides functionality to edit text (in so called
+      "buffers"), access the file system, search and replace text, etc. All parts of the system that you will see are implemented in Java.
+      
+      <p>The search function of the editor can be adjusted with several flags: Case insensitive search, search for whole words only,
+      search using regular expressions, ... The search dialog is implemented in the class <tt>SearchDialog</tt>. The class <tt>SearchAndReplace</tt>
+      is a facade for the search algorithms and collaborates with subclasses of <tt>SearchMatcher</tt> to perform the search. A special feature of the
+      editor is the so called "hyper search" that opens a separate dialog with all matches, possibly in different files. The matches are shown in a tree structure,
+      and the top node of the tree is a <tt>HyperSearchOperationNode</tt>.</p>
+      
+      <p>Access to the file system is encapsulated by a "virtual file system" (abbreviated "VFS"). A UI for browsing this file system is implemented in the class
+      <tt>VFSBrowser</tt>. It uses a <tt>VFSDirectoryEntryTable</tt> and a <tt>VFSDirectoryEntryTableModel</tt> to show a table of directory entries.</p>
+      
+      <p>To keep the UI reactive, certain tasks are performed outside the UI's event processing thread. There is an old way of doing this, using subclasses of the abstract class
+      <tt>WorkRequest</tt>, and a new way, using subclasses of the abstract class <tt>Task</tt>.
+	</div></div>
+</body>
+</html>

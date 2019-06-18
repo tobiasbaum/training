@@ -1,0 +1,12 @@
+	protected VFSBrowser browser;
+	protected Object session;
+	protected VFS vfs;
+	protected String path1;
+	protected String path2;
+	protected Object[] loadInfo;
+<<<81,org/experiment/editor/browser/AbstractBrowserTask.java
+	protected VFSBrowser browser;
+	protected Object session;
+	protected VFS vfs;
+	protected String path;
+<<<60,org/experiment/editor/browser/AbstractBrowserTask.java

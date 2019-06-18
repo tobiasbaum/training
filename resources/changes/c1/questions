@@ -1,0 +1,33 @@
+<fieldset class="shuffle">
+	<p>Which of these statements applies?</p>
+	<span class="shufflable"><input type="radio" name="changeDescription" id="changeDescription_0" value="0" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="changeDescription_0">The functionality of BrowserIORequest was moved to several subclasses of AbstractBrowserTask</label></span><br/>
+	<span class="shufflable"><input type="radio" name="changeDescription" id="changeDescription_1" value="1" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="changeDescription_1">Several AbstractBrowserTasks were combined into BrowserIORequest</label></span><br/>
+	<span><input type="radio" name="changeDescription" id="changeDescription_2" value="2" required="true" class="fixedPos" onclick="addToLog('questionClick;'+this.id)"><label for="changeDescription_2">I don't know</label></span><br/>
+</fieldset><br/>
+
+<fieldset class="shuffle">
+	<p>The "loadInfo" array is used to ...</p>
+	<span class="shufflable"><input type="radio" name="loadInfo" id="loadInfo_0" value="0" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="loadInfo_0">transfer results from ListDirectoryBrowserTask back to the caller</label></span><br/>
+	<span class="shufflable"><input type="radio" name="loadInfo" id="loadInfo_1" value="1" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="loadInfo_1">provide settings for ListDirectoryBrowserTask</label></span><br/>
+	<span class="shufflable"><input type="radio" name="loadInfo" id="loadInfo_2" value="2" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="loadInfo_2">transfer results from MkDirBrowserTask back to the caller</label></span><br/>
+	<span class="shufflable"><input type="radio" name="loadInfo" id="loadInfo_3" value="3" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="loadInfo_3">provide settings for MkDirBrowserTask</label></span><br/>
+	<span><input type="radio" name="loadInfo" id="loadInfo_4" value="4" required="true" class="fixedPos" onclick="addToLog('questionClick;'+this.id)"><label for="loadInfo_4">I don't know</label></span><br/>
+</fieldset><br/>
+
+<fieldset class="shuffle">
+	<p>The method for deletion (in VFSBrowser) ...</p>
+	<span class="shufflable"><input type="radio" name="deletionTask" id="deletionTask_0" value="0" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="deletionTask_0">does not allow deleting more than one file</label></span><br/>
+	<span class="shufflable"><input type="radio" name="deletionTask" id="deletionTask_1" value="1" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="deletionTask_1">deletes one file after another when multiple files are given</label></span><br/>
+	<span class="shufflable"><input type="radio" name="deletionTask" id="deletionTask_2" value="2" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="deletionTask_2">deletes files in parallel when multiple files are given</label></span><br/>
+	<span><input type="radio" name="deletionTask" id="deletionTask_3" value="3" required="true" class="fixedPos" onclick="addToLog('questionClick;'+this.id)"><label for="deletionTask_3">I don't know</label></span><br/>
+</fieldset><br/>
+
+<fieldset class="shuffle">
+	<p>What is true about renaming?</p>
+	<span class="shufflable"><input type="radio" name="renaming" id="renaming_0" value="0" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="renaming_0">There are two rename methods in VFSBrowser: One for a known target filename and one for asking the user for the new filename. Both call the same code in RenameBrowserTask.</label></span><br/>
+	<span class="shufflable"><input type="radio" name="renaming" id="renaming_1" value="1" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="renaming_1">There are two rename methods in VFSBrowser: One for a known target filename and one for asking the user for the new filename. They delegate to different code in RenameBrowserTask.</label></span><br/>
+	<span class="shufflable"><input type="radio" name="renaming" id="renaming_2" value="2" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="renaming_2">There are two rename methods in VFSBrowser: One for a known target filename and one for asking the user for the new filename. They delegate to different subclasses of AbstractBrowserTask.</label></span><br/>
+	<span class="shufflable"><input type="radio" name="renaming" id="renaming_3" value="3" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="renaming_3">There are three rename methods in VFSBrowser: One for a known target filename, one for asking the user for the new filename and one for changing the case of a file on case insensitive file systems. All three call the same code in RenameBrowserTask.</label></span><br/>
+	<span class="shufflable"><input type="radio" name="renaming" id="renaming_4" value="4" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="renaming_4">There is one method in VFSBrowser to handle renaming.</label></span><br/>
+	<span><input type="radio" name="renaming" id="renaming_5" value="5" required="true" class="fixedPos" onclick="addToLog('questionClick;'+this.id)"><label for="renaming_5">I don't know</label></span><br/>
+</fieldset><br/>

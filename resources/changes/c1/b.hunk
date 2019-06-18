@@ -1,0 +1,68 @@
+	public void rename(String from)
+	{
+		VFS vfs = VFSManager.getVFSForPath(from);
+
+		String filename = vfs.getFileName(from);
+		String[] args = { filename };
+		String to = GUIUtilities.input(this,"vfs.browser.rename",
+			args,filename);
+		if(to == null)
+			return;
+
+		to = MiscUtilities.constructPath(vfs.getParentOfPath(from),to);
+
+		Object session = vfs.createVFSSession(from,this);
+		if(session == null)
+			return;
+
+		if(!startRequest())
+			return;
+
+		VFSManager.runInWorkThread(new BrowserIORequest(
+			BrowserIORequest.RENAME,this,
+			session,vfs,from,to,null));
+
+		// Do not change this until all VFS Browser tasks are
+		// done in ThreadUtilities
+		VFSManager.runInAWTThread(new Runnable()
+		{
+			public void run()
+			{
+				endRequest();
+			}
+		});
+	}
+<<<724,org/experiment/editor/browser/VFSBrowser.java, rename()
+	public void rename(String from)
+	{
+		VFS vfs = VFSManager.getVFSForPath(from);
+
+		String filename = vfs.getFileName(from);
+		String[] args = { filename };
+		String to = GUIUtilities.input(this,"vfs.browser.rename",
+			args,filename);
+		if(to == null)
+			return;
+
+		to = MiscUtilities.constructPath(vfs.getParentOfPath(from),to);
+
+		Object session = vfs.createVFSSession(from,this);
+		if(session == null)
+			return;
+
+		if(!startRequest())
+			return;
+
+		Runnable delatedAWT = new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				endRequest();
+			}
+		};
+		Task renameTask = new RenameBrowserTask(
+			this, session, vfs, to, from, delatedAWT);
+		ThreadUtilities.runInBackground(renameTask);
+	}
+<<<746,org/experiment/editor/browser/VFSBrowser.java, rename()

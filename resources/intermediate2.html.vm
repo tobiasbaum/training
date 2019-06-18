@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Code Review Experiment</title>
+	<meta http-equiv="X-UA-Compatible" content="chrome=1, IE=edge">
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+
+	<link type="text/css" rel="stylesheet" href="experiment.css" />
+	
+	<!-- Requires jQuery -->
+	<script src="jquery.min.js" type="text/javascript"></script>
+	<script type="text/javascript" src="experiment.js"></script>
+	
+	<script type="text/javascript">
+        $(document).ready(function () {
+        	activateLeaveWarning();
+        });
+    </script>
+</head>
+<body>
+      <p>You have completed the review tasks. Thank you! Now please answer the following questions:</p> 
+      
+      <form action="intermediate3.html" method="post">
+ 		<fieldset>
+ 			<p>When you compare the last two reviews, i.e. the second and third review you performed: Which change did you understand better?</p>
+			<input type="radio" name="comparisonUnderstanding" id="comparisonUnderstanding_0" value="second" required="true"><label for="comparisonUnderstanding_0">I understood the change in the second review (${exp.getAssignedDiffDescription(1)}) better than that in the third.</label><br/>
+			<input type="radio" name="comparisonUnderstanding" id="comparisonUnderstanding_1" value="third" required="true"><label for="comparisonUnderstanding_1">I understood the change in the third review (${exp.getAssignedDiffDescription(2)}) better than that in the second.</label><br/>
+			<input type="radio" name="comparisonUnderstanding" id="comparisonUnderstanding_2" value="same" required="true"><label for="comparisonUnderstanding_2">I understood both to the same degree.</label><br/>
+			<br/>
+			Explanation (optional):<br/>
+   			<textarea name="explanationComparisonUnderstanding" cols="100" rows="4"></textarea>
+   		</fieldset><br/>
+   		
+ 		<fieldset>
+ 			<p>When you compare the changes in the last two reviews: Which change had a more complicated structure?</p>
+			<input type="radio" name="comparisonComplicated" id="comparisonComplicated_0" value="second" required="true"><label for="comparisonComplicated_0">The change in the second review (${exp.getAssignedDiffDescription(1)}) had a more complicated structure.</label><br/>
+			<input type="radio" name="comparisonComplicated" id="comparisonComplicated_1" value="third" required="true"><label for="comparisonComplicated_1">The change in the third review (${exp.getAssignedDiffDescription(2)}) had a more complicated structure.</label><br/>
+			<input type="radio" name="comparisonComplicated" id="comparisonComplicated_2" value="same" required="true"><label for="comparisonComplicated_2">Both changes had similarly complicated structures.</label><br/>
+			<br/>
+			Explanation (optional):<br/>
+   			<textarea name="explanationComparisonComplicated" cols="100" rows="4"></textarea>
+   		</fieldset><br/>
+   		
+ 		<fieldset>
+ 			<p>The patches we used in the review tasks stem from the jEdit open source editor (with some additional defects added by us). Do you have any experience with jEdit?</p>
+			<input type="radio" name="jedit" id="jedit_0" value="0" required="true"><label for="jedit_0">I have neither used nor contributed to jEdit.</label><br/>
+			<input type="radio" name="jedit" id="jedit_1" value="1" required="true"><label for="jedit_1">I have used jEdit, but I have not contributed to the jEdit source code.</label><br/>
+			<input type="radio" name="jedit" id="jedit_2" value="2" required="true"><label for="jedit_2">I have contributed to the jEdit source code.</label><br/>
+   		</fieldset><br/>
+
+        <button onClick="deactivateLeaveWarning()">Continue ►</button>
+      </form>
+</body>
+</html>

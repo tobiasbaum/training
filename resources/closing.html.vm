@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Code Review Experiment</title>
+	<meta http-equiv="X-UA-Compatible" content="chrome=1, IE=edge">
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+
+	<link type="text/css" rel="stylesheet" href="experiment.css" />
+	
+	<!-- Requires jQuery -->
+	<script src="jquery.min.js" type="text/javascript"></script>
+</head>
+<body>
+      <p>Thank you again for taking part in our experiment!</p>
+      <p>Your answers have been submitted. 
+      In case you have any remarks or questions on the experiment or the topic of code reviews in general, don't hesitate 
+      to contact <a href="mailto:tobias.baum@inf.uni-hannover.de">tobias.baum@inf.uni-hannover.de</a> (Tobias Baum). Also drop us a line if you want to be informed about
+      the results of the research. Alternatively, you can follow us on Twitter (<a href="https://twitter.com/tb_luh" target="_blank">@tb_luh</a>, <a href="https://twitter.com/sback_" target="_blank">@sback_</a>)
+      or find the results on the website <a href="http://tobias-baum.de" target="_blank">http://tobias-baum.de</a> as soon as they are published. It would be fantastic if you could 
+      forward the experiment invitation to friends, colleagues, and other developers who may be appropriate.</p>
+      
+      <p>A unique ID has been generated for your data so that you will be able to find yourself in the result data set without compromising anonymity.
+      This ID will also be used to let you know whether you have won a <b>cash prize</b>.
+      Your ID is <b>${exp.idAlpha}R${exp.privateKey}</b>.
+      If you want to find out whether you have won or want to find your results when we publish the raw data, <b>please note it down</b>.
+      The IDs of the winners will be published over the above-mentioned channels in August.</p>
+</body>
+</html>

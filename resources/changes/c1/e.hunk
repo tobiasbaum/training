@@ -1,0 +1,16 @@
+	/**
+	 * Creates a new browser I/O request.
+	 * @param browser The VFS browser instance
+	 * @param path1 The first path name to operate on
+	 * @param path2 The second path name to operate on
+	 * @param loadInfo A two-element array filled out by the request;
+	 * element 1 is the canonical path, element 2 is the file list.
+	 */
+	AbstractBrowserTask(VFSBrowser browser,
+		Object session, VFS vfs, String path1, String path2,
+		Object[] loadInfo)
+	{
+		this(browser, session, vfs, path1, path2, loadInfo, null);
+	}
+<<<40,org/experiment/editor/browser/AbstractBrowserTask.java, constructor
+<<<40,org/experiment/editor/browser/AbstractBrowserTask.java

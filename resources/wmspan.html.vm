@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Code Review Experiment</title>
+	<meta http-equiv="X-UA-Compatible" content="chrome=1, IE=edge">
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+
+	<link type="text/css" rel="stylesheet" href="experiment.css" />
+	
+	<!-- Requires jQuery -->
+	<script src="jquery.min.js" type="text/javascript"></script>
+	<script type="text/javascript" src="experiment.js"></script>
+	
+	<script type="text/javascript">
+		var allowedLetters = ['T', 'L', 'Q', 'N', 'F', 'H', 'Y', 'S', 'P', 'K', 'R', 'J'];
+		
+		var calibrationEquations = [];
+	
+		var tests = [];
+		
+		var mode = '';
+		var index = 0;
+		var submode = '';
+		var subindex = 0;
+		var recalledLetters = '';
+		var mathCorrectCount = 0;
+		var totalLettersCorrect = 0;
+		var totalMathCorrect = 0;
+		var mathStartTime;
+		var mathTimes = [];
+		var timeoutTime;
+		var timeoutId;
+		
+        $(document).ready(function () {
+        	activateLeaveWarning();
+        	initEquations();
+        });
+        
+        function initEquations() {
+        	//original aospan:
+        	//   practice for recall only
+        	//   15 calibration
+        	//   3 * 2 practice
+        	//   3 * (3 .. 7) test
+        	//shortening by Oswald et al.: only 2 trials per length + without length 3 and 7
+        	for (var i = 0; i < 15; i++) {
+        		calibrationEquations.push(generateEquation());
+        	}
+        	for (var i = 3; i <= 7; i++) {
+        		tests.push(generateTest(i));
+        		tests.push(generateTest(i));
+        	}
+        	shuffle(tests);
+    		tests.unshift(generateTest(2));        	
+    		tests.unshift(generateTest(2));
+    		addToLog('operation span initialized');        	
+        
+        	mode = 'init';
+        }
+        
+        function generateTest(size) {
+        	//a test is a list where each element has this form:
+        	//  {task: {eqn: "2 + 3 = ?", number: "5", correct: true}, letter: 'F'}
+        	
+        	shuffle(allowedLetters);
+        	var ret = [];
+        	for (var i = 0; i < size; i++)	{
+        		ret.push({
+        			task: generateEquation(),
+        			letter: allowedLetters[i]
+        		});
+        	}
+        	return ret;
+        }
+        
+        function generateEquation() {
+        	//an equation has the form {eqn: "(2 + 3) * 1 = ?", number: "5", correct: true}
+        	var correctResult;
+        	var textForm;
+        	do {
+	        	var variant = rand(0, 3);
+	        	switch (variant) {
+	        	case 0:
+	        		v1 = rand(0, 6);
+	        		v2 = rand(0, 6);
+	        		v3 = rand(0, 9);
+	        		correctResult = (v1 * v2) + v3;
+	        		textForm = '(' + v1 + ' * ' + v2 + ') + ' + v3 + ' = ?';
+	        		break;
+	        	case 1:
+	        		v1 = rand(0, 5);
+	        		v2 = rand(1, 3);
+	        		v3 = rand(0, 4);
+	        		v4 = v1 * v2;
+	        		correctResult = (v4 / v2) - v3;
+	        		textForm = '(' + v4 + ' / ' + v2 + ') - ' + v3 + ' = ?';
+	        		break;
+	        	case 2:
+	        		v1 = rand(0, 6);
+	        		v2 = rand(0, 6);
+	        		v3 = rand(0, 9);
+	        		correctResult = (v1 * v2) - v3;
+	        		textForm = '(' + v1 + ' * ' + v2 + ') - ' + v3 + ' = ?';
+	        		break;
+	        	case 3:
+	        		v1 = rand(0, 5);
+	        		v2 = rand(1, 3);
+	        		v3 = rand(0, 9);
+	        		v4 = v1 * v2;
+	        		correctResult = (v4 / v2) + v3;
+	        		textForm = '(' + v4 + ' / ' + v2 + ') + ' + v3 + ' = ?';
+	        		break;
+	        	}
+        	} while (correctResult < 0 || correctResult > 30);
+        	var generateIncorrectResult = randBool();
+        	var resultToShow;
+        	if (generateIncorrectResult) {
+        		var above = correctResult <= 1 || randBool();
+        		if (above) {
+        			resultToShow = correctResult + rand(1, 5);
+        		} else {
+        			resultToShow = rand(0, correctResult);
+        		}
+        	} else {
+        		resultToShow = correctResult;
+        	}
+        	return {
+        		eqn: textForm,
+        		number: resultToShow,
+        		correct: !generateIncorrectResult
+        	}
+        }
+        
+        function rand(min, max) {
+		    return Math.floor(Math.random() * (max - min + 1)) + min;
+		}
+        
+        function randBool() {
+		    return Math.random() < 0.5;
+		}
+		
+        function nextView() {
+    		addToLog('next view from ' + mode + '.' + submode + ',' + index + ',' + subindex);        	
+        	if (mode == 'init') {
+        		mode = 'calibration';
+        		index = 0;
+        		submode = 'equation';
+        		showEquation();
+        	} else if (mode == 'intermediate') {
+        		timeoutTime = calculateTimeoutTime();
+        		addToLog('calculatedTimeoutTime', timeoutTime);
+        		mode = 'test';
+        		index = 0;
+        		submode = 'equation';
+        		showEquation();
+        	} else if (submode == 'equation') {
+        		recordMathTiming();
+        		submode = 'solve';
+        		showSolve();
+        	} else if (submode == 'solve') {
+        		if (mode == 'calibration') {
+        			if (index + 1 >= calibrationEquations.length) {
+	    				submode = 'results';
+		        		showResults();
+        			} else {
+        				index++;
+        				submode = 'equation';
+		        		showEquation();
+        			}
+        		} else if (mode == 'test') {
+        			submode = 'letter';
+	        		showLetter();
+        		}
+        	} else if (submode == 'letter') {
+    			if (subindex + 1 >= tests[index].length) {
+    				submode = 'recall';
+    				showRecall();
+    			} else {
+    				subindex++;
+    				submode = 'equation';
+	        		showEquation();
+    			}
+        	} else if (submode == 'recall') {
+				submode = 'results';
+        		showResults();
+			} else if (submode == 'results') {
+				clearInput();
+				mathCorrectCount = 0;
+        		if (mode == 'calibration') {
+    				mode = 'intermediate';
+    				submode = '';
+    				index = 0;
+    				subindex = 0;
+    				showView('wmIntermediate');
+        		} else if (mode == 'test') {
+	    			if (index + 1 >= tests.length) {
+	    				mode = 'end';
+	    				submode = '';
+	    				showEnd();
+	    			} else {
+	    				index++;
+	    				subindex = 0;
+	    				submode = 'equation';
+		        		showEquation();
+	    			}
+        		}
+        	}
+        }
+        
+        function recordMathTiming() {
+        	var time = Date.now() - mathStartTime;
+        	mathTimes.push(time);
+        }
+        
+        function calculateTimeoutTime() {
+        	//Unsworth et al. define the timeout time for the math tasks
+        	//  to be the average + 2.5 standard deviations of the calibration
+        	//  timings
+        	var sum = mathTimes.reduce(function(a, b) { return a + b; });
+			var avg = sum / mathTimes.length;
+			var sumOfSquareDeviations = mathTimes
+				.map(function(x) { return (x - avg) * (x - avg); })
+				.reduce(function(a, b) { return a + b; });
+			var variance = sumOfSquareDeviations / mathTimes.length;
+			var sd = Math.sqrt(variance);
+			return avg + 2.5 * sd;
+        }
+        
+        function showResults() {
+        	if (mode == 'calibration') {
+        		$('#mathCorrectCountC').text(mathCorrectCount);
+        		$('#trialCountC').text(calibrationEquations.length);
+        		showView('wmCalibrationResult');
+        	} else {
+        		var correctLetterCount = countCorrectLetters(tests[index], recalledLetters)
+        		$('#correctLetterCount').text(correctLetterCount);
+        		$('#mathCorrectCountT').text(mathCorrectCount);
+        		$('#trialCountT').text(tests[index].length);
+        		$('#recallTaskIndex').text(index + 1);
+        		$('#recallTaskCount').text(tests.length);
+        		showView('wmTestResult');
+        		
+    			addToLog('trial result,' + correctLetterCount + ',' + mathCorrectCount + ',' + tests[index].length);
+    			        	
+        		totalLettersCorrect += correctLetterCount;
+        		totalMathCorrect += mathCorrectCount;
+        	}
+        }
+        
+        function countCorrectLetters(test, actualLetters) {
+        	var minSize;
+        	if (actualLetters.length > test.length) {
+        		minSize = test.length;
+        	} else {
+        		minSize = actualLetters.length;
+        	}
+        	var count = 0;
+        	for (var i = 0; i < minSize; i++) {
+        		if (test[i].letter == actualLetters[i]) {
+        			count++;
+        		}
+        	}
+        	return count;
+        }
+        
+        function solveYes() {
+        	var correct = getCurrentEquation().correct;
+        	recordSolution(correct ? 'correct' : 'incorrect');
+        	nextView();
+        }
+        
+        function solveNo() {
+        	var correct = !getCurrentEquation().correct;
+        	recordSolution(correct ? 'correct' : 'incorrect');
+        	nextView();
+        }
+        
+        function solveTimeout() {
+        	recordSolution('timeout');
+        	submode = 'solve';
+        	nextView();
+        }
+        
+        function recordSolution(result) {
+			addToLog('mathSolution,' + result);
+        	if (result == 'correct') {
+        		mathCorrectCount++;
+        	}        	
+        }
+        
+        function recalled(letter) {
+        	recalledLetters += letter;
+        	$('#wmRecallAnswer').text(recalledLetters);
+        }
+        
+        function dontKnow() {
+        	recalledLetters += '_';
+        	$('#wmRecallAnswer').text(recalledLetters);
+        }
+        
+        function clearInput() {
+        	recalledLetters = '';
+        	$('#wmRecallAnswer').text(recalledLetters);
+        }
+        
+        function showEquation() {
+        	var eqnData = getCurrentEquation();
+        	$('#wmEquationContent').text(eqnData.eqn);
+        	showView('wmEquation');
+        	mathStartTime = Date.now();
+        	if (mode == 'test') {
+        		timeoutId = window.setTimeout(solveTimeout, timeoutTime);
+        	}
+        }
+        
+        function showSolve() {
+        	window.clearTimeout(timeoutId);
+        	var eqnData = getCurrentEquation();
+        	$('#wmResultNumber').text(eqnData.number);
+        	showView('wmResult');
+        }
+        
+        function getCurrentEquation() {
+        	if (mode == 'calibration') {
+        		return calibrationEquations[index];
+        	} else {
+        		return tests[index][subindex].task;
+        	}
+        }
+        
+        function showLetter() {
+        	$('#wmLetterValue').text(tests[index][subindex].letter);
+        	showView('wmLetter');
+        	timeoutId = window.setTimeout(nextView, 800);
+        }
+        
+        function showRecall() {
+        	showView('wmRecall');
+        }
+        
+        function showEnd() {
+        	$('#totalLettersCorrect').text(totalLettersCorrect);
+        	$('#totalMathCorrect').text(totalMathCorrect);
+        	var totalSum = 0;
+        	for (var i = 0; i < tests.length; i++) {
+        		totalSum += tests[i].length;
+        	}
+        	$('#totalTotal').text(totalSum);
+        	showView('wmEnd');
+        }
+        
+        function showView(id) {
+        	$('#wmStart').hide();
+        	$('#wmEquation').hide();
+        	$('#wmResult').hide();
+        	$('#wmIntermediate').hide();
+        	$('#wmLetter').hide();
+        	$('#wmRecall').hide();
+        	$('#wmTestResult').hide();
+        	$('#wmCalibrationResult').hide();
+        	$('#wmEnd').hide();
+        	$('#' + id).show();
+        }
+    </script>
+</head>
+<body>
+<br/>
+<br/>
+<br/>
+<br/>
+<center>
+	<div id="wmStart">
+		<p>You will now be presented with 15 simple arithmetic tasks.</p>
+		<p>After solving each task mentally, click "Check" and choose whether the displayed number
+		is the correct answer.</p>
+        <button onClick="nextView()">Continue ►</button>
+	</div>
+	<div id="wmEquation" style="display:none">
+         <div id="wmEquationContent" style="font-size:18pt">3 + 2 = ?</div>
+         <button onClick="nextView()">Solve ►</button>
+	</div>
+	<div id="wmResult" style="display:none">
+         <div id="wmResultNumber" style="font-size:18pt">5</div>
+         <button onClick="solveYes()">Right</button>
+         <button onClick="solveNo()">Wrong</button>
+	</div>
+	<div id="wmIntermediate" style="display:none">
+		<p>Now you will be presented a single letter after each arithmetic task.
+		This letter will disappear automatically after a short time.
+		Try to remember these letters. After a few tasks, you will be asked
+		to recall them in the correct order.</p>
+		<p>Additionally, the arithmetic tasks will now have a time limit. The time limit
+		is based on the time you took for solving the previous arithmetic tasks. If you
+		do not solve the arithmetic problems in time, they will count as incorrect.
+		Therefore it is VERY important to solve the problems as quickly and as accurately
+		as possible.</p>
+        <button onClick="nextView()">Continue ►</button>
+	</div>
+	<div id="wmLetter" style="display:none">
+         <div id="wmLetterValue" style="font-size:28pt">X</div>
+	</div>
+	<div id="wmRecall" style="display:none">
+         <p>Please click on the letters in the correct order:</p>
+         <button onClick="recalled('T')" style="width:40px">T</button>
+         <button onClick="recalled('L')" style="width:40px">L</button>
+         <button onClick="recalled('Q')" style="width:40px">Q</button>
+         <button onClick="recalled('N')" style="width:40px">N</button><br/>
+         <button onClick="recalled('F')" style="width:40px">F</button>
+         <button onClick="recalled('H')" style="width:40px">H</button>
+         <button onClick="recalled('Y')" style="width:40px">Y</button>
+         <button onClick="recalled('S')" style="width:40px">S</button><br/>
+         <button onClick="recalled('P')" style="width:40px">P</button>
+         <button onClick="recalled('K')" style="width:40px">K</button>
+         <button onClick="recalled('R')" style="width:40px">R</button>
+         <button onClick="recalled('J')" style="width:40px">J</button><br/>
+         <button onClick="dontKnow()" title="Use this if you forgot the next letter, so that you can continue entering the remaining letters at their correct positions">Don't know</button><br/>
+         <button onClick="clearInput()" title="Clear the entered letters, so that you can restart entering them.">Clear</button><br/>
+         <br/>
+         <div id="wmRecallAnswer" style="font-size:18pt"></div>&nbsp;
+         <br/>
+         <button onClick="nextView()" title="Check your input and continue with the next task">Continue ►</button>
+	</div>
+	<div id="wmCalibrationResult" style="display:none">
+		You solved <span id="mathCorrectCountC">x</span> math tasks correctly for this set of <span id="trialCountC">m</span> trials<br/>
+      
+		<button onClick="nextView()">Continue ►</button>
+	</div>
+	<div id="wmTestResult" style="display:none">
+		You recalled <span id="correctLetterCount">n</span> letters correctly out of <span id="trialCountT">m</span><br/>
+		You solved <span id="mathCorrectCountT">x</span> math tasks correctly for this set of trials<br/>
+		This was recall task <span id="recallTaskIndex">x</span> of <span id="recallTaskCount">y</span><br/>
+      
+		<button onClick="nextView()">Continue ►</button>
+	</div>
+	<div id="wmEnd" style="display:none">
+      In total, you recalled <span id="totalLettersCorrect">x</span> letters correctly
+      and solved <span id="totalMathCorrect">y</span> of <span id="totalTotal">z</span> arithmetic tasks.
+      
+      <form action="finalquestions.html" method="post">
+         <button onClick="deactivateLeaveWarning()">Continue ►</button>
+		<textarea id="logContent" name="logContent" style="display:none"></textarea>
+      </form>
+	</div>
+<center>
+</body>
+</html>

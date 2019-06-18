@@ -1,0 +1,6 @@
+<<<54,org/experiment/editor/search/SearchMatcher.java
+	/**
+	 * true if this SearchMatcher search for whole words only.
+	 */
+	protected boolean wholeWord;
+<<<120,org/experiment/editor/search/SearchMatcher.java

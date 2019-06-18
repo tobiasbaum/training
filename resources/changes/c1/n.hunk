@@ -1,0 +1,12 @@
+	public String toString()
+	{
+		return getClass().getName() + "[type=LIST_DIRECTORY"
+			+ ",vfs=" + vfs + ",path1=" + path1 + ']';
+	}
+<<<102,org/experiment/editor/browser/ListDirectoryBrowserTask.java, toString()
+	public String toString()
+	{
+		return getClass().getName() + "[type=LIST_DIRECTORY"
+			+ ",vfs=" + vfs + ",pat=" + path + ']';
+	}
+<<<104,org/experiment/editor/browser/ListDirectoryBrowserTask.java, toString()

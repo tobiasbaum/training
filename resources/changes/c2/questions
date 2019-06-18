@@ -1,0 +1,23 @@
+<fieldset class="shuffle">
+	<p>Is it possible to change the set of characters that determine the end of a word?</p>
+	<span class="shufflable"><input type="radio" name="charChange" id="charChange_0" value="0" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="charChange_0">Yes</label></span><br/>
+	<span class="shufflable"><input type="radio" name="charChange" id="charChange_1" value="1" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="charChange_1">No</label></span><br/>
+	<span><input type="radio" name="charChange" id="charChange_2" value="2" required="true" class="fixedPos" onclick="addToLog('questionClick;'+this.id)"><label for="charChange_2">I don't know</label></span><br/>
+</fieldset><br/>
+
+<fieldset class="shuffle">
+	<p>When the first match was not a whole word, the next match is searched. How is this implemented in PatternSearchMatcher and BoyerMooreSearchMatcher?</p>
+	<span class="shufflable"><input type="radio" name="nextMatchImpl" id="nextMatchImpl_0" value="0" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="nextMatchImpl_0">It is implemented by recursion in both cases</label></span><br/>
+	<span class="shufflable"><input type="radio" name="nextMatchImpl" id="nextMatchImpl_1" value="1" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="nextMatchImpl_1">It is implemented by iteration in both cases</label></span><br/>
+	<span class="shufflable"><input type="radio" name="nextMatchImpl" id="nextMatchImpl_2" value="2" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="nextMatchImpl_2">It is implemented by recursion in one case and by iteration in the other</label></span><br/>
+	<span><input type="radio" name="nextMatchImpl" id="nextMatchImpl_3" value="3" required="true" class="fixedPos" onclick="addToLog('questionClick;'+this.id)"><label for="nextMatchImpl_3">I don't know</label></span><br/>
+</fieldset><br/>
+
+<fieldset class="shuffle">
+	<p>Which class decides which concrete matcher subclass to create?</p>
+	<span class="shufflable"><input type="radio" name="matcherCreation" id="matcherCreation_0" value="0" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="matcherCreation_0">SearchAndReplace</label></span><br/>
+	<span class="shufflable"><input type="radio" name="matcherCreation" id="matcherCreation_1" value="1" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="matcherCreation_1">SearchMatcher</label></span><br/>
+	<span class="shufflable"><input type="radio" name="matcherCreation" id="matcherCreation_2" value="2" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="matcherCreation_2">SearchDialog</label></span><br/>
+	<span class="shufflable"><input type="radio" name="matcherCreation" id="matcherCreation_3" value="3" required="true" onclick="addToLog('questionClick;'+this.id)"><label for="matcherCreation_3">SearchMatcherFactory</label></span><br/>
+	<span><input type="radio" name="matcherCreation" id="matcherCreation_4" value="4" required="true" class="fixedPos" onclick="addToLog('questionClick;'+this.id)"><label for="matcherCreation_4">I don't know</label></span><br/>
+</fieldset><br/>
