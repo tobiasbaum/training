@@ -1,4 +1,4 @@
-package de.unihannover.orderingExperimentUi;
+package de.set.assessmentUi;
 
 import java.util.ArrayList;
 import java.util.Collection;

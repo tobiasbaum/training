@@ -1,4 +1,4 @@
-package de.unihannover.orderingExperimentUi;
+package de.set.assessmentUi;
 
 public enum Treatment {
 

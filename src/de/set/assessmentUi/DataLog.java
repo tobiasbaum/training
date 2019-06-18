@@ -1,4 +1,4 @@
-package de.unihannover.orderingExperimentUi;
+package de.set.assessmentUi;
 
 import java.io.FileOutputStream;
 import java.io.IOException;

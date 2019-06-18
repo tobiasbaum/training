@@ -1,4 +1,4 @@
-package de.unihannover.orderingExperimentUi;
+package de.set.assessmentUi;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import de.unihannover.orderingExperimentUi.Treatments.TreatmentCombination;
+import de.set.assessmentUi.Treatments.TreatmentCombination;
 
 public class Experiment {
 

@@ -1,10 +1,10 @@
-package de.unihannover.orderingExperimentUi;
+package de.set.assessmentUi;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import de.unihannover.orderingExperimentUi.Experiment;
+import de.set.assessmentUi.Experiment;
 
 public class ExperimentTest {
 

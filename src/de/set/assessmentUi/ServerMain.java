@@ -1,4 +1,4 @@
-package de.unihannover.orderingExperimentUi;
+package de.set.assessmentUi;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -38,9 +38,9 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
-import de.unihannover.orderingExperimentUi.DiffData.ChangePart;
-import de.unihannover.orderingExperimentUi.Treatments.TreatmentCombination;
-import de.unihannover.orderingExperimentUi.Treatments.TreatmentUsageData;
+import de.set.assessmentUi.DiffData.ChangePart;
+import de.set.assessmentUi.Treatments.TreatmentCombination;
+import de.set.assessmentUi.Treatments.TreatmentUsageData;
 
 public class ServerMain extends AbstractHandler {
 

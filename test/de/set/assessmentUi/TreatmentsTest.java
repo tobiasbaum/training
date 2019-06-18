@@ -1,4 +1,4 @@
-package de.unihannover.orderingExperimentUi;
+package de.set.assessmentUi;
 
 import static org.junit.Assert.assertEquals;
 
@@ -11,10 +11,10 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import de.unihannover.orderingExperimentUi.Treatment;
-import de.unihannover.orderingExperimentUi.Treatments;
-import de.unihannover.orderingExperimentUi.Treatments.TreatmentCombination;
-import de.unihannover.orderingExperimentUi.Treatments.TreatmentUsageData;
+import de.set.assessmentUi.Treatment;
+import de.set.assessmentUi.Treatments;
+import de.set.assessmentUi.Treatments.TreatmentCombination;
+import de.set.assessmentUi.Treatments.TreatmentUsageData;
 
 public class TreatmentsTest {
 
