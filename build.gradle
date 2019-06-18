@@ -33,7 +33,7 @@ repositories {
 }
 
 dependencies {
-	compile 'org.eclipse.jetty:jetty-server:9.3.+', 
+	compile 'com.sparkjava:spark-core:2.8.0', 
 	    'org.apache.velocity:velocity:1.7'
 		
     testCompile 'junit:junit:4.+'

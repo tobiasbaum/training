@@ -11,9 +11,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
@@ -34,13 +31,13 @@ import javax.xml.bind.DatatypeConverter;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.context.Context;
-import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
 import de.set.assessmentUi.DiffData.ChangePart;
 import de.set.assessmentUi.Treatments.TreatmentCombination;
 import de.set.assessmentUi.Treatments.TreatmentUsageData;
+import spark.Response;
+import spark.Spark;
 
 public class ServerMain extends AbstractHandler {
 
@@ -51,16 +48,16 @@ public class ServerMain extends AbstractHandler {
     private final Treatments treatments = new Treatments(new Random());
     private final String salt;
 
-    public ServerMain(String salt) throws IOException {
+    public ServerMain(final String salt) throws IOException {
         this.salt = salt;
         this.initTreatments();
     }
 
     @Override
-    public void handle(String target,
-                       Request baseRequest,
-                       HttpServletRequest request,
-                       HttpServletResponse response)
+    public void handle(final String target,
+    		final org.eclipse.jetty.server.Request baseRequest,
+                       final HttpServletRequest request,
+                       final HttpServletResponse response)
         throws IOException, ServletException {
 
         baseRequest.setHandled(true);
@@ -160,7 +157,7 @@ public class ServerMain extends AbstractHandler {
         }
     }
 
-    private String traceToString(Throwable t) {
+    private String traceToString(final Throwable t) {
         try {
             final StringWriter sw = new StringWriter();
             final PrintWriter pw = new PrintWriter(sw);
@@ -173,7 +170,7 @@ public class ServerMain extends AbstractHandler {
         }
     }
 
-    private String hash(String toHash) {
+    private String hash(final String toHash) {
         try {
             final byte[] bytesOfMessage = (this.salt + toHash).getBytes("UTF-8");
             final MessageDigest md = MessageDigest.getInstance("MD5");
@@ -184,7 +181,7 @@ public class ServerMain extends AbstractHandler {
         }
     }
 
-    private int countCorrectRemarksInTestReview(String log) {
+    private int countCorrectRemarksInTestReview(final String log) {
         final String[] lines = log.split("\n");
         final Set<String> foundDefects = new HashSet<>();
         for (final String line : lines) {
@@ -207,7 +204,7 @@ public class ServerMain extends AbstractHandler {
         return foundDefects.size();
     }
 
-    private String determineDefectKey(String fragment, String line) {
+    private String determineDefectKey(final String fragment, final String line) {
         if (fragment.equals("#1R") && line.equals("278")) {
             return "offbyone1";
         }
@@ -220,11 +217,11 @@ public class ServerMain extends AbstractHandler {
         return null;
     }
 
-    private boolean isReviewResult(String key) {
+    private boolean isReviewResult(final String key) {
         return key.equals("logContent");
     }
 
-    private void sendCodeview(Experiment exp, int index, HttpServletResponse response) throws IOException {
+    private void sendCodeview(final Experiment exp, final int index, final HttpServletResponse response) throws IOException {
         final Context ctx = new VelocityContext();
         ctx.put("exp", exp);
         ctx.put("index", index);
@@ -251,11 +248,11 @@ public class ServerMain extends AbstractHandler {
         final DiffData diffData = DiffData.load(diffPath, treatment);
         ctx.put("diff", diffData);
         DataLog.log(exp.getId(), "hunkMap;" + treatment + ";" + diffPath + ";"
-                        + diffData.getChangeParts().stream().map((ChangePart cp) -> cp.getIndex() + "=" + cp.getId()).collect(Collectors.toList()));
+                        + diffData.getChangeParts().stream().map((final ChangePart cp) -> cp.getIndex() + "=" + cp.getId()).collect(Collectors.toList()));
         this.interpretTemplate("/codeview.html.vm", ctx, response);
     }
 
-    private void sendFileOrTemplate(String file, Experiment exp, HttpServletResponse response) throws IOException {
+    private void sendFileOrTemplate(final String file, final Experiment exp, final HttpServletResponse response) throws IOException {
         if (ServerMain.class.getResource(file + ".vm") != null) {
             final Context ctx = new VelocityContext();
             ctx.put("exp", exp);
@@ -265,7 +262,7 @@ public class ServerMain extends AbstractHandler {
         }
     }
 
-    private void interpretTemplate(String file, Context ctx, HttpServletResponse response) throws IOException {
+    private void interpretTemplate(final String file, final Context ctx, final HttpServletResponse response) throws IOException {
         this.setMimetype(file, response);
         final InputStream s = ServerMain.class.getResourceAsStream(file);
         if (s == null) {
@@ -293,7 +290,7 @@ public class ServerMain extends AbstractHandler {
         }
     }
 
-    private void sendFile(String target, HttpServletResponse response) throws IOException {
+    private void sendFile(final String target, final HttpServletResponse response) throws IOException {
         this.setMimetype(target, response);
         final InputStream s = ServerMain.class.getResourceAsStream(target);
         if (s == null) {
@@ -312,7 +309,7 @@ public class ServerMain extends AbstractHandler {
         }
     }
 
-    private void setMimetype(String file, HttpServletResponse response) {
+    private void setMimetype(final String file, final HttpServletResponse response) {
         if (file.contains(".html")) {
             response.setContentType("text/html;charset=UTF-8");
         } else if (file.contains(".css")) {
@@ -330,11 +327,11 @@ public class ServerMain extends AbstractHandler {
         }
     }
 
-    private void sendError(int code, String string, HttpServletResponse response) throws IOException {
+    private void sendError(final int code, final String string, final HttpServletResponse response) throws IOException {
         response.sendError(code, string);
     }
 
-    private void sendAdminPage(HttpServletResponse response) throws IOException {
+    private void sendAdminPage(final HttpServletResponse response) throws IOException {
         try (PrintWriter w = response.getWriter()) {
             w.println("<h1>Experiments</h1>");
             w.println("<table>");
@@ -359,20 +356,40 @@ public class ServerMain extends AbstractHandler {
         }
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(final String[] args) throws Exception {
         Velocity.init();
-        performDiffSanityCheck();
 
-        final Server server = new Server(args.length > 0 ? Integer.parseInt(args[0]) : 8080);
-        server.setAttribute("org.eclipse.jetty.server.Request.maxFormContentSize", 10000000);
-        server.setHandler(new ServerMain(Files.readAllLines(Paths.get("salt.txt"), StandardCharsets.ISO_8859_1).toString()));
+        final ServerMain m = new ServerMain("asdf");
+        m.staticFile("/", "/index.html");
+        m.staticFile("/index.html");
+        m.staticFile("/experiment.js");
+//        performDiffSanityCheck();
+//
+//        final Server server = new Server(args.length > 0 ? Integer.parseInt(args[0]) : 8080);
+//        server.setAttribute("org.eclipse.jetty.server.Request.maxFormContentSize", 10000000);
+//        server.setHandler(new ServerMain(Files.readAllLines(Paths.get("salt.txt"), StandardCharsets.ISO_8859_1).toString()));
+//
+//        server.start();
+//        server.join();
 
-        server.start();
-        server.join();
+        Spark.awaitStop();
         DataLog.close();
     }
 
-    private void initTreatments() throws IOException {
+    private void staticFile(final String path) {
+    	this.staticFile(path, path);
+	}
+
+    private void staticFile(final String urlPath, final String cpPath) {
+    	Spark.get(urlPath, (request, response) -> this.getStaticFile(request, response, cpPath));
+    }
+
+	private Object getStaticFile(final spark.Request request, final Response response, final String cpPath) throws IOException {
+		this.sendFile(cpPath, response.raw());
+		return null;
+	}
+
+	private void initTreatments() throws IOException {
         final File initFile = new File("prefill.txt");
         if (!initFile.exists()) {
             System.out.println("no init file (prefill.txt) found");
@@ -399,19 +416,19 @@ public class ServerMain extends AbstractHandler {
         }
     }
 
-    private Treatment parseTreatment(String string) {
+    private Treatment parseTreatment(final String string) {
         return Treatment.valueOf(this.withoutComma(string));
     }
 
-    private Diff parseDiff(String string) {
+    private Diff parseDiff(final String string) {
         return Diff.valueOf(this.withoutComma(string));
     }
 
-    private String withoutComma(String string) {
+    private String withoutComma(final String string) {
         return string.replace(",", "");
     }
 
-    private int parseReviewScoreSum(String string) {
+    private int parseReviewScoreSum(final String string) {
         final String[] parts = this.withoutComma(string).split("=");
         if (!parts[0].equals("reviewScoreSum")) {
             throw new RuntimeException("expected reviewScoreSum but was " + parts[0]);
@@ -419,7 +436,7 @@ public class ServerMain extends AbstractHandler {
         return Integer.parseInt(parts[1]);
     }
 
-    private int parseCount(String string) {
+    private int parseCount(final String string) {
         final String[] parts = this.withoutComma(string).split("=");
         if (!parts[0].equals("count")) {
             throw new RuntimeException("expected count but was " + parts[0]);
@@ -427,12 +444,4 @@ public class ServerMain extends AbstractHandler {
         return Integer.parseInt(parts[1]);
     }
 
-    private static void performDiffSanityCheck() throws IOException {
-        for (final Treatment t : Treatment.values()) {
-            for (final Diff d : Diff.values()) {
-                DiffData.load(d.getPath(), t);
-            }
-        }
-        DiffData.load("warmup", Treatment.WORST_NO_FILES);
-    }
 }
