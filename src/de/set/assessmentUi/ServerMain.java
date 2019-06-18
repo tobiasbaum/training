@@ -14,11 +14,13 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -36,8 +38,11 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import de.set.assessmentUi.DiffData.ChangePart;
 import de.set.assessmentUi.Treatments.TreatmentCombination;
 import de.set.assessmentUi.Treatments.TreatmentUsageData;
+import spark.ModelAndView;
+import spark.Request;
 import spark.Response;
 import spark.Spark;
+import spark.template.velocity.VelocityTemplateEngine;
 
 public class ServerMain extends AbstractHandler {
 
@@ -48,7 +53,13 @@ public class ServerMain extends AbstractHandler {
     private final Treatments treatments = new Treatments(new Random());
     private final String salt;
 
+    private final Map<Long, AssessmentSuite> assessments = new ConcurrentHashMap<>();
+
     public ServerMain(final String salt) throws IOException {
+    	final AssessmentSuite test = new AssessmentSuite(1234, "Herr Baum");
+    	test.addStep(new WorkingMemoryTest());
+    	this.assessments.put(test.getId(), test);
+
         this.salt = salt;
         this.initTreatments();
     }
@@ -363,17 +374,69 @@ public class ServerMain extends AbstractHandler {
         m.staticFile("/", "/index.html");
         m.staticFile("/index.html");
         m.staticFile("/experiment.js");
-//        performDiffSanityCheck();
-//
-//        final Server server = new Server(args.length > 0 ? Integer.parseInt(args[0]) : 8080);
-//        server.setAttribute("org.eclipse.jetty.server.Request.maxFormContentSize", 10000000);
-//        server.setHandler(new ServerMain(Files.readAllLines(Paths.get("salt.txt"), StandardCharsets.ISO_8859_1).toString()));
-//
-//        server.start();
-//        server.join();
+        m.staticFile("/jquery.min.js");
+        m.staticFile("/experiment.css");
+        Spark.get("/assessment/*/start.html", m::assessmentStart);
+        Spark.post("/assessment/*/step/*", m::assessmentStep);
+        Spark.get("/shutdown/asdrsqer1223as", m::shutdown);
+    }
 
-        Spark.awaitStop();
-        DataLog.close();
+    private Object assessmentStart(final Request request, final Response response) {
+    	long id;
+    	try {
+    		id = Long.parseLong(request.splat()[0]);
+    	} catch (final NumberFormatException e) {
+    		return Spark.halt(404);
+    	}
+    	final AssessmentSuite a = this.assessments.get(id);
+    	if (a == null) {
+    		return Spark.halt(404);
+    	}
+
+    	final Map<String, Object> data = new HashMap<>();
+    	data.put("assessment", a);
+    	return this.velocity(data, "/start.html.vm");
+    }
+
+    private Object assessmentStep(final Request request, final Response response) {
+    	long id;
+    	try {
+    		id = Long.parseLong(request.splat()[0]);
+    	} catch (final NumberFormatException e) {
+    		return Spark.halt(404);
+    	}
+    	final AssessmentSuite a = this.assessments.get(id);
+    	if (a == null) {
+    		return Spark.halt(404);
+    	}
+
+    	int step;
+    	try {
+    		step = Integer.parseInt(request.splat()[1]);
+    	} catch (final NumberFormatException e) {
+    		return Spark.halt(404);
+    	}
+
+    	if (!a.isNextStep(step)) {
+    		DataLog.log(a.getId(), "Invalid step " + step);
+    		return "Ungültige Schrittnummer. Bitte nutzen Sie nur die Navigationsfunktionen der Webseite, nicht die des Browsers.";
+    	}
+    	a.setCurrentStep(step);
+
+    	final AssessmentItem item = a.getStep(step);
+    	if (item == null) {
+    		return Spark.halt(404);
+    	}
+
+    	final Map<String, Object> data = new HashMap<>();
+    	data.put("assessment", a);
+    	data.put("nextStep", step + 1);
+    	data.put("item", item);
+    	return this.velocity(data, item.getTemplate());
+    }
+
+    private Object velocity(final Map<String, Object> data, final String template) {
+    	return new VelocityTemplateEngine().render(new ModelAndView(data, template));
     }
 
     private void staticFile(final String path) {
@@ -381,10 +444,10 @@ public class ServerMain extends AbstractHandler {
 	}
 
     private void staticFile(final String urlPath, final String cpPath) {
-    	Spark.get(urlPath, (request, response) -> this.getStaticFile(request, response, cpPath));
+    	Spark.get(urlPath, (final Request request, final Response response) -> this.getStaticFile(request, response, cpPath));
     }
 
-	private Object getStaticFile(final spark.Request request, final Response response, final String cpPath) throws IOException {
+	private Object getStaticFile(final Request request, final Response response, final String cpPath) throws IOException {
 		this.sendFile(cpPath, response.raw());
 		return null;
 	}
@@ -442,6 +505,21 @@ public class ServerMain extends AbstractHandler {
             throw new RuntimeException("expected count but was " + parts[0]);
         }
         return Integer.parseInt(parts[1]);
+    }
+
+    private Object shutdown(final Request request, final Response response) {
+    	new Thread("stopper") {
+    		@Override
+			public void run() {
+    	    	Spark.stop();
+    	        Spark.awaitStop();
+    	        try {
+					DataLog.close();
+				} catch (final IOException e) {
+				}
+    		}
+    	} .start();
+    	return "Stopping ...";
     }
 
 }

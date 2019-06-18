@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8" />
-	<title>Code Review Experiment</title>
+	<title>Bewerbungsportal der SET GmbH - $assessment.greeting</title>
 	<meta http-equiv="X-UA-Compatible" content="chrome=1, IE=edge">
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
 
@@ -13,111 +13,31 @@
 	<script type="text/javascript" src="experiment.js"></script>
 	
 	<script type="text/javascript">
-		function gotIp(ip) {
-			if (ip != 'unknown') {
-				ip = hashFnv32a(ip);
-			}
-			$('#clientSideIpHash').val($('#clientSideIpHash').val() + ip);
-		}
-		
         $(document).ready(function () {
         	activateLeaveWarning();
-        	findIP(gotIp);
         });
     </script>
 </head>
 <body>
-	<p>First we need some information that can possibly help us to make sense of the results after 
-	the experiment. If you don't know an answer exactly, a rough estimate will suffice.</p>
-	<form action="exp/$exp.id/intro.html" method="post" autocomplete="off">
-		<!-- role -->
-		<fieldset>
-			<p>What is your main role?</p>
-			<input type="radio" name="role" id="role_0" value="programmer" required="true"><label for="role_0">Programmer / Software Developer</label><br/>
-			<input type="radio" name="role" id="role_1" value="tester" required="true"><label for="role_1">Tester</label><br/>
-			<input type="radio" name="role" id="role_2" value="analyst" required="true"><label for="role_2">Analyst</label><br/>
-			<input type="radio" name="role" id="role_3" value="architect" required="true"><label for="role_3">Software Architect</label><br/>
-			<input type="radio" name="role" id="role_4" value="operations" required="true"><label for="role_4">IT Operations</label><br/>
-			<input type="radio" name="role" id="role_5" value="manager" required="true"><label for="role_5">Manager</label><br/>
-			<input type="radio" name="role" id="role_6" value="researcher" required="true"><label for="role_6">Researcher / Professor / PhD Student</label><br/>
-			<input type="radio" name="role" id="role_7" value="student" required="true"><label for="role_7">Student</label><br/>
-			<input type="radio" name="role" id="role_8" value="other" required="true"><label for="role_8">Other</label><br/>
-		</fieldset><br/>
-		
-		<!-- professional development experience -->
-		<fieldset>
-			<p>How many years ago did you start professional software development?</p>
-			<input type="radio" name="profDevExp" id="profDevExp_0" value="0" required="true"><label for="profDevExp_0">I have no experience in professional software development</label><br/>
-			<input type="radio" name="profDevExp" id="profDevExp_1" value="1" required="true"><label for="profDevExp_1">1 year or less</label><br/>
-			<input type="radio" name="profDevExp" id="profDevExp_2" value="2" required="true"><label for="profDevExp_2">2 years</label><br/>
-			<input type="radio" name="profDevExp" id="profDevExp_3" value="3" required="true"><label for="profDevExp_3">3 - 5 years</label><br/>
-			<input type="radio" name="profDevExp" id="profDevExp_4" value="4" required="true"><label for="profDevExp_4">6 - 10 years</label><br/>
-			<input type="radio" name="profDevExp" id="profDevExp_5" value="5" required="true"><label for="profDevExp_5">11 years or more</label><br/>
-		</fieldset><br/>
-		      
-		<!-- Java experience -->
-		<fieldset>
-			<p>How many years ago did you start programming in Java?</p>
-			<input type="radio" name="javaExp" id="javaExp_0" value="0" required="true"><label for="javaExp_0">I have never programmed in Java so far</label><br/>
-			<input type="radio" name="javaExp" id="javaExp_1" value="1" required="true"><label for="javaExp_1">1 year or less</label><br/>
-			<input type="radio" name="javaExp" id="javaExp_2" value="2" required="true"><label for="javaExp_2">2 years</label><br/>
-			<input type="radio" name="javaExp" id="javaExp_3" value="3" required="true"><label for="javaExp_3">3 - 5 years</label><br/>
-			<input type="radio" name="javaExp" id="javaExp_4" value="4" required="true"><label for="javaExp_4">6 - 10 years</label><br/>
-			<input type="radio" name="javaExp" id="javaExp_5" value="5" required="true"><label for="javaExp_5">11 years or more</label><br/>
-		</fieldset><br/>
-		      
-		<!-- programming practice -->
-		<fieldset>
-			<p>How often do you currently do programming?</p>
-			<input type="radio" name="programPract" id="programPract_0" value="0" required="true"><label for="programPract_0">Not at all</label><br/>
-			<input type="radio" name="programPract" id="programPract_1" value="1" required="true"><label for="programPract_1">About once a year</label><br/>
-			<input type="radio" name="programPract" id="programPract_2" value="2" required="true"><label for="programPract_2">About once a month</label><br/>
-			<input type="radio" name="programPract" id="programPract_3" value="3" required="true"><label for="programPract_3">About once a week</label><br/>
-			<input type="radio" name="programPract" id="programPract_4" value="4" required="true"><label for="programPract_4">About once a day or more often</label><br/>
-		</fieldset><br/>
-		      
-		<!-- review practice -->
-		<fieldset>
-			<p>How often do you currently perform code reviews?</p>
-			<input type="radio" name="reviewPract" id="reviewPract_0" value="0" required="true"><label for="reviewPract_0">Not at all</label><br/>
-			<input type="radio" name="reviewPract" id="reviewPract_1" value="1" required="true"><label for="reviewPract_1">About once a year</label><br/>
-			<input type="radio" name="reviewPract" id="reviewPract_2" value="2" required="true"><label for="reviewPract_2">About once a month</label><br/>
-			<input type="radio" name="reviewPract" id="reviewPract_3" value="3" required="true"><label for="reviewPract_3">About once a week</label><br/>
-			<input type="radio" name="reviewPract" id="reviewPract_4" value="4" required="true"><label for="reviewPract_4">About once a day or more often</label><br/>
-		</fieldset><br/>
-		      
-		<!-- review experience -->
-		<!--<fieldset>
-			<p>How many years ago did you start doing code reviews this often (or even more often)?</p>
-			<input type="radio" name="reviewExp" id="reviewExp_0" value="0" required="true"><label for="reviewExp_0">I have never done code reviews so far</label><br/>
-			<input type="radio" name="reviewExp" id="reviewExp_1" value="1" required="true"><label for="reviewExp_1">1 year or less</label><br/>
-			<input type="radio" name="reviewExp" id="reviewExp_2" value="2" required="true"><label for="reviewExp_2">2 years</label><br/>
-			<input type="radio" name="reviewExp" id="reviewExp_3" value="3" required="true"><label for="reviewExp_3">3 - 5 years</label><br/>
-			<input type="radio" name="reviewExp" id="reviewExp_4" value="4" required="true"><label for="reviewExp_4">6 - 10 years</label><br/>
-			<input type="radio" name="reviewExp" id="reviewExp_5" value="5" required="true"><label for="reviewExp_5">11 years or more</label><br/>
-		</fieldset><br/>-->
-		      
-		<!-- TODO review tool use? -->
-		
-		<!-- TODO experience with the codebase? -->
-		
-		<!-- potentially tired -->
-		<fieldset>
-			<p>How many hours have you already been working today?</p>
-			<input type="number" name="workStartHours" required="true" min="0" max="24"/>
-		</fieldset><br/>
-		<fieldset>
-			<p>How tired/fit do you feel at the moment?</p>
-			<input type="radio" name="fitness" id="fitness_1" value="1" required="true"><label for="fitness_1">1: very tired</label>
-			<input type="radio" name="fitness" id="fitness_2" value="2" required="true"><label for="fitness_2">2: moderately tired</label>
-			<input type="radio" name="fitness" id="fitness_3" value="3" required="true"><label for="fitness_3">3: neutral</label>
-			<input type="radio" name="fitness" id="fitness_4" value="4" required="true"><label for="fitness_4">4: moderately fit</label>
-			<input type="radio" name="fitness" id="fitness_5" value="5" required="true"><label for="fitness_5">5: very fit</label>
-		</fieldset><br/>
-		  
-		<input type="hidden" id="clientSideIpHash" name="clientSideIpHash" value="" />
-		  
-		<button onClick="deactivateLeaveWarning()">Continue ►</button>
-	</form>
+<p>Hallo $assessment.greeting,</p>
+
+<p>vielen Dank für Ihr Interesse an der SET! Die Fragen und Aufgaben auf den folgenden Seiten dienen uns dazu, ein
+erstes Bild von Ihren Interessen und Fähigkeiten zu erhalten. Im Idealfall können wir uns dann anschließend in einem
+persönlichen Gespräch weiter kennenlernen.</p>
+
+<p>Die Beantwortung der Fragen und Aufgaben kann bis zu TODO Minuten in Anspruch nehmen. Einmal begonnen kann sie nicht unterbrochen
+werden. Suchen Sie sich deshalb an besten einen ruhigen Ort und eine passende Zeit, um fokussiert teilnehmen zu können.</p>
+
+<p>Bitte versetzen Sie Ihren Browser für die Bearbeitung der Aufgaben in den Vollbildmodus. Häufig kann dies durch Drücken von F11 erreicht werden.</p>
+
+<p>Durch das Klicken auf "Start" stimmen Sie zu, dass wir die Ergebnisse der Aufgaben zur Bewertung Ihrer Bewerbung und zum Vergleich mit anderen Bewerbern analysieren und speichern.</p>
+
+<p>Nochmals vielen Dank für die Bewerbung und viel Erfolg,</p>
+
+<p>Arthur Brack, Tobias Baum und die anderen Kollegen von der SET</p>
+
+   <form action="step/0" method="post">
+      <button type="submit">Start ►</button>
+   </form>
 </body>
 </html>
