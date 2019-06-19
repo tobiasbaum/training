@@ -57,6 +57,7 @@ public class ServerMain extends AbstractHandler {
 
     public ServerMain(final String salt) throws IOException {
     	final AssessmentSuite test = new AssessmentSuite(1234, "Herr Baum");
+    	test.addStep(new UnderstandingTask("/understanding/codeA"));
     	test.addStep(new WorkingMemoryTest());
     	this.assessments.put(test.getId(), test);
 
@@ -375,8 +376,10 @@ public class ServerMain extends AbstractHandler {
         m.staticFile("/", "/index.html");
         m.staticFile("/index.html");
         m.staticFile("/experiment.js");
-        m.staticFile("/jquery.min.js");
         m.staticFile("/experiment.css");
+        m.staticFile("/codemirror.js");
+        m.staticFile("/codemirror.css");
+        m.staticFile("/jquery.min.js");
         Spark.get("/assessment/*/start.html", m::assessmentStart);
         Spark.post("/assessment/*/step/*", m::assessmentStep);
         Spark.get("/shutdown/asdrsqer1223as", m::shutdown);
