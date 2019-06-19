@@ -3,6 +3,8 @@ package de.set.assessmentUi;
 import java.util.ArrayList;
 import java.util.List;
 
+import spark.Request;
+
 public class AssessmentSuite {
 
 	private final long id;
@@ -44,6 +46,21 @@ public class AssessmentSuite {
 	public void setCurrentStep(final int step) {
 		this.currentStep = step;
 		DataLog.log(this.id, "moved to step " + step + ": " + this.getStep(step));
+	}
+
+	private AssessmentItem getCurrentStep() {
+		if (this.currentStep >= 0 && this.currentStep < this.steps.size()) {
+			return this.steps.get(this.currentStep);
+		} else {
+			return null;
+		}
+	}
+
+	public void handleResultForCurrentStep(final Request request) {
+    	final AssessmentItem previousItem = this.getCurrentStep();
+    	if (previousItem != null) {
+    		previousItem.handleResultData(this, this.currentStep, request);
+    	}
 	}
 
 }

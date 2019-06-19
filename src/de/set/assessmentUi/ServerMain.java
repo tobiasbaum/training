@@ -371,6 +371,7 @@ public class ServerMain extends AbstractHandler {
         Velocity.init();
 
         final ServerMain m = new ServerMain("asdf");
+        Spark.before((final Request request, final Response response) -> DataLog.log(0, "calling URL " + request.url()));
         m.staticFile("/", "/index.html");
         m.staticFile("/index.html");
         m.staticFile("/experiment.js");
@@ -410,6 +411,8 @@ public class ServerMain extends AbstractHandler {
     		return Spark.halt(404);
     	}
 
+    	a.handleResultForCurrentStep(request);
+
     	int step;
     	try {
     		step = Integer.parseInt(request.splat()[1]);
@@ -424,15 +427,15 @@ public class ServerMain extends AbstractHandler {
     	a.setCurrentStep(step);
 
     	final AssessmentItem item = a.getStep(step);
-    	if (item == null) {
-    		return Spark.halt(404);
-    	}
-
     	final Map<String, Object> data = new HashMap<>();
     	data.put("assessment", a);
-    	data.put("nextStep", step + 1);
-    	data.put("item", item);
-    	return this.velocity(data, item.getTemplate());
+    	if (item != null) {
+    		data.put("nextStep", step + 1);
+    		data.put("item", item);
+    		return this.velocity(data, item.getTemplate());
+    	} else {
+    		return this.velocity(data, "/closing.html.vm");
+    	}
     }
 
     private Object velocity(final Map<String, Object> data, final String template) {

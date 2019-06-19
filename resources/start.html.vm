@@ -6,11 +6,11 @@
 	<meta http-equiv="X-UA-Compatible" content="chrome=1, IE=edge">
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
 
-	<link type="text/css" rel="stylesheet" href="experiment.css" />
+	<link type="text/css" rel="stylesheet" href="/experiment.css" />
 	
 	<!-- Requires jQuery -->
-	<script src="jquery.min.js" type="text/javascript"></script>
-	<script type="text/javascript" src="experiment.js"></script>
+	<script src="/jquery.min.js" type="text/javascript"></script>
+	<script type="text/javascript" src="/experiment.js"></script>
 	
 	<script type="text/javascript">
         $(document).ready(function () {
@@ -37,7 +37,7 @@ werden. Suchen Sie sich deshalb an besten einen ruhigen Ort und eine passende Ze
 <p>Arthur Brack, Tobias Baum und die anderen Kollegen von der SET</p>
 
    <form action="step/0" method="post">
-      <button type="submit">Start ►</button>
+      <button onClick="deactivateLeaveWarning()" type="submit">Start ►</button>
    </form>
 </body>
 </html>
