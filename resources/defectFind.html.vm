@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8" />
-	<title>Bewerbungsportal der SET GmbH - $assessment.greeting</title>
+	<title>Code Review Experiment</title>
 	<meta http-equiv="X-UA-Compatible" content="chrome=1, IE=edge">
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
 
@@ -19,16 +19,17 @@
 	
 	<script type="text/javascript">
         $(document).ready(function () {
-
-			CodeMirror(document.getElementById('editor'), {
+			let cm = CodeMirror(document.getElementById('editor'), {
 			  value: '$item.contentEscaped',
 			  mode:  'java',
 			  readOnly: true,
 			  viewportMargin: Infinity,
 			  lineWrapping: true,
 			  lineNumbers: true,
-			  gutters: ["CodeMirror-linenumbers"]
-			});        	
+			  gutters: ["remarks", "CodeMirror-linenumbers"]
+			});
+			cm.on("gutterClick", handleGutterClick);
+			        	
 			window.onscroll = function(ev) {scrollHandler()};
         	activateLeaveWarning();
         	addToLog('view loaded,user agent=' + navigator.userAgent);
@@ -41,14 +42,15 @@
 	</script>
 </head>
 <body>
-	<i><p>Versuchen Sie den folgenden Java-Code im Kopf nachzuvollziehen. Welche Ausgabe erzeugt er?</p></i><br/><br/>
+
+	<i><p>Der folgende Code enthält einen fachlichen Fehler. Ihre Aufgabe ist, diesen zu finden.</p></i>
+	<i><p>Um einen Fehler in einer Zeile anzumerken, klicken Sie auf die betreffende Zeilennummer. Falls sie eine Anmerkung löschen
+	möchten, klicken Sie erneut darauf und entfernen Sie den Text.</p></i><br/><br/>
 	
 	<div id="editor">
 	</div><br/>
 	
     <form action="$nextStep" method="post">
-		<label for="answer">Ausgabe des Programms:</label> <input name="answer" minlength="1" type="text" required="required"></input><br/><br/>	
-	
 		<button onClick="deactivateLeaveWarning()" title="Ergebnis festschreiben und zur nächsten Aufgabe" type="submit">Nächste Aufgabe ►</button>
 		<input type="hidden" name="index" value="$index" />
 		<textarea id="logContent" name="logContent" style="display:none"></textarea>

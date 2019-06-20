@@ -57,6 +57,7 @@ public class ServerMain extends AbstractHandler {
 
     public ServerMain(final String salt) throws IOException {
     	final AssessmentSuite test = new AssessmentSuite(1234, "Herr Baum");
+    	test.addStep(new DefectFindTask("/defectFind/defA"));
     	test.addStep(new UnderstandingTask("/understanding/codeA"));
     	test.addStep(new WorkingMemoryTest());
     	this.assessments.put(test.getId(), test);

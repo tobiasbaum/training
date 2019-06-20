@@ -4,19 +4,19 @@ import java.io.IOException;
 
 import spark.Request;
 
-public class UnderstandingTask extends AssessmentItem {
+public class DefectFindTask extends AssessmentItem {
 
 	private final String codepath;
 	private final String content;
 
-	public UnderstandingTask(final String codepath) throws IOException {
+	public DefectFindTask(final String codepath) throws IOException {
 		this.codepath = codepath;
 		this.content = loadResourceAsString(codepath);
 	}
 
 	@Override
 	public String getTemplate() {
-		return "/understanding.html.vm";
+		return "/defectFind.html.vm";
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class UnderstandingTask extends AssessmentItem {
 
 	@Override
 	public String toString() {
-		return "understanding " + this.codepath;
+		return "defectFind " + this.codepath;
 	}
 
 }
