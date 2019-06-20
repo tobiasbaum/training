@@ -31,7 +31,7 @@
 			addToLog('screen size ' + screen.width + ' x ' + screen.height);
 			setupIdleDetection();
 			setupMouseAndKeyboardLogging();
-			setAndLogCookie($index, $exp.id);
+			setAndLogCookie($nextStep, $assessment.id);
 		});
 	</script>
 </head>

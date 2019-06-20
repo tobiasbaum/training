@@ -40,7 +40,12 @@ public class UnderstandingTask extends AssessmentItem {
 	}
 
 	public String getContentEscaped() {
-		return this.content.replace("\\", "\\\\").replace("'", "\\'").replace("\n", "\\n").replace("\r", "\\r");
+		return this.content
+				.replace("\\", "\\\\")
+				.replace("'", "\\'")
+				.replace("\n", "\\n")
+				.replace("\r", "\\r")
+				.replace("\"", "\\\"");
 	}
 
 	@Override
