@@ -41,6 +41,8 @@
 	</script>
 </head>
 <body>
+    <h3>Aufgabe $nextStep</h3>
+    
 	<i><p>Versuchen Sie den folgenden Java-Code im Kopf nachzuvollziehen. Welche Ausgabe erzeugt er?</p></i><br/><br/>
 	
 	<div id="editor">
@@ -50,7 +52,6 @@
 		<label for="answer">Ausgabe des Programms:</label> <input name="answer" minlength="1" type="text" required="required"></input><br/><br/>	
 	
 		<button onClick="deactivateLeaveWarning()" title="Ergebnis festschreiben und zur nächsten Aufgabe" type="submit">Nächste Aufgabe ►</button>
-		<input type="hidden" name="index" value="$index" />
 		<textarea id="logContent" name="logContent" style="display:none"></textarea>
    	</form>
 

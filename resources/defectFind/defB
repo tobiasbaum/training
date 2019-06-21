@@ -1,0 +1,36 @@
+    /**
+     * Liefert einen Bereich aus dem übergebenen String.
+     * Normalisiert dabei Start- und Endindices. Negative Indices laufen 'rückwärts'.
+     * -1 ist somit das letzte Zeichen im String. Positive Indices werden um 1 dekrementiert.
+     * @param string Gesamtstring
+     * @param startIndex Startindex, der normalisiert werden soll.
+     * @param endIndex Endindex, der normalisiert werden soll.
+     * @return Der entsprechende Teilstring oder der leere String, falls der startIndex hinter dem endIndex ist.
+     */
+    public static String getRange(final String string, final int startIndex, final int endIndex) {
+        final int len = string.length();
+
+        int from;
+        if (startIndex < 0) {
+            from = len + startIndex;
+        } else {
+            from = startIndex - 1;
+        }
+
+        int to;
+        if (endIndex < 0) {
+            to = len + endIndex;
+        } else {
+            to = endIndex - 1;
+        }
+
+        if (to >= len) {
+            to = len - 1;
+        }
+
+        if (to < from) {
+            return ""; //$NON-NLS-1$
+        }
+
+        return string.substring(from, to + 1);
+    }

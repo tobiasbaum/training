@@ -1,0 +1,35 @@
+class Node {
+    String name;
+    Node[] adjacent;
+	
+	public Node(String name, Node... adjacent) {
+	    this.name = name;
+	    this.adjacent = adjacent;
+	}
+}
+
+class Main {
+	public static void main(final String[] args) {
+	    Node blue = new Node("blue");
+		Node green = new Node("green", blue);
+		Node red = new Node("red", blue);
+		Node yellow = new Node("yellow", green, red);
+		
+		traverse(yellow);
+	}
+	
+	private void traverse(Node n) {
+		traverse(n, new HashSet<>());
+	}
+	
+	private void traverse(Node n, Set<Node> visited) {
+		if (visited.contains(n)) {
+		    return;
+		}
+		System.out.print(n.name + ",");
+		visited.add(n);
+		for (Node a : n.adjacent) {
+			traverse(a, visited);
+		}
+	}
+}

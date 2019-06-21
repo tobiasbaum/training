@@ -42,6 +42,7 @@
 	</script>
 </head>
 <body>
+    <h3>Aufgabe $nextStep</h3>
 
 	<i><p>Der folgende Code enthält einen fachlichen Fehler. Ihre Aufgabe ist, diesen zu finden.</p></i>
 	<i><p>Um einen Fehler in einer Zeile anzumerken, klicken Sie auf die betreffende Zeilennummer. Falls sie eine Anmerkung löschen
@@ -52,7 +53,6 @@
 	
     <form action="$nextStep" method="post">
 		<button onClick="deactivateLeaveWarning()" title="Ergebnis festschreiben und zur nächsten Aufgabe" type="submit">Nächste Aufgabe ►</button>
-		<input type="hidden" name="index" value="$index" />
 		<textarea id="logContent" name="logContent" style="display:none"></textarea>
    	</form>
 
