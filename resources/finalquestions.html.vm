@@ -6,11 +6,11 @@
 	<meta http-equiv="X-UA-Compatible" content="chrome=1, IE=edge">
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
 
-	<link type="text/css" rel="stylesheet" href="experiment.css" />
+	<link type="text/css" rel="stylesheet" href="/experiment.css" />
 	
 	<!-- Requires jQuery -->
-	<script src="jquery.min.js" type="text/javascript"></script>
-	<script type="text/javascript" src="experiment.js"></script>
+	<script src="/jquery.min.js" type="text/javascript"></script>
+	<script type="text/javascript" src="/experiment.js"></script>
 	
 	<script type="text/javascript">
         $(document).ready(function () {
@@ -19,11 +19,83 @@
     </script>
 </head>
 <body>
-      <form action="closing.html" method="post">
-   			Do you have further remarks on the experiment or on the topic of code reviews in general? Please let us know here...<br/>
+      <form action="$nextStep" method="post">
+            <p>Wie würden Sie ihr Interesse an den folgenden Themenbereichen einschätzen:</p>
+            <table>
+            <tr style="background-color: #999999;">
+              <td></td>
+              <td style="padding: 5px;">keinerlei Interesse</td>
+              <td style="padding: 5px;">...</td>
+              <td style="padding: 5px;">mittel</td>
+              <td style="padding: 5px;">...</td>
+              <td style="padding: 5px;">sehr hohes Interesse</td>
+              <td style="padding: 5px;">kann ich nicht einschätzen</td>
+            </tr>
+            <tr>
+              <td>Softwareentwicklung</td>
+              <td style="text-align:right"><input type="radio" required="required" name="interestSoftwareDev" value="-2" />&nbsp;</td>
+              <td style="text-align:center"><input type="radio" required="required" name="interestSoftwareDev" value="-1" /></td>
+              <td style="text-align:center"><input type="radio" required="required" name="interestSoftwareDev" value="0" /></td>
+              <td style="text-align:center"><input type="radio" required="required" name="interestSoftwareDev" value="1" /></td>
+              <td style="text-align:left">&nbsp;<input type="radio" required="required" name="interestSoftwareDev" value="2" /></td>
+              <td style="text-align:center"><input type="radio" required="required" name="interestSoftwareDev" value="unknown" /></td>
+            </tr>
+            <tr style="background-color: #BBBBBB;">
+              <td>Betriebssysteme und Infrastruktur</td>
+              <td style="text-align:right"><input type="radio" required="required" name="interestInfra" value="-2" />&nbsp;</td>
+              <td style="text-align:center"><input type="radio" required="required" name="interestInfra" value="-1" /></td>
+              <td style="text-align:center"><input type="radio" required="required" name="interestInfra" value="0" /></td>
+              <td style="text-align:center"><input type="radio" required="required" name="interestInfra" value="1" /></td>
+              <td style="text-align:left">&nbsp;<input type="radio" required="required" name="interestInfra" value="2" /></td>
+              <td style="text-align:center"><input type="radio" required="required" name="interestInfra" value="unknown" /></td>
+            </tr>
+            <tr>
+              <td>technische Zusammenarbeit mit Kunden</td>
+              <td style="text-align:right"><input type="radio" required="required" name="interestCustomers" value="-2" />&nbsp;</td>
+              <td style="text-align:center"><input type="radio" required="required" name="interestCustomers" value="-1" /></td>
+              <td style="text-align:center"><input type="radio" required="required" name="interestCustomers" value="0" /></td>
+              <td style="text-align:center"><input type="radio" required="required" name="interestCustomers" value="1" /></td>
+              <td style="text-align:left">&nbsp;<input type="radio" required="required" name="interestCustomers" value="2" /></td>
+              <td style="text-align:center"><input type="radio" required="required" name="interestCustomers" value="unknown" /></td>
+            </tr>
+            <tr style="background-color: #BBBBBB;">
+              <td>Projektleitung und Organisation</td>
+              <td style="text-align:right"><input type="radio" required="required" name="interestOrga" value="-2" />&nbsp;</td>
+              <td style="text-align:center"><input type="radio" required="required" name="interestOrga" value="-1" /></td>
+              <td style="text-align:center"><input type="radio" required="required" name="interestOrga" value="0" /></td>
+              <td style="text-align:center"><input type="radio" required="required" name="interestOrga" value="1" /></td>
+              <td style="text-align:left">&nbsp;<input type="radio" required="required" name="interestOrga" value="2" /></td>
+              <td style="text-align:center"><input type="radio" required="required" name="interestOrga" value="unknown" /></td>
+            </tr>
+            <tr>
+              <td>Reisetätigkeit</td>
+              <td style="text-align:right"><input type="radio" required="required" name="interestTravel" value="-2" />&nbsp;</td>
+              <td style="text-align:center"><input type="radio" required="required" name="interestTravel" value="-1" /></td>
+              <td style="text-align:center"><input type="radio" required="required" name="interestTravel" value="0" /></td>
+              <td style="text-align:center"><input type="radio" required="required" name="interestTravel" value="1" /></td>
+              <td style="text-align:left">&nbsp;<input type="radio" required="required" name="interestTravel" value="2" /></td>
+              <td style="text-align:center"><input type="radio" required="required" name="interestTravel" value="unknown" /></td>
+            </tr>
+            <tr style="background-color: #BBBBBB;">
+              <td>Präsentieren und Verkaufen von Lösungen</td>
+              <td style="text-align:right"><input type="radio" required="required" name="interestSales" value="-2" />&nbsp;</td>
+              <td style="text-align:center"><input type="radio" required="required" name="interestSales" value="-1" /></td>
+              <td style="text-align:center"><input type="radio" required="required" name="interestSales" value="0" /></td>
+              <td style="text-align:center"><input type="radio" required="required" name="interestSales" value="1" /></td>
+              <td style="text-align:left">&nbsp;<input type="radio" required="required" name="interestSales" value="2" /></td>
+              <td style="text-align:center"><input type="radio" required="required" name="interestSales" value="unknown" /></td>
+            </tr>
+            </table><br/><br/>
+            
+            <p>Dürfen wir Ihre Daten auch über das Bewerbungsverfahren hinaus speichern, um Sie kontaktieren zu können, falls wir
+            Ihnen nicht jetzt, aber später, eine Stelle anbieten möchten?<p>
+            <input type="radio" required="required" id="saveForLater_yes" name="saveForLater" value="yes"/><label for="saveForLater_yes">Ja</label><br/>            
+            <input type="radio" required="required" id="saveForLater_no" name="saveForLater" value="no"/><label for="saveForLater_no">Nein</label><br/><br/>  
+            
+   			<p>Haben Sie noch Anmerkungen zu unserem Online-Bewerbungsverfahren? Dann teilen Sie uns diese hier mit...</p>
    			<textarea name="furtherRemarks" cols="100" rows="8"></textarea><br/>
    		
-        <button onClick="deactivateLeaveWarning()">Finish experiment ►</button>
+        <button onClick="deactivateLeaveWarning()">Abschließen ►</button>
       </form>
 </body>
 </html>

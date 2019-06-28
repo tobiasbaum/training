@@ -19,10 +19,12 @@
     </script>
 </head>
 <body>
+<img src="/set_logo.png" alt="SET-Logo" width="400px" style="display:block;margin-left:auto;margin-right:auto;"/><br/><br/>
+
 <p>Hallo $assessment.greeting,</p>
 
-<p>vielen Dank für Ihr Interesse an der SET! Die Fragen und Aufgaben auf den folgenden Seiten dienen uns dazu, ein
-erstes Bild von Ihren Interessen und Fähigkeiten zu erhalten. Im Idealfall können wir uns dann anschließend in einem
+<p>vielen Dank für Ihr Interesse an der SET GmbH! Die Fragen und Aufgaben auf den folgenden Seiten dienen uns dazu, ein
+erstes Bild von Ihren Fähigkeiten und Interessen zu erhalten. Im Idealfall können wir uns dann anschließend in einem
 persönlichen Gespräch weiter kennenlernen.</p>
 
 <p>Die Beantwortung der Fragen und Aufgaben kann bis zu TODO Minuten in Anspruch nehmen. Einmal begonnen kann sie nicht unterbrochen

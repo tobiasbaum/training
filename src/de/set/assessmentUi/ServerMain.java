@@ -23,13 +23,14 @@ public class ServerMain {
 
     public ServerMain() throws IOException {
     	final AssessmentSuite test = new AssessmentSuite(1234, "Herr Baum");
-    	test.addStep(new WorkingMemoryTest());
-    	test.addStep(new UnderstandingTask("/understanding/codeA"));
-    	test.addStep(new UnderstandingTask("/understanding/codeB"));
-    	test.addStep(new UnderstandingTask("/understanding/codeC"));
-    	test.addStep(new DefectFindTask("/defectFind/defA"));
-    	test.addStep(new DefectFindTask("/defectFind/defB"));
-    	test.addStep(new DefectFindTask("/defectFind/defC"));
+//    	test.addStep(new WorkingMemoryTest());
+//    	test.addStep(new UnderstandingTask("/understanding/codeA"));
+//    	test.addStep(new UnderstandingTask("/understanding/codeB"));
+//    	test.addStep(new UnderstandingTask("/understanding/codeC"));
+//    	test.addStep(new DefectFindTask("/defectFind/defA"));
+//    	test.addStep(new DefectFindTask("/defectFind/defB"));
+//    	test.addStep(new DefectFindTask("/defectFind/defC"));
+    	test.addStep(new FinalQuestions());
     	this.assessments.put(test.getId(), test);
     }
 
@@ -57,8 +58,12 @@ public class ServerMain {
             response.setContentType("text/html;charset=UTF-8");
         } else if (file.contains(".css")) {
             response.setContentType("text/css;charset=UTF-8");
-        } else if (file.contains("js")) {
+        } else if (file.contains(".js")) {
             response.setContentType("application/javascript;charset=UTF-8");
+        } else if (file.contains(".png")) {
+            response.setContentType("image/png");
+        } else if (file.contains(".ico")) {
+            response.setContentType("image/x-icon");
         }
     }
 
@@ -86,6 +91,8 @@ public class ServerMain {
         m.staticFile("/codemirror.js");
         m.staticFile("/codemirror.css");
         m.staticFile("/jquery.min.js");
+        m.staticFile("/favicon.ico");
+        m.staticFile("/set_logo.png");
         Spark.get("/assessment/*/start.html", m::assessmentStart);
         Spark.post("/assessment/*/step/*", m::assessmentStep);
         Spark.get("/shutdown/asdrsqer1223as", m::shutdown);
@@ -157,6 +164,7 @@ public class ServerMain {
 
     private void staticFile(final String urlPath, final String cpPath) {
     	Spark.get(urlPath, (final Request request, final Response response) -> this.getStaticFile(request, response, cpPath));
+    	Spark.head(urlPath, (final Request request, final Response response) -> this.getStaticFile(request, response, cpPath));
     }
 
 	private Object getStaticFile(final Request request, final Response response, final String cpPath) throws IOException {

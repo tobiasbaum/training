@@ -2,11 +2,11 @@ package de.set.assessmentUi;
 
 import spark.Request;
 
-public class WorkingMemoryTest extends AssessmentItem {
+public class FinalQuestions extends AssessmentItem {
 
 	@Override
 	public String getTemplate() {
-		return "/wmspan.html.vm";
+		return "/finalquestions.html.vm";
 	}
 
 	@Override
@@ -16,7 +16,7 @@ public class WorkingMemoryTest extends AssessmentItem {
 
 	@Override
 	public String toString() {
-		return "wm test";
+		return "final questions";
 	}
 
 }

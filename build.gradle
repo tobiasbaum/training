@@ -35,7 +35,8 @@ repositories {
 dependencies {
 	compile 'com.sparkjava:spark-core:2.8.0', 
 	    'org.apache.velocity:velocity:1.7',
-		'com.sparkjava:spark-template-velocity:2.7.1'
+		'com.sparkjava:spark-template-velocity:2.7.1',
+		'org.slf4j:slf4j-simple:1.7.26'
 		
     testCompile 'junit:junit:4.+'
 }
