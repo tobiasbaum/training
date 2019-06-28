@@ -3,9 +3,12 @@ package de.set.assessmentUi;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -19,19 +22,13 @@ import spark.template.velocity.VelocityTemplateEngine;
 
 public class ServerMain {
 
+	private static final String SHUTDOWN_PASS = "asdrsqer1223as";
+	private static final String ADMIN_PASS = "iuohaf1234ao";
+
     private final Map<Long, AssessmentSuite> assessments = new ConcurrentHashMap<>();
+    private final AtomicLong suiteCounter = new AtomicLong(System.currentTimeMillis() % 100000 + 10000);
 
     public ServerMain() throws IOException {
-    	final AssessmentSuite test = new AssessmentSuite(1234, "Herr Baum");
-//    	test.addStep(new WorkingMemoryTest());
-//    	test.addStep(new UnderstandingTask("/understanding/codeA"));
-//    	test.addStep(new UnderstandingTask("/understanding/codeB"));
-//    	test.addStep(new UnderstandingTask("/understanding/codeC"));
-//    	test.addStep(new DefectFindTask("/defectFind/defA"));
-//    	test.addStep(new DefectFindTask("/defectFind/defB"));
-//    	test.addStep(new DefectFindTask("/defectFind/defC"));
-    	test.addStep(new FinalQuestions());
-    	this.assessments.put(test.getId(), test);
     }
 
     private void sendFile(final String target, final HttpServletResponse response) throws IOException {
@@ -95,7 +92,9 @@ public class ServerMain {
         m.staticFile("/set_logo.png");
         Spark.get("/assessment/*/start.html", m::assessmentStart);
         Spark.post("/assessment/*/step/*", m::assessmentStep);
-        Spark.get("/shutdown/asdrsqer1223as", m::shutdown);
+        Spark.get("/shutdown/" + SHUTDOWN_PASS, m::shutdown);
+        Spark.get("/admin/" + ADMIN_PASS, m::admin);
+        Spark.post("/admin/" + ADMIN_PASS, m::admin);
     }
 
     private Object assessmentStart(final Request request, final Response response) {
@@ -154,7 +153,45 @@ public class ServerMain {
     	}
     }
 
-    private Object velocity(final Map<String, Object> data, final String template) {
+    private Object admin(final Request request, final Response response) throws IOException {
+    	final String action = request.queryParamOrDefault("action", "");
+    	if (action.equals("create")) {
+    		final String name = request.queryParamOrDefault("name", "");
+    		final boolean withProg = request.queryParamOrDefault("prog", "").equals("prog");
+    		final boolean withWm = request.queryParamOrDefault("wm", "").equals("wm");
+
+        	final AssessmentSuite test = new AssessmentSuite(this.determineSuiteId(), name);
+        	if (withProg) {
+	        	test.addStep(new UnderstandingTask("/understanding/codeA"));
+	        	test.addStep(new UnderstandingTask("/understanding/codeB"));
+	        	test.addStep(new UnderstandingTask("/understanding/codeC"));
+        	}
+        	if (withWm) {
+        		test.addStep(new WorkingMemoryTest());
+        	}
+        	if (withProg) {
+	        	test.addStep(new DefectFindTask("/defectFind/defA"));
+	        	test.addStep(new DefectFindTask("/defectFind/defB"));
+	        	test.addStep(new DefectFindTask("/defectFind/defC"));
+        	}
+        	test.addStep(new FinalQuestions());
+        	this.assessments.put(test.getId(), test);
+    	}
+
+    	final List<AssessmentSuite> list = new ArrayList<>(this.assessments.values());
+    	list.sort((final AssessmentSuite s1, final AssessmentSuite s2) -> s1.getLastAccess().compareTo(s2.getLastAccess()));
+
+    	final Map<String, Object> data = new HashMap<>();
+    	data.put("assessments", list);
+    	return this.velocity(data, "/admin.html.vm");
+    }
+
+    private long determineSuiteId() {
+    	final long cnt = this.suiteCounter.getAndIncrement();
+    	return cnt * 1000 + System.currentTimeMillis() % 1000;
+	}
+
+	private Object velocity(final Map<String, Object> data, final String template) {
     	return new VelocityTemplateEngine().render(new ModelAndView(data, template));
     }
 
