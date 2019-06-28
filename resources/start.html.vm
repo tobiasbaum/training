@@ -34,7 +34,7 @@ werden. Suchen Sie sich deshalb an besten einen ruhigen Ort und eine passende Ze
 
 <p>Nochmals vielen Dank für die Bewerbung und viel Erfolg,</p>
 
-<p>Arthur Brack, Tobias Baum und die anderen Kollegen von der SET</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;Arthur Brack, Tobias Baum und die anderen Kollegen von der SET</p>
 
    <form action="step/0" method="post">
       <button onClick="deactivateLeaveWarning()" type="submit">Start ►</button>

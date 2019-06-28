@@ -49,7 +49,7 @@
 	</div><br/>
 	
     <form action="$nextStep" method="post">
-		<label for="answer">Ausgabe des Programms:</label> <input name="answer" minlength="1" type="text" required="required"></input><br/><br/>	
+		<label for="answer">Ausgabe des Programms:</label> <input name="answer" minlength="1" type="text" required="required" autocomplete="off"></input><br/><br/>	
 	
 		<button onClick="deactivateLeaveWarning()" title="Ergebnis festschreiben und zur nächsten Aufgabe" type="submit">Nächste Aufgabe ►</button>
 		<textarea id="logContent" name="logContent" style="display:none"></textarea>

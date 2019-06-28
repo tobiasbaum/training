@@ -370,37 +370,34 @@
 <br/>
 <center>
 	<div id="wmStart">
-		<p>You will now be presented with 15 simple arithmetic tasks.</p>
-		<p>After solving each task mentally, click "Check" and choose whether the displayed number
-		is the correct answer.</p>
-        <button onClick="nextView()">Continue ►</button>
+		<p>Als nächstes kommen 15 einfache Rechenaufgaben.</p>
+		<p>Nachdem Sie eine Aufgabe im Kopf gelöst haben, klicken Sie auf "Lösen" und entscheiden Sie,<br/> ob die angezeigte Zahl die richtige Lösung ist.</p>
+        <button onClick="nextView()">Weiter ►</button>
 	</div>
 	<div id="wmEquation" style="display:none">
-         <div id="wmEquationContent" style="font-size:18pt">3 + 2 = ?</div>
-         <button onClick="nextView()">Solve ►</button>
+         <div id="wmEquationContent" style="font-size:18pt">3 + 2 = ?</div><br/>
+         <button onClick="nextView()">Lösen ►</button>
 	</div>
 	<div id="wmResult" style="display:none">
-         <div id="wmResultNumber" style="font-size:18pt">5</div>
-         <button onClick="solveYes()">Right</button>
-         <button onClick="solveNo()">Wrong</button>
+         <div id="wmResultNumber" style="font-size:18pt">5</div><br/>
+         <button onClick="solveYes()">Richtig</button>
+         <button onClick="solveNo()">Falsch</button>
 	</div>
 	<div id="wmIntermediate" style="display:none">
-		<p>Now you will be presented a single letter after each arithmetic task.
-		This letter will disappear automatically after a short time.
-		Try to remember these letters. After a few tasks, you will be asked
-		to recall them in the correct order.</p>
-		<p>Additionally, the arithmetic tasks will now have a time limit. The time limit
-		is based on the time you took for solving the previous arithmetic tasks. If you
-		do not solve the arithmetic problems in time, they will count as incorrect.
-		Therefore it is VERY important to solve the problems as quickly and as accurately
-		as possible.</p>
-        <button onClick="nextView()">Continue ►</button>
+		<p>Jetzt wird nach jeder Rechenaufgabe ein einzelner Buchstabe angezeigt.
+		Dieser Buchstabe verschwindet nach einer kurzen Zeit.
+		Versuchen Sie, sich diese Buchstaben im Kopf zu merken. Nach einigen Aufgaben werden Sie dann gebeten,
+		die gemerkten Buchstaben in der richtigen Reihenfolge wiederzugeben.</p>
+		<p>Die Rechenaufgabe haben dabei jetzt ein Zeitlimit. Das Zeitlimit basiert auf der Zeit die für die Bearbeitung der soeben
+		durchgeführten Aufgaben benötigt wurde. Wenn die Rechenaufgabe nicht innerhalb des Zeitlimits gelöst wird, gilt
+		sie als falsch beantwortet. Es ist deshalb sehr wichtig die Aufgaben sowohl schnell als auch korrekt zu lösen.</p>
+        <button onClick="nextView()">Weiter ►</button>
 	</div>
 	<div id="wmLetter" style="display:none">
          <div id="wmLetterValue" style="font-size:28pt">X</div>
 	</div>
 	<div id="wmRecall" style="display:none">
-         <p>Please click on the letters in the correct order:</p>
+         <p>Bitte klicken Sie auf die Buchstaben in der richtigen Reihenfolge:</p>
          <button onClick="recalled('T')" style="width:40px">T</button>
          <button onClick="recalled('L')" style="width:40px">L</button>
          <button onClick="recalled('Q')" style="width:40px">Q</button>
@@ -413,31 +410,31 @@
          <button onClick="recalled('K')" style="width:40px">K</button>
          <button onClick="recalled('R')" style="width:40px">R</button>
          <button onClick="recalled('J')" style="width:40px">J</button><br/>
-         <button onClick="dontKnow()" title="Use this if you forgot the next letter, so that you can continue entering the remaining letters at their correct positions">Don't know</button><br/>
-         <button onClick="clearInput()" title="Clear the entered letters, so that you can restart entering them.">Clear</button><br/>
+         <button onClick="dontKnow()" title="Nutzen, wenn Sie den nächsten Buchstaben nicht mehr wissen, sodass die folgenden Buchstaben weiter an den richtigen Stellen eingegeben werden können">Buchstabe vergessen</button><br/>
+         <button onClick="clearInput()" title="Löscht alle eingegebenen Buchstaben, sodass neu begonnen werden kann.">Zurücksetzen</button><br/>
          <br/>
          <div id="wmRecallAnswer" style="font-size:18pt"></div>&nbsp;
          <br/>
-         <button onClick="nextView()" title="Check your input and continue with the next task">Continue ►</button>
+         <button onClick="nextView()" title="Prüft die Eingabe und geht zur nächsten Aufgabe über">Weiter ►</button>
 	</div>
 	<div id="wmCalibrationResult" style="display:none">
-		You solved <span id="mathCorrectCountC">x</span> math tasks correctly for this set of <span id="trialCountC">m</span> trials<br/>
+		<span id="mathCorrectCountC">x</span> von <span id="trialCountC">m</span> Rechenaufgaben wurden korrekt gelöst.<br/><br/>
       
-		<button onClick="nextView()">Continue ►</button>
+		<button onClick="nextView()">Weiter ►</button>
 	</div>
 	<div id="wmTestResult" style="display:none">
-		You recalled <span id="correctLetterCount">n</span> letters correctly out of <span id="trialCountT">m</span><br/>
-		You solved <span id="mathCorrectCountT">x</span> math tasks correctly for this set of trials<br/>
-		This was recall task <span id="recallTaskIndex">x</span> of <span id="recallTaskCount">y</span><br/>
+		<span id="correctLetterCount">n</span> von <span id="trialCountT">m</span> Buchstaben wurden an der richtigen Stelle erinnert.<br/>
+		Dabei wurden <span id="mathCorrectCountT">x</span> Rechenaufgaben korrekt gelöst.<br/>
+		Dies war Merkaufgabe <span id="recallTaskIndex">x</span> von <span id="recallTaskCount">y</span>.<br/><br/>
       
-		<button onClick="nextView()">Continue ►</button>
+		<button onClick="nextView()">Weiter ►</button>
 	</div>
 	<div id="wmEnd" style="display:none">
-      In total, you recalled <span id="totalLettersCorrect">x</span> letters correctly
-      and solved <span id="totalMathCorrect">y</span> of <span id="totalTotal">z</span> arithmetic tasks.
+      Insgesamt haben Sie <span id="totalLettersCorrect">x</span> Buchstaben korrekt erinnert und
+      <span id="totalMathCorrect">y</span> von <span id="totalTotal">z</span> Rechenaufgaben richtig gelöst.<br/>
       
       <form action="$nextStep" method="post">
-         <button onClick="deactivateLeaveWarning()">Continue ►</button>
+         <button onClick="deactivateLeaveWarning()">Weiter ►</button>
 		<textarea id="logContent" name="logContent" style="display:none"></textarea>
       </form>
 	</div>
