@@ -3,8 +3,8 @@
      * Normalisiert dabei Start- und Endindices. Negative Indices laufen 'rückwärts'.
      * -1 ist somit das letzte Zeichen im String. Positive Indices werden um 1 dekrementiert.
      * @param string Gesamtstring
-     * @param startIndex Startindex, der normalisiert werden soll.
-     * @param endIndex Endindex, der normalisiert werden soll.
+     * @param startIndex Startindex (!= 0), der normalisiert werden soll.
+     * @param endIndex Endindex (!= 0), der normalisiert werden soll.
      * @return Der entsprechende Teilstring oder der leere String, falls der startIndex hinter dem endIndex ist.
      */
     public static String getRange(final String string, final int startIndex, final int endIndex) {

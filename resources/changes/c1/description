@@ -1,1 +1,0 @@
-Refactor the requests for the virtual file system browser that still used work requests to use the Task API
