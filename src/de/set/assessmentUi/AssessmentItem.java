@@ -35,9 +35,11 @@ public abstract class AssessmentItem {
 	}
 
 	protected static String escapeForJsString(final String s) {
+		//neben dem Escapen wird an den Anfang jeder Zeile ein Zero-Width-Zeichen gesetzt
+		//  dadurch wird Copy-and-Paste des Codes deutlich erschwert
 		return s.replace("\\", "\\\\")
 				.replace("'", "\\'")
-				.replace("\n", "\\n")
+				.replace("\n", "\\n\u180E")
 				.replace("\r", "\\r")
 				.replace("\"", "\\\"");
 	}

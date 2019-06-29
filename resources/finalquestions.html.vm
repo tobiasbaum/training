@@ -19,73 +19,91 @@
     </script>
 </head>
 <body>
+    <h3>Abschließende Fragen</h3>
+    
       <form action="$nextStep" method="post">
-            <p>Wie würden Sie ihr Interesse an den folgenden Themenbereichen einschätzen:</p>
+            <p>Bitte sortieren Sie die folgenden Tätigkeitsbereiche entsprechend Ihrer Interessen, von 1 (höchstes Interesse) bis 6 (geringstes Interesse)</p>
             <table>
-            <tr style="background-color: #999999;">
-              <td></td>
-              <td style="padding: 5px;">keinerlei Interesse</td>
-              <td style="padding: 5px;">...</td>
-              <td style="padding: 5px;">mittel</td>
-              <td style="padding: 5px;">...</td>
-              <td style="padding: 5px;">sehr hohes Interesse</td>
-              <td style="padding: 5px;">kann ich nicht einschätzen</td>
-            </tr>
-            <tr>
-              <td>Softwareentwicklung</td>
-              <td style="text-align:right"><input type="radio" required="required" name="interestSoftwareDev" value="-2" />&nbsp;</td>
-              <td style="text-align:center"><input type="radio" required="required" name="interestSoftwareDev" value="-1" /></td>
-              <td style="text-align:center"><input type="radio" required="required" name="interestSoftwareDev" value="0" /></td>
-              <td style="text-align:center"><input type="radio" required="required" name="interestSoftwareDev" value="1" /></td>
-              <td style="text-align:left">&nbsp;<input type="radio" required="required" name="interestSoftwareDev" value="2" /></td>
-              <td style="text-align:center"><input type="radio" required="required" name="interestSoftwareDev" value="unknown" /></td>
-            </tr>
-            <tr style="background-color: #BBBBBB;">
-              <td>Betriebssysteme und Infrastruktur</td>
-              <td style="text-align:right"><input type="radio" required="required" name="interestInfra" value="-2" />&nbsp;</td>
-              <td style="text-align:center"><input type="radio" required="required" name="interestInfra" value="-1" /></td>
-              <td style="text-align:center"><input type="radio" required="required" name="interestInfra" value="0" /></td>
-              <td style="text-align:center"><input type="radio" required="required" name="interestInfra" value="1" /></td>
-              <td style="text-align:left">&nbsp;<input type="radio" required="required" name="interestInfra" value="2" /></td>
-              <td style="text-align:center"><input type="radio" required="required" name="interestInfra" value="unknown" /></td>
-            </tr>
-            <tr>
-              <td>technische Zusammenarbeit mit Kunden</td>
-              <td style="text-align:right"><input type="radio" required="required" name="interestCustomers" value="-2" />&nbsp;</td>
-              <td style="text-align:center"><input type="radio" required="required" name="interestCustomers" value="-1" /></td>
-              <td style="text-align:center"><input type="radio" required="required" name="interestCustomers" value="0" /></td>
-              <td style="text-align:center"><input type="radio" required="required" name="interestCustomers" value="1" /></td>
-              <td style="text-align:left">&nbsp;<input type="radio" required="required" name="interestCustomers" value="2" /></td>
-              <td style="text-align:center"><input type="radio" required="required" name="interestCustomers" value="unknown" /></td>
-            </tr>
-            <tr style="background-color: #BBBBBB;">
-              <td>Projektleitung und Organisation</td>
-              <td style="text-align:right"><input type="radio" required="required" name="interestOrga" value="-2" />&nbsp;</td>
-              <td style="text-align:center"><input type="radio" required="required" name="interestOrga" value="-1" /></td>
-              <td style="text-align:center"><input type="radio" required="required" name="interestOrga" value="0" /></td>
-              <td style="text-align:center"><input type="radio" required="required" name="interestOrga" value="1" /></td>
-              <td style="text-align:left">&nbsp;<input type="radio" required="required" name="interestOrga" value="2" /></td>
-              <td style="text-align:center"><input type="radio" required="required" name="interestOrga" value="unknown" /></td>
-            </tr>
-            <tr>
-              <td>Reisetätigkeit</td>
-              <td style="text-align:right"><input type="radio" required="required" name="interestTravel" value="-2" />&nbsp;</td>
-              <td style="text-align:center"><input type="radio" required="required" name="interestTravel" value="-1" /></td>
-              <td style="text-align:center"><input type="radio" required="required" name="interestTravel" value="0" /></td>
-              <td style="text-align:center"><input type="radio" required="required" name="interestTravel" value="1" /></td>
-              <td style="text-align:left">&nbsp;<input type="radio" required="required" name="interestTravel" value="2" /></td>
-              <td style="text-align:center"><input type="radio" required="required" name="interestTravel" value="unknown" /></td>
-            </tr>
-            <tr style="background-color: #BBBBBB;">
-              <td>Präsentieren und Verkaufen von Lösungen</td>
-              <td style="text-align:right"><input type="radio" required="required" name="interestSales" value="-2" />&nbsp;</td>
-              <td style="text-align:center"><input type="radio" required="required" name="interestSales" value="-1" /></td>
-              <td style="text-align:center"><input type="radio" required="required" name="interestSales" value="0" /></td>
-              <td style="text-align:center"><input type="radio" required="required" name="interestSales" value="1" /></td>
-              <td style="text-align:left">&nbsp;<input type="radio" required="required" name="interestSales" value="2" /></td>
-              <td style="text-align:center"><input type="radio" required="required" name="interestSales" value="unknown" /></td>
-            </tr>
-            </table><br/><br/>
+              <tr>
+              <td><label for="interestSoftDev">Softwareentwicklung</label></td><td>
+                <select id="interestSoftDev" name="interestSoftDev" required="required">
+                  <option>?</option>
+                  <option>1 (höchstes Interesse)</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                  <option>5</option>
+                  <option>6 (geringstes Interesse)</option>
+                </select>
+              </label>
+              </td></tr>
+              <tr>
+              <td><label for="interestOrga">Projektleitung und Organisation</label></td><td>
+                <select id="interestOrga" name="interestOrga" required="required">
+                  <option>?</option>
+                  <option>1 (höchstes Interesse)</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                  <option>5</option>
+                  <option>6 (geringstes Interesse)</option>
+                </select>
+              </label>
+              </td></tr>
+              <tr>
+              <td><label for="interestReise">Reisetätigkeit</label></td><td>
+                <select id="interestReise" name="interestReise" required="required">
+                  <option>?</option>
+                  <option>1 (höchstes Interesse)</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                  <option>5</option>
+                  <option>6 (geringstes Interesse)</option>
+                </select>
+              </label>
+              </td></tr>
+              <tr>
+              <td><label for="interestSales">Präsentieren und Verkaufen</label></td><td>
+                <select id="interestSales" name="interestSales" required="required">
+                  <option>?</option>
+                  <option>1 (höchstes Interesse)</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                  <option>5</option>
+                  <option>6 (geringstes Interesse)</option>
+                </select>
+              </label>
+              </td></tr>
+              </td></tr>
+              <tr>
+              <td><label for="interestCust">technische Zusammenarbeit mit Kunden</label></td><td>
+                <select id="interestCust" name="interestCust" required="required">
+                  <option>?</option>
+                  <option>1 (höchstes Interesse)</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                  <option>5</option>
+                  <option>6 (geringstes Interesse)</option>
+                </select>
+              </label>
+              </td></tr>
+              <tr>
+              <td><label for="interestInfra">Betriebssysteme und Infrastruktur</label></td><td>
+                <select id="interestInfra" name="interestInfra" required="required">
+                  <option>?</option>
+                  <option>1 (höchstes Interesse)</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                  <option>5</option>
+                  <option>6 (geringstes Interesse)</option>
+                </select>
+              </label>
+            </table><br/>
+            <br/>
             
             <p>Dürfen wir Ihre Daten auch über das Bewerbungsverfahren hinaus speichern, um Sie kontaktieren zu können, falls wir
             Ihnen nicht jetzt, aber später, eine Stelle anbieten möchten?<p>
