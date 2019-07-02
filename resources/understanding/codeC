@@ -18,11 +18,11 @@ class Main {
 		traverse(yellow);
 	}
 	
-	private void traverse(Node n) {
+	private static void traverse(Node n) {
 		traverse(n, new HashSet<>());
 	}
 	
-	private void traverse(Node n, Set<Node> visited) {
+	private static void traverse(Node n, Set<Node> visited) {
 		if (visited.contains(n)) {
 		    return;
 		}

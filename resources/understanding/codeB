@@ -1,25 +1,25 @@
 class Invoice {
-    private List<Integer> itemPrices;
+    private final List<Integer> itemPrices;
 
     public Invoice() {
 	    this(new ArrayList<>());
 	}
-	
-    public Invoice(List<Integer> itemPrices) {
+
+    public Invoice(final List<Integer> itemPrices) {
 	    this.itemPrices = itemPrices;
 	}
-	
-	public static Invoice copy(Invoice toCopy) {
+
+	public Invoice copy() {
 	    return new Invoice(this.itemPrices);
 	}
-	
-	public void addItemPrice(int itemPrice) {
+
+	public void addItemPrice(final int itemPrice) {
 		this.itemPrices.add(itemPrice);
 	}
-	
+
 	public int getTotal() {
 	    int sum = 0;
-		for (Integer price : this.itemPrices) {
+		for (final Integer price : this.itemPrices) {
 			sum += price;
 		}
 		return sum;
@@ -28,13 +28,13 @@ class Invoice {
 
 class Main {
 	public static void main(final String[] args) {
-		Invoice a = new Invoice();
+		final Invoice a = new Invoice();
 		a.addItemPrice(5);
-		
-		Invoice b = a.copy();
+
+		final Invoice b = a.copy();
 		b.addItemPrice(1);
-		
-		int total = a.getTotal() + b.getTotal();
+
+		final int total = a.getTotal() + b.getTotal();
 		System.out.println(Integer.toString(total));
 	}
 }
