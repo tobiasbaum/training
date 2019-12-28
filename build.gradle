@@ -5,7 +5,7 @@ apply plugin:'application'
 sourceCompatibility = 1.8
 version = '1.0'
 
-mainClassName = "de.set.assessmentUi.ServerMain"
+mainClassName = "de.set.trainingUI.TrainingServerMain"
 
 tasks.compileJava.options.encoding = 'UTF-8'
 

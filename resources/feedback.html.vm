@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Entwicklertraining</title>
+	<meta http-equiv="X-UA-Compatible" content="chrome=1, IE=edge">
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+
+	<link type="text/css" rel="stylesheet" href="/experiment.css" />
+	
+	<!-- Requires jQuery -->
+	<script src="/jquery.min.js" type="text/javascript"></script>
+	
+	<!-- Requires CodeMirror -->
+	<script type="text/javascript" src="/codemirror.js"></script>
+	<link type="text/css" rel="stylesheet" href="/codemirror.css" />
+	
+	<script type="text/javascript" src="/experiment.js"></script>
+</head>
+<body>
+#if( $trial.incorrect)
+  <p style="color:red;font-weight:bold">Nicht richtig</p>
+#else
+  <p style="color:green;font-weight:bold">Richtig</p>
+#end
+  <p>Benötigte Zeit: $trial.neededTimeFormatted<br/>
+  $trial.tryCount. Versuch</p>
+  
+#if( $stats.record)
+  <p>
+  Glückwunsch!<br/>
+ #if( $stats.recordFirst)
+  Du hast diese Aufgabe als Erste(r) geschafft!<br/>
+ #end
+ #if( $stats.recordTimeMean)
+  Du hast die Aufgabe schneller als der Durchschnitt geschafft!<br/>
+ #end
+ #if( $stats.recordTimeBest)
+  Du hast eine neue Rekordzeit aufgestellt!<br/>
+ #end
+ #if( $stats.recordTimeBestPersonal)
+  Das ist eine neue persönliche Bestzeit!<br/>
+ #end
+ #if( $stats.recordTryMean)
+  Du hast die Aufgabe in weniger Versuchen als der Durchschnitt geschafft!<br/>
+ #end
+ #if( $stats.recordTryBest)
+  Du hast einen neuen Rekord für die Anzahl Versuche aufgestellt!<br/>
+ #end
+  </p>
+#end
+  
+  <p>
+#if( $stats.forFamily)
+  Bisherige Statistik für diese Art von Aufgaben:<br/>
+#else
+  Bisherige Statistik für diese Aufgabe:<br/>
+#end
+
+  $stats.successOnFirstTry % Erfolg im Erstversuch<br/>
+  $stats.meanTryCount Versuche werden im Schnitt benötigt (Bestmarke: $stats.bestTryCount)<br/>
+#if( $stats.withTime)
+  Durchschnittszeit $stats.meanTime für erfolgreichen Erstversuch (Bestmarke: $stats.bestTime)<br/>
+#end
+  </p>
+	
+#if( $trial.incorrect)
+    <form action="retryTask" method="post">
+        <button type="submit">Erneut versuchen</button>
+    </form>
+    <form action="nextTask" method="post">
+        <button type="submit">Überspringen und nächste Aufgabe</button>
+    </form>
+#else
+    <form action="nextTask" method="post">
+        <button type="submit">Nächste Aufgabe ►</button>
+    </form>
+#end
+    <form action="overview" method="post">
+        <button type="submit">Zur Startseite</button>
+    </form>
+
+</body>
+</html>

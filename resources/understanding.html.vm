@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8" />
-	<title>Bewerbungsportal der SET GmbH - $assessment.greeting</title>
+	<title>Entwicklertraining</title>
 	<meta http-equiv="X-UA-Compatible" content="chrome=1, IE=edge">
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
 
@@ -30,7 +30,6 @@
 			  gutters: ["CodeMirror-linenumbers"]
 			});        	
 			window.onscroll = function(ev) {scrollHandler()};
-        	activateLeaveWarning();
         	addToLog('view loaded,user agent=' + navigator.userAgent);
 			addToLog('window size ' + $(window).width() + ' x ' + $(window).height());
 			addToLog('screen size ' + screen.width + ' x ' + screen.height);
@@ -41,17 +40,15 @@
 	</script>
 </head>
 <body>
-    <h3>Aufgabe $nextStep &mdash; Codeverstehen</h3>
-    
-	<i><p>Versuchen Sie den folgenden Java-Code im Kopf nachzuvollziehen. Welche Ausgabe erzeugt er?</p></i><br/><br/>
+	<i><p>Versuche den folgenden Java-Code im Kopf nachzuvollziehen. Welche Ausgabe erzeugt er?</p></i><br/><br/>
 	
 	<div id="editor">
 	</div><br/>
 	
-    <form action="$nextStep" method="post">
+    <form action="checkTask" method="post">
 		<label for="answer">Ausgabe des Programms:</label> <input name="answer" minlength="1" type="text" required="required" autocomplete="off"></input><br/><br/>	
 	
-		<button onClick="deactivateLeaveWarning()" title="Ergebnis festschreiben und zur nächsten Aufgabe" type="submit">Nächste Aufgabe ►</button>
+		<button title="Antwort prüfen" type="submit">Antwort prüfen ►</button>
 		<textarea id="logContent" name="logContent" style="display:none"></textarea>
    	</form>
 

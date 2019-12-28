@@ -1,0 +1,29 @@
+class Invoice {
+    private final List<Integer> itemPrices;
+
+    public Invoice() {
+	    this.itemPrices = new ArrayList<>();
+	}
+
+	public void addItemPrice(final int itemPrice) {
+		this.itemPrices.add(itemPrice);
+	}
+
+	public int getTotal() {
+	    int sum = 0;
+		for (final Integer price : this.itemPrices) {
+			sum += price;
+		}
+		return sum;
+	}
+}
+
+class Main {
+	public static void main(final String[] args) {
+		final Invoice a = new Invoice();
+		a.addItemPrice(5);
+		a.addItemPrice(1);
+
+		System.out.println(Integer.toString(a.getTotal()));
+	}
+}
