@@ -3,9 +3,11 @@ package de.set.trainingUI;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -20,10 +22,24 @@ import spark.Request;
 public class DefectFindTask extends Task {
 
     public static enum RemarkType {
-        WRONG_COMPARISON,
-        OTHER_ALGORITHMIC_PROBLEM,
-        SYNTAX_ERROR,
-        DUPLICATE_CODE
+        SYNTAX_ERROR("Syntaxfehler"),
+        WRONG_COMPARISON("Fehlerhafter Vergleich"),
+        OTHER_ALGORITHMIC_PROBLEM("Anderes algorithmisches Problem"),
+        DUPLICATE_CODE("Doppelter Code");
+
+        private String text;
+
+        private RemarkType(final String text) {
+            this.text = text;
+        }
+
+        public String getValue() {
+            return this.name();
+        }
+
+        public String getText() {
+            return this.text;
+        }
     }
 
     public static final class Remark {
@@ -161,6 +177,11 @@ public class DefectFindTask extends Task {
     @Override
     protected double estimateDifficulty() {
         return this.content.length() + 1;
+    }
+
+    @Override
+    public void addContextData(final Map<String, Object> data) {
+        data.put("remarkTypes", Arrays.asList(RemarkType.values()));
     }
 
 }

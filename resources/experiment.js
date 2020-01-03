@@ -24,6 +24,7 @@
 
 var reviewEnded = false;
 var reviewRemarks = {};
+var remarkInputInstance = null;
 
 function handleGutterClick(instance, lineNumber, gutter, clickEvent) {
     if (reviewEnded) {
@@ -31,6 +32,7 @@ function handleGutterClick(instance, lineNumber, gutter, clickEvent) {
         addToLog('gutterClickAfterReviewEnd;' + lineNumber);
         return;
     }
+    remarkInputInstance = instance;
     var info = instance.lineInfo(lineNumber);
     var prevMsg;
     if (info.gutterMarkers) {
@@ -41,32 +43,40 @@ function handleGutterClick(instance, lineNumber, gutter, clickEvent) {
     var realLineNumber = lineNumber + instance.options.firstLineNumber;
 	var lineId = instance.hunkId + ';' + realLineNumber;
     addToLog('startEnterReviewRemark;' + lineId);
-    var msg = prompt("Please enter review remark", prevMsg);
-    if (msg == null) {
-	    addToLog('cancelEnterReviewRemark;' + lineId);
-    	return;
-    }
+    
+    $('#remarkType').val(prevMsg);
+    $('#remarkLine').val(realLineNumber);
+    $('#remarkInput').show();
+    $('#remarkType').focus();
+}    
+    
+function handleRemarkInputCancel() {
+    $('#remarkInput').hide();
+}
+
+function handleRemarkInputOk() {
+    var type = $('#remarkType').val();
+    var msg = $('#remarkMessage').val();
+    var realLineNumber = $('#remarkLine').val();
+    var lineNumber = realLineNumber - remarkInputInstance.options.firstLineNumber;
+    var info = remarkInputInstance.lineInfo(lineNumber);
     if (info.gutterMarkers) {
     	if (msg == "") {
-	    	addToLog('deleteReviewRemark;' + lineId);
-			instance.setGutterMarker(lineNumber, "remarks", null);
+			remarkInputInstance.setGutterMarker(lineNumber, "remarks", null);
 			delete reviewRemarks[realLineNumber];
     	} else {
-	    	addToLog('changeReviewRemark;' + lineId + ';' + msg);
     		info.gutterMarkers.remarks.title = msg;
-    		reviewRemarks[realLineNumber] = {t: 'WRONG_COMPARISON', m: msg};
+    		reviewRemarks[realLineNumber] = {t: type, m: msg};
     	}
     } else {
-    	if (msg == "") {
-	    	addToLog('cancelEnterReviewRemark;' + lineId);
-		} else {
-	    	addToLog('createReviewRemark;' + lineId + ';' + msg);
-			instance.setGutterMarker(lineNumber, "remarks", makeMarker(msg));
-    		reviewRemarks[realLineNumber] = {t: 'WRONG_COMPARISON', m: msg};
+    	if (msg != "") {
+			remarkInputInstance.setGutterMarker(lineNumber, "remarks", makeMarker(msg));
+    		reviewRemarks[realLineNumber] = {t: type, m: msg};
 		}
     }
 
     document.getElementById('remarks').value = JSON.stringify(reviewRemarks);
+    $('#remarkInput').hide();
 }
 
 function makeMarker(msg) {

@@ -2,6 +2,7 @@ package de.set.trainingUI;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Properties;
 
 import spark.Request;
@@ -49,6 +50,10 @@ public class UnderstandingTask extends Task {
     @Override
     protected double estimateDifficulty() {
         return this.content.length();
+    }
+
+    @Override
+    public void addContextData(final Map<String, Object> data) {
     }
 
 }

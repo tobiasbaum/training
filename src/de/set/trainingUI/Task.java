@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Map;
 import java.util.Properties;
 
 import spark.Request;
@@ -33,6 +34,8 @@ public abstract class Task {
     }
 
 	public abstract String getTemplate();
+
+    public abstract void addContextData(Map<String, Object> data);
 
 	public abstract void handleResultData(final AssessmentSuite a, int currentStep, Request request);
 

@@ -139,6 +139,7 @@ public class TrainingServerMain {
         final Task task = trial.getTask();
         data.put("item", task);
         data.put("trial", trial);
+        task.addContextData(data);
         return this.velocity(data, task.getTemplate());
     }
 
