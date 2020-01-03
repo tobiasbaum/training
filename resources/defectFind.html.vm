@@ -29,21 +29,10 @@
 			  gutters: ["remarks", "CodeMirror-linenumbers"]
 			});
 			cm.on("gutterClick", handleGutterClick);
-			        	
-			window.onscroll = function(ev) {scrollHandler()};
-        	activateLeaveWarning();
-        	addToLog('view loaded,user agent=' + navigator.userAgent);
-			addToLog('window size ' + $(window).width() + ' x ' + $(window).height());
-			addToLog('screen size ' + screen.width + ' x ' + screen.height);
-			setupIdleDetection();
-			setupMouseAndKeyboardLogging();
-			setAndLogCookie($nextStep, $assessment.id);
 		});
 	</script>
 </head>
 <body>
-    <h3>Aufgabe $nextStep &mdash; Code-Review</h3>
-
 	<i><p>Der folgende Code enthält einen fachlichen Fehler. Ihre Aufgabe ist, diesen zu finden.</p></i>
 	<i><p>Um einen Fehler in einer Zeile anzumerken, klicken Sie auf die betreffende Zeilennummer. Falls Sie eine Anmerkung löschen
 	möchten, klicken Sie erneut darauf und entfernen Sie den Text.</p></i><br/><br/>
@@ -51,9 +40,9 @@
 	<div id="editor">
 	</div><br/>
 	
-    <form action="$nextStep" method="post">
-		<button onClick="deactivateLeaveWarning()" title="Ergebnis festschreiben und zur nächsten Aufgabe" type="submit">Nächste Aufgabe ►</button>
-		<textarea id="logContent" name="logContent" style="display:none"></textarea>
+    <form action="checkTask" method="post">
+		<button title="Ergebnis prüfen" type="submit">Aufgabe prüfen ►</button>
+		<textarea id="remarks" name="remarks" style="display:none"></textarea>
    	</form>
 
 </body>

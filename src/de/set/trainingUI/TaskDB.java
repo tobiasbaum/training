@@ -50,6 +50,8 @@ public class TaskDB {
         switch (type) {
         case "understanding":
             return UnderstandingTask.load(p, taskDirectory);
+        case "review":
+            return DefectFindTask.load(p, taskDirectory);
         default:
             throw new RuntimeException("unknown task type " + type + " in " + taskDirectory);
         }

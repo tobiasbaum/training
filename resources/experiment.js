@@ -50,11 +50,11 @@ function handleGutterClick(instance, lineNumber, gutter, clickEvent) {
     	if (msg == "") {
 	    	addToLog('deleteReviewRemark;' + lineId);
 			instance.setGutterMarker(lineNumber, "remarks", null);
-			delete reviewRemarks[instance.hunkId][realLineNumber];
+			delete reviewRemarks[realLineNumber];
     	} else {
 	    	addToLog('changeReviewRemark;' + lineId + ';' + msg);
     		info.gutterMarkers.remarks.title = msg;
-    		reviewRemarks[instance.hunkId][realLineNumber] = msg;
+    		reviewRemarks[realLineNumber] = {t: 'WRONG_COMPARISON', m: msg};
     	}
     } else {
     	if (msg == "") {
@@ -62,12 +62,11 @@ function handleGutterClick(instance, lineNumber, gutter, clickEvent) {
 		} else {
 	    	addToLog('createReviewRemark;' + lineId + ';' + msg);
 			instance.setGutterMarker(lineNumber, "remarks", makeMarker(msg));
-    		if (!reviewRemarks[instance.hunkId]) {
-    			reviewRemarks[instance.hunkId] = {};
-    		}
-    		reviewRemarks[instance.hunkId][realLineNumber] = msg;
+    		reviewRemarks[realLineNumber] = {t: 'WRONG_COMPARISON', m: msg};
 		}
     }
+
+    document.getElementById('remarks').value = JSON.stringify(reviewRemarks);
 }
 
 function makeMarker(msg) {
@@ -157,7 +156,7 @@ function togglePrefix(elementId) {
 }
 
 function restoreReviewMarkers(codemirror) {
-	var remarks = reviewRemarks[codemirror.hunkId];
+	var remarks = reviewRemarks;
 	if (remarks) {
 		var startLineNumber = codemirror.options.firstLineNumber;
 		var lineCount = codemirror.lineCount();
@@ -180,7 +179,6 @@ function endReview() {
 }
 
 function addToLog(message) {
-	document.getElementById('logContent').value += Date.now().toString(36) + ';' + message.replace('\n', ' ') + '\n';
 }
 
 var lastScrollTime = 0;
