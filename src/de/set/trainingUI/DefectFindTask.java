@@ -23,7 +23,9 @@ public class DefectFindTask extends Task {
 
     public static enum RemarkType {
         SYNTAX_ERROR("Syntaxfehler"),
+        WRONG_CONDITION("Fehlerhafte Bedingung"),
         WRONG_COMPARISON("Fehlerhafter Vergleich"),
+        MISSING_CODE("Fehlender Code"),
         OTHER_ALGORITHMIC_PROBLEM("Anderes algorithmisches Problem"),
         DUPLICATE_CODE("Doppelter Code");
 

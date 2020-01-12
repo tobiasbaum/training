@@ -1,0 +1,33 @@
+class Node {
+    private String name;
+    private Node[] adjacent;
+
+	public Node(String name, Node... adjacent) {
+	    this.name = name;
+	    this.adjacent = adjacent;
+	}
+
+    public String getName() {
+        return this.name;
+    }
+
+    /**
+     * Durchläuft, beginnend bei diesem Knoten, alle von ihm aus erreichbaren Knoten
+     * und übergibt sie an den Consumer. Die Knoten werden in Reihenfolge einer Tiefensuche
+     * übergeben.
+     */
+	public static void traverse(Node n, Consumer<Node> consumer) {
+		traverse(n, consumer, new HashSet<>());
+	}
+	
+	private static void traverse(Node n, Consumer<Node> consumer, Set<Node> visited) {
+		if (visited.contains(n)) {
+		    return;
+		}
+		consumer.accept(n);
+		visited.add(n);
+		for (Node a : n.adjacent) {
+			traverse(a, visited);
+		}
+	}
+}
