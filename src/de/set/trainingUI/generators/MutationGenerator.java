@@ -104,10 +104,27 @@ public class MutationGenerator extends Generator {
     private String mutateSource(final Properties taskProperties, final Random rand) throws FileNotFoundException {
         final CompilationUnit ast = this.parseNormalized(new File(this.directory, "source"));
         final List<Mutation> mutations = findPossibleMutations(ast);
-        final Mutation chosen = mutations.get(rand.nextInt(mutations.size()));
-        chosen.apply(rand);
-        chosen.createRemark(1, taskProperties);
+        final int count = this.determineCount(rand, mutations.size());
+        Collections.shuffle(mutations, rand);
+        final List<Mutation> chosen = mutations.subList(0, count);
+        for (final Mutation m : chosen) {
+            m.apply(rand);
+        }
+        int i = 1;
+        for (final Mutation m : chosen) {
+            m.createRemark(i++, taskProperties);
+        }
         return ast.toString();
+    }
+
+    private int determineCount(final Random rand, final int size) {
+        if (size <= 1 || rand.nextDouble() < 0.7) {
+            return 1;
+        }
+        if (size <= 2 || rand.nextDouble() < 0.7) {
+            return 2;
+        }
+        return 3;
     }
 
     private CompilationUnit parseNormalized(final File file) throws FileNotFoundException {
