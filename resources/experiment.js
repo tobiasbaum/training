@@ -44,7 +44,7 @@ function handleGutterClick(instance, lineNumber, gutter, clickEvent) {
 	var lineId = instance.hunkId + ';' + realLineNumber;
     addToLog('startEnterReviewRemark;' + lineId);
     
-    $('#remarkType').val(prevMsg);
+    $('#remarkMessage').val(prevMsg);
     $('#remarkLine').val(realLineNumber);
     $('#remarkInput').show();
     $('#remarkType').focus();
