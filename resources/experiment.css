@@ -37,7 +37,3 @@ form.remarkInputContent {
     transform: translate(-50%, -50%);
     background-color: white;
 }
-
-.CodeMirror {
-	height: auto;
-}

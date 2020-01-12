@@ -57,4 +57,12 @@ public class Trial {
         return this.startTime;
     }
 
+    public String serialize() {
+        return this.task.getId()
+            + ";" + this.startTime.toEpochMilli()
+            + ";" + this.retryCount
+            + ";" + (this.endTime == null ? "null" : this.endTime.toEpochMilli())
+            + ";" + this.incorrect;
+    }
+
 }

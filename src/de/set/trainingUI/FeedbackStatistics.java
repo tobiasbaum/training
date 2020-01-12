@@ -78,13 +78,13 @@ public class FeedbackStatistics {
     }
 
     public boolean isRecordTryMean() {
-        return this.trial.getRetryCount() < this.stats.getMeanTryCount()
+        return this.trial.getTryCount() < this.stats.getMeanTryCount()
             && !this.isRecordTryBest()
             && !this.isRecordFirst();
     }
 
     public boolean isRecordTryBest() {
-        return this.trial.getRetryCount() < this.stats.getBestTryCount()
+        return this.trial.getTryCount() < this.stats.getBestTryCount()
             && !this.isRecordFirst();
     }
 

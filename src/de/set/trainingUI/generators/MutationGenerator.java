@@ -36,9 +36,7 @@ import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
 import de.set.trainingUI.DefectFindTask.RemarkType;
 
 @SuppressWarnings("nls")
-public class MutationGenerator {
-
-    private static Random rand = new Random(123);
+public class MutationGenerator extends Generator {
 
     private abstract static class Mutation {
 
@@ -60,99 +58,95 @@ public class MutationGenerator {
 
     }
 
-    private static class Template {
-        private final File directory;
-        private final Properties values;
+    private final File directory;
+    private final Properties values;
 
-        public Template(final File template) throws IOException {
-            this.directory = template;
-            this.values = loadProperties(new File(template, "template.properties"));
+    public MutationGenerator(final File template) throws IOException {
+        this.directory = template;
+        this.values = loadProperties(new File(template, "template.properties"));
+    }
+
+    @Override
+    protected Properties getValues() {
+        return this.values;
+    }
+
+    private static Properties loadProperties(final File file) throws IOException {
+        final Properties p = new Properties();
+        try (FileInputStream s = new FileInputStream(file)) {
+            p.load(s);
+        }
+        return p;
+    }
+
+    @Override
+    public void generate(final File targetDir, final Random rand) throws IOException, NoSuchAlgorithmException {
+        final VelocityContext params = new VelocityContext();
+        for (final Entry<Object, Object> e : this.values.entrySet()) {
+            final String valueSet = e.getValue().toString();
+            final List<String> values = Arrays.asList(valueSet.split("\\|"));
+            params.put(e.getKey().toString(), values.get(rand.nextInt(values.size())));
         }
 
-        private static Properties loadProperties(final File file) throws IOException {
-            final Properties p = new Properties();
-            try (FileInputStream s = new FileInputStream(file)) {
-                p.load(s);
-            }
-            return p;
+        final Properties taskProperties = loadProperties(new File(this.directory, "task.properties"));
+        final String s = this.mutateSource(taskProperties, rand);
+        final String id = this.hash(s);
+
+        final File dir = new File(targetDir, id);
+        dir.mkdir();
+        Files.write(dir.toPath().resolve("source"), s.getBytes("UTF-8"));
+
+        try (FileOutputStream out = new FileOutputStream(new File(dir, "task.properties"))) {
+            taskProperties.store(out, null);
         }
+    }
 
-        public void generateMultiple(final File targetDir) throws NoSuchAlgorithmException, IOException {
-            final int count = Integer.parseInt(this.values.getProperty("count"));
-            for (int i = 0; i < count; i++) {
-                this.generate(targetDir);
-            }
-        }
+    private String mutateSource(final Properties taskProperties, final Random rand) throws FileNotFoundException {
+        final CompilationUnit ast = this.parseNormalized(new File(this.directory, "source"));
+        final List<Mutation> mutations = findPossibleMutations(ast);
+        final Mutation chosen = mutations.get(rand.nextInt(mutations.size()));
+        chosen.apply(rand);
+        chosen.createRemark(1, taskProperties);
+        return ast.toString();
+    }
 
-        public void generate(final File targetDir) throws IOException, NoSuchAlgorithmException {
-            final VelocityContext params = new VelocityContext();
-            for (final Entry<Object, Object> e : this.values.entrySet()) {
-                final String valueSet = e.getValue().toString();
-                final List<String> values = Arrays.asList(valueSet.split("\\|"));
-                params.put(e.getKey().toString(), values.get(rand.nextInt(values.size())));
-            }
+    private CompilationUnit parseNormalized(final File file) throws FileNotFoundException {
+        final CompilationUnit parsed = StaticJavaParser.parse(file);
+        //parse twice to normalize line numbers
+        return StaticJavaParser.parse(parsed.toString());
+    }
 
-            final Properties taskProperties = loadProperties(new File(this.directory, "task.properties"));
-            final String s = this.mutateSource(taskProperties);
-            final String id = this.hash(s);
+    private String generateFile(final String string, final VelocityContext params) {
+        final org.apache.velocity.Template t = Velocity.getTemplate(new File(this.directory, string).getPath());
 
-            final File dir = new File(targetDir, id);
-            dir.mkdir();
-            Files.write(dir.toPath().resolve("source"), s.getBytes("UTF-8"));
+        final StringWriter w = new StringWriter();
+        t.merge(params, w);
+        return w.toString();
+    }
 
-            try (FileOutputStream out = new FileOutputStream(new File(dir, "task.properties"))) {
-                taskProperties.store(out, null);
-            }
-        }
+    private String hash(final String s) throws NoSuchAlgorithmException {
+        final MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        final byte[] encodedhash = digest.digest(s.getBytes(StandardCharsets.UTF_8));
+        return bytesToHex(encodedhash);
+    }
 
-        private String mutateSource(final Properties taskProperties) throws FileNotFoundException {
-            final CompilationUnit ast = this.parseNormalized(new File(this.directory, "source"));
-            final List<Mutation> mutations = findPossibleMutations(ast);
-            final Mutation chosen = mutations.get(rand.nextInt(mutations.size()));
-            chosen.apply(rand);
-            chosen.createRemark(1, taskProperties);
-            return ast.toString();
-        }
-
-        private CompilationUnit parseNormalized(final File file) throws FileNotFoundException {
-            final CompilationUnit parsed = StaticJavaParser.parse(file);
-            //parse twice to normalize line numbers
-            return StaticJavaParser.parse(parsed.toString());
-        }
-
-        private String generateFile(final String string, final VelocityContext params) {
-            final org.apache.velocity.Template t = Velocity.getTemplate(new File(this.directory, string).getPath());
-
-            final StringWriter w = new StringWriter();
-            t.merge(params, w);
-            return w.toString();
-        }
-
-        private String hash(final String s) throws NoSuchAlgorithmException {
-            final MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            final byte[] encodedhash = digest.digest(s.getBytes(StandardCharsets.UTF_8));
-            return bytesToHex(encodedhash);
-        }
-
-        private static String bytesToHex(final byte[] hash) {
-            final StringBuffer hexString = new StringBuffer();
-            for (final byte element : hash) {
+    private static String bytesToHex(final byte[] hash) {
+        final StringBuffer hexString = new StringBuffer();
+        for (final byte element : hash) {
             final String hex = Integer.toHexString(0xff & element);
-                if (hex.length() == 1) {
-                    hexString.append('0');
-                }
-                hexString.append(hex);
+            if (hex.length() == 1) {
+                hexString.append('0');
             }
-            return hexString.toString();
+            hexString.append(hex);
         }
-
+        return hexString.toString();
     }
 
     public static void main(final String[] args) throws Exception {
         final File template = new File(args[0]);
 
-        final Template t = new Template(template);
-        t.generateMultiple(new File("taskdb2"));
+        final MutationGenerator t = new MutationGenerator(template);
+        t.generateMultiple(new File("taskdb2"), new Random(123));
     }
 
     static List<Mutation> findPossibleMutations(final CompilationUnit ast) {
