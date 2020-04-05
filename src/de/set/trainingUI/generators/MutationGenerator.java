@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -28,13 +27,9 @@ import org.apache.velocity.app.Velocity;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.expr.BinaryExpr;
-import com.github.javaparser.ast.expr.BinaryExpr.Operator;
-import com.github.javaparser.ast.expr.UnaryExpr;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
-import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
 
 import de.set.trainingUI.DefectFindTask.RemarkType;
@@ -42,7 +37,7 @@ import de.set.trainingUI.DefectFindTask.RemarkType;
 @SuppressWarnings("nls")
 public class MutationGenerator extends Generator {
 
-    private abstract static class Mutation {
+    abstract static class Mutation {
 
         public abstract void apply(Random r);
 
@@ -218,150 +213,6 @@ public class MutationGenerator extends Generator {
             }
         }, null);
         return ret;
-    }
-
-    private static final class InvertMutation extends Mutation {
-
-        private final IfStmt ifStmt;
-
-        public InvertMutation(final IfStmt n) {
-            this.ifStmt = n;
-        }
-
-        @Override
-        public void apply(final Random r) {
-            this.ifStmt.setCondition(new UnaryExpr(
-                    this.ifStmt.getCondition(),
-                    UnaryExpr.Operator.LOGICAL_COMPLEMENT));
-        }
-
-        @Override
-        public int getAnchorLine() {
-            return this.ifStmt.getBegin().get().line;
-        }
-
-        @Override
-        public void createRemark(final int nbr, final Properties p) {
-            final Set<Integer> lines = Collections.singleton(this.getAnchorLine());
-            this.setRemark(nbr, p, lines, RemarkType.WRONG_CONDITION, ".+", "die Bedingung muss invertiert werden");
-        }
-
-    }
-
-    private static final class RemoveMutation extends Mutation {
-
-        private final Statement n;
-        private final Node parent;
-
-        public RemoveMutation(final Statement n) {
-            this.n = n;
-            this.parent = this.n.getParentNode().get();
-        }
-
-        @Override
-        public void apply(final Random r) {
-            this.n.remove();
-        }
-
-        @Override
-        public int getAnchorLine() {
-            return this.n.getBegin().get().line;
-        }
-
-        @Override
-        public void createRemark(final int nbr, final Properties p) {
-            final Set<Integer> lines = new LinkedHashSet<>();
-            final int start = this.parent.getBegin().get().line;
-            final int end = this.parent.getEnd().get().line;
-            for (int i = start; i < end; i++) {
-                lines.add(i);
-            }
-            this.setRemark(nbr, p, lines, RemarkType.MISSING_CODE, ".+", this.n.toString() + " fehlt");
-        }
-
-    }
-
-    private static final class FlipOperatorMutation extends Mutation {
-
-        private final BinaryExpr expr;
-        private final String correct;
-
-        public FlipOperatorMutation(final BinaryExpr expr) {
-            this.expr = expr;
-            this.correct = expr.toString();
-        }
-
-        public static boolean isApplicable(final BinaryExpr ex) {
-            return ex.getOperator() != flipOperator(ex.getOperator(), new Random(42));
-        }
-
-        @Override
-        public void apply(final Random r) {
-            this.expr.setOperator(flipOperator(this.expr.getOperator(), r));
-        }
-
-        private static Operator flipOperator(final Operator operator, final Random r) {
-            switch (operator) {
-            case PLUS:
-            case MINUS:
-                return another(r, operator, Operator.MINUS, Operator.PLUS);
-            case LESS:
-            case LESS_EQUALS:
-            case GREATER:
-            case GREATER_EQUALS:
-                return another(r, operator, Operator.LESS, Operator.LESS_EQUALS, Operator.GREATER_EQUALS, Operator.GREATER);
-            case OR:
-            case AND:
-                return another(r, operator, Operator.OR, Operator.AND);
-            //$CASES-OMITTED$
-            default:
-                return operator;
-            }
-        }
-
-        private static Operator another(
-                final Random r, final Operator old, final Operator... operators) {
-            final List<Operator> choices = new ArrayList<>(Arrays.asList(operators));
-            choices.remove(old);
-            if (choices.size() == 1) {
-                return choices.get(0);
-            } else {
-                return choices.get(r.nextInt(choices.size()));
-            }
-        }
-
-        @Override
-        public int getAnchorLine() {
-            return this.expr.getBegin().get().line;
-        }
-
-        @Override
-        public void createRemark(final int nbr, final Properties p) {
-            final Set<Integer> lines = Collections.singleton(this.getAnchorLine());
-            final RemarkType type;
-            switch (this.expr.getOperator()) {
-            case AND:
-            case OR:
-                type = RemarkType.WRONG_CONDITION;
-                break;
-            case LESS:
-            case GREATER:
-            case GREATER_EQUALS:
-            case LESS_EQUALS:
-                type = RemarkType.WRONG_COMPARISON;
-                break;
-            case PLUS:
-            case MINUS:
-                type = RemarkType.WRONG_CALCULATION;
-                break;
-            //$CASES-OMITTED$
-            default:
-                throw new AssertionError("invalid operator");
-            }
-            this.setRemark(nbr, p, lines,
-                    type, ".+", "korrekt wäre " + this.correct);
-        }
-
     }
 
 }
