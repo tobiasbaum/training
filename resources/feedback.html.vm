@@ -63,15 +63,30 @@
   Durchschnittszeit $stats.meanTime für erfolgreichen Erstversuch (Bestmarke: $stats.bestTime)<br/>
 #end
   </p>
-	
+
 #if( $trial.incorrect)
     <form action="retryTask" method="post">
         <button type="submit">Erneut versuchen</button>
     </form>
     <form action="nextTask" method="post">
-        <button type="submit">Überspringen und nächste Aufgabe</button>
+        <button type="submit">Aufgabe überspringen</button>
+    </form>
+    <form action="solveTask" method="post">
+        <button type="submit">Lösen und überspringen</button>
     </form>
 #else
+    Lösung:<br/>
+    <table border>
+    #foreach( $line in $solution )
+        <tr>
+        #foreach( $item in $line )
+              <td>$item</td>
+        #end
+        </tr>
+    #end
+    </table>
+    <br/>
+
     <form action="nextTask" method="post">
         <button type="submit">Nächste Aufgabe ►</button>
     </form>
@@ -79,6 +94,5 @@
     <form action="overview" method="post">
         <button type="submit">Zur Startseite</button>
     </form>
-
 </body>
 </html>

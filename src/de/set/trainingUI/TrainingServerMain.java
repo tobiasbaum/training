@@ -96,6 +96,7 @@ public class TrainingServerMain {
         Spark.post("/overview", m::overview);
         Spark.post("/nextTask", m::nextTask);
         Spark.post("/checkTask", m::checkTask);
+        Spark.post("/solveTask", m::solveTask);
         Spark.post("/retryTask", m::retryTask);
         Spark.get("/shutdown/" + SHUTDOWN_PASS, m::shutdown);
     }
@@ -127,6 +128,17 @@ public class TrainingServerMain {
     	return this.showTask(trial);
     }
 
+    private Object solveTask(final Request request, final Response response) {
+        final Trainee u = this.getUserFromCookie(request);
+
+        final Task task = u.getCurrentTrial().getTask();
+        final Map<String, Object> data = new HashMap<>();
+        data.put("item", task);
+        task.addContextData(data);
+        data.put("solution", task.getSolution());
+        return this.velocity(data, "/solution.html.vm");
+    }
+
     private Object retryTask(final Request request, final Response response) {
         final Trainee u = this.getUserFromCookie(request);
 
@@ -154,6 +166,7 @@ public class TrainingServerMain {
         final Map<String, Object> data = new HashMap<>();
         data.put("trial", trial);
         data.put("stats", stats);
+        data.put("solution", trial.getTask().getSolution());
         return this.velocity(data, "/feedback.html.vm");
     }
 

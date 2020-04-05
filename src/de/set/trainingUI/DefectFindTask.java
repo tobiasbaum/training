@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -25,6 +26,7 @@ public class DefectFindTask extends Task {
         SYNTAX_ERROR("Syntaxfehler"),
         WRONG_CONDITION("Fehlerhafte Bedingung"),
         WRONG_COMPARISON("Fehlerhafter Vergleich"),
+        WRONG_CALCULATION("Fehlerhafte Berechnung"),
         MISSING_CODE("Fehlender Code"),
         OTHER_ALGORITHMIC_PROBLEM("Anderes algorithmisches Problem"),
         DUPLICATE_CODE("Doppelter Code");
@@ -123,6 +125,8 @@ public class DefectFindTask extends Task {
 		                p.getProperty(key.replace(".pattern", ".example"))));
 		    }
 		}
+		Collections.sort(this.expectedRemarks,
+	        (final RemarkPattern p1, final RemarkPattern p2) -> Integer.compare(p1.example.line, p2.example.line));
 	}
 
 	@Override
@@ -184,6 +188,18 @@ public class DefectFindTask extends Task {
     @Override
     public void addContextData(final Map<String, Object> data) {
         data.put("remarkTypes", Arrays.asList(RemarkType.values()));
+    }
+
+    @Override
+    public List<List<String>> getSolution() {
+        final List<List<String>> ret = new ArrayList<>();
+        for (final RemarkPattern r : this.expectedRemarks) {
+            ret.add(Arrays.asList(
+                    "Zeile " + r.example.line,
+                    r.example.type.getText(),
+                    r.example.message));
+        }
+        return ret;
     }
 
 }

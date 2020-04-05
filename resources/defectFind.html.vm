@@ -47,13 +47,15 @@
    	
    	<div id="remarkInput" class="remarkInput" style="display:none">
         <form action="#" class="remarkInputContent" autocomplete="off">
-            Zeile: <input type="text" name="remarkLine" id="remarkLine" readonly></input><br/>
-            Typ: <select name="remarkType" id="remarkType" size="1">
+            <table>
+            <tr><td>Zeile:</td><td><input type="text" name="remarkLine" id="remarkLine" readonly></input></td></tr>
+            <tr><td>Typ:</td><td><select name="remarkType" id="remarkType" size="1">
             #foreach( $item in $remarkTypes )
               <option value="$item.value">$item.text</option>
             #end
-            </select><br/>
-            Hinweis: <input type="text" name="remarkMessage" id="remarkMessage"></input><br/>
+            </select></td></tr>
+            <tr><td>Hinweis:</td><td><input type="text" name="remarkMessage" id="remarkMessage"></input></td></tr>
+            </table>
             <button type="button" onclick="handleRemarkInputOk()">OK</button>
             <button type="button" onclick="handleRemarkInputCancel()">Abbrechen</button>
         </form>

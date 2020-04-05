@@ -13,6 +13,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map.Entry;
@@ -27,6 +29,8 @@ import org.apache.velocity.app.Velocity;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.expr.BinaryExpr;
+import com.github.javaparser.ast.expr.BinaryExpr.Operator;
 import com.github.javaparser.ast.expr.UnaryExpr;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
@@ -46,15 +50,18 @@ public class MutationGenerator extends Generator {
 
         protected void setRemark(final int nbr, final Properties p, final Set<Integer> lines, final RemarkType type,
                 final String pattern, final String text) {
+            assert lines.contains(this.getAnchorLine());
             p.setProperty("remark." + nbr + ".pattern",
                     lines.stream().map((final Integer i) -> i.toString()).collect(Collectors.joining(","))
                     + ";" + type.name()
                     + ";" + pattern);
             p.setProperty("remark." + nbr + ".example",
-                    lines.iterator().next()
+                    this.getAnchorLine()
                     + ";" + type.name()
                     + ";" + text);
         }
+
+        public abstract int getAnchorLine();
 
     }
 
@@ -107,6 +114,7 @@ public class MutationGenerator extends Generator {
         final int count = this.determineCount(rand, mutations.size());
         Collections.shuffle(mutations, rand);
         final List<Mutation> chosen = mutations.subList(0, count);
+        this.removeInSameLine(chosen);
         for (final Mutation m : chosen) {
             m.apply(rand);
         }
@@ -117,11 +125,24 @@ public class MutationGenerator extends Generator {
         return ast.toString();
     }
 
+    private void removeInSameLine(final List<Mutation> chosen) {
+        final Set<Integer> usedLines = new HashSet<>();
+        final Iterator<Mutation> iter = chosen.iterator();
+        while (iter.hasNext()) {
+            final int line = iter.next().getAnchorLine();
+            if (usedLines.contains(line)) {
+                iter.remove();
+            } else {
+                usedLines.add(line);
+            }
+        }
+    }
+
     private int determineCount(final Random rand, final int size) {
-        if (size <= 1 || rand.nextDouble() < 0.7) {
+        if (size <= 1 || rand.nextDouble() < 0.8) {
             return 1;
         }
-        if (size <= 2 || rand.nextDouble() < 0.7) {
+        if (size <= 2 || rand.nextDouble() < 0.8) {
             return 2;
         }
         return 3;
@@ -171,11 +192,13 @@ public class MutationGenerator extends Generator {
         ast.accept(new GenericVisitorAdapter<Void, Void>() {
             @Override
             public Void visit(final IfStmt n, final Void v) {
+                super.visit(n, v);
                 ret.add(new InvertMutation(n));
                 return null;
             }
             @Override
             public Void visit(final ExpressionStmt n, final Void v) {
+                super.visit(n, v);
                 if (n.getParentNode().get().getChildNodes().size() <= 1) {
                     return null;
                 }
@@ -183,6 +206,14 @@ public class MutationGenerator extends Generator {
                     return null;
                 }
                 ret.add(new RemoveMutation(n));
+                return null;
+            }
+            @Override
+            public Void visit(final BinaryExpr n, final Void v) {
+                super.visit(n, v);
+                if (FlipOperatorMutation.isApplicable(n)) {
+                    ret.add(new FlipOperatorMutation(n));
+                }
                 return null;
             }
         }, null);
@@ -205,8 +236,13 @@ public class MutationGenerator extends Generator {
         }
 
         @Override
+        public int getAnchorLine() {
+            return this.ifStmt.getBegin().get().line;
+        }
+
+        @Override
         public void createRemark(final int nbr, final Properties p) {
-            final Set<Integer> lines = Collections.singleton(this.ifStmt.getBegin().get().line);
+            final Set<Integer> lines = Collections.singleton(this.getAnchorLine());
             this.setRemark(nbr, p, lines, RemarkType.WRONG_CONDITION, ".+", "die Bedingung muss invertiert werden");
         }
 
@@ -228,6 +264,11 @@ public class MutationGenerator extends Generator {
         }
 
         @Override
+        public int getAnchorLine() {
+            return this.n.getBegin().get().line;
+        }
+
+        @Override
         public void createRemark(final int nbr, final Properties p) {
             final Set<Integer> lines = new LinkedHashSet<>();
             final int start = this.parent.getBegin().get().line;
@@ -236,6 +277,89 @@ public class MutationGenerator extends Generator {
                 lines.add(i);
             }
             this.setRemark(nbr, p, lines, RemarkType.MISSING_CODE, ".+", this.n.toString() + " fehlt");
+        }
+
+    }
+
+    private static final class FlipOperatorMutation extends Mutation {
+
+        private final BinaryExpr expr;
+        private final String correct;
+
+        public FlipOperatorMutation(final BinaryExpr expr) {
+            this.expr = expr;
+            this.correct = expr.toString();
+        }
+
+        public static boolean isApplicable(final BinaryExpr ex) {
+            return ex.getOperator() != flipOperator(ex.getOperator(), new Random(42));
+        }
+
+        @Override
+        public void apply(final Random r) {
+            this.expr.setOperator(flipOperator(this.expr.getOperator(), r));
+        }
+
+        private static Operator flipOperator(final Operator operator, final Random r) {
+            switch (operator) {
+            case PLUS:
+            case MINUS:
+                return another(r, operator, Operator.MINUS, Operator.PLUS);
+            case LESS:
+            case LESS_EQUALS:
+            case GREATER:
+            case GREATER_EQUALS:
+                return another(r, operator, Operator.LESS, Operator.LESS_EQUALS, Operator.GREATER_EQUALS, Operator.GREATER);
+            case OR:
+            case AND:
+                return another(r, operator, Operator.OR, Operator.AND);
+            //$CASES-OMITTED$
+            default:
+                return operator;
+            }
+        }
+
+        private static Operator another(
+                final Random r, final Operator old, final Operator... operators) {
+            final List<Operator> choices = new ArrayList<>(Arrays.asList(operators));
+            choices.remove(old);
+            if (choices.size() == 1) {
+                return choices.get(0);
+            } else {
+                return choices.get(r.nextInt(choices.size()));
+            }
+        }
+
+        @Override
+        public int getAnchorLine() {
+            return this.expr.getBegin().get().line;
+        }
+
+        @Override
+        public void createRemark(final int nbr, final Properties p) {
+            final Set<Integer> lines = Collections.singleton(this.getAnchorLine());
+            final RemarkType type;
+            switch (this.expr.getOperator()) {
+            case AND:
+            case OR:
+                type = RemarkType.WRONG_CONDITION;
+                break;
+            case LESS:
+            case GREATER:
+            case GREATER_EQUALS:
+            case LESS_EQUALS:
+                type = RemarkType.WRONG_COMPARISON;
+                break;
+            case PLUS:
+            case MINUS:
+                type = RemarkType.WRONG_CALCULATION;
+                break;
+            //$CASES-OMITTED$
+            default:
+                throw new AssertionError("invalid operator");
+            }
+            this.setRemark(nbr, p, lines,
+                    type, ".+", "korrekt wäre " + this.correct);
         }
 
     }

@@ -2,11 +2,14 @@ package de.set.trainingUI;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import spark.Request;
 
+@SuppressWarnings("nls")
 public class UnderstandingTask extends Task {
 
 	private final String content;
@@ -54,6 +57,11 @@ public class UnderstandingTask extends Task {
 
     @Override
     public void addContextData(final Map<String, Object> data) {
+    }
+
+    @Override
+    public List<List<String>> getSolution() {
+        return Collections.singletonList(Collections.singletonList(this.expectedAnswer));
     }
 
 }
