@@ -28,11 +28,13 @@ import org.apache.velocity.app.Velocity;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.expr.BinaryExpr;
+import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
 
 import de.set.trainingUI.DefectFindTask.RemarkType;
+import de.set.trainingUI.generators.SwapVariableExpressionMutation.SwapVariableData;
 
 @SuppressWarnings("nls")
 public class MutationGenerator extends Generator {
@@ -54,6 +56,10 @@ public class MutationGenerator extends Generator {
                     this.getAnchorLine()
                     + ";" + type.name()
                     + ";" + text);
+        }
+
+        protected static<T> T pickRandom(final List<T> choices, final Random r) {
+            return choices.get(r.nextInt(choices.size()));
         }
 
         public abstract int getAnchorLine();
@@ -183,6 +189,7 @@ public class MutationGenerator extends Generator {
     }
 
     static List<Mutation> findPossibleMutations(final CompilationUnit ast) {
+        final SwapVariableData swapVariableData = SwapVariableExpressionMutation.analyze(ast);
         final List<Mutation> ret = new ArrayList<>();
         ast.accept(new GenericVisitorAdapter<Void, Void>() {
             @Override
@@ -194,13 +201,9 @@ public class MutationGenerator extends Generator {
             @Override
             public Void visit(final ExpressionStmt n, final Void v) {
                 super.visit(n, v);
-                if (n.getParentNode().get().getChildNodes().size() <= 1) {
-                    return null;
+                if (RemoveMutation.isApplicable(n)) {
+                    ret.add(new RemoveMutation(n));
                 }
-                if (!n.getExpression().isMethodCallExpr()) {
-                    return null;
-                }
-                ret.add(new RemoveMutation(n));
                 return null;
             }
             @Override
@@ -208,6 +211,14 @@ public class MutationGenerator extends Generator {
                 super.visit(n, v);
                 if (FlipOperatorMutation.isApplicable(n)) {
                     ret.add(new FlipOperatorMutation(n));
+                }
+                return null;
+            }
+            @Override
+            public Void visit(final NameExpr n, final Void v) {
+                super.visit(n, v);
+                if (swapVariableData.isApplicable(n)) {
+                    ret.add(new SwapVariableExpressionMutation(swapVariableData, n));
                 }
                 return null;
             }

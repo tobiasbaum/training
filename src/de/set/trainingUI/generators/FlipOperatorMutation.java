@@ -59,7 +59,7 @@ final class FlipOperatorMutation extends Mutation {
         if (choices.size() == 1) {
             return choices.get(0);
         } else {
-            return choices.get(r.nextInt(choices.size()));
+            return pickRandom(choices, r);
         }
     }
 

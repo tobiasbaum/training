@@ -6,6 +6,7 @@ import java.util.Random;
 import java.util.Set;
 
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.Statement;
 
 import de.set.trainingUI.DefectFindTask.RemarkType;
@@ -40,6 +41,16 @@ final class RemoveMutation extends Mutation {
             lines.add(i);
         }
         this.setRemark(nbr, p, lines, RemarkType.MISSING_CODE, ".+", this.n.toString() + " fehlt");
+    }
+
+    public static boolean isApplicable(final ExpressionStmt stmt) {
+        if (stmt.getParentNode().get().getChildNodes().size() <= 1) {
+            return false;
+        }
+        if (!stmt.getExpression().isMethodCallExpr()) {
+            return false;
+        }
+        return true;
     }
 
 }
