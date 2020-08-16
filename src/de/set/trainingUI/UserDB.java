@@ -10,6 +10,9 @@ public class UserDB {
     private static Map<String, Trainee> trainees = new ConcurrentHashMap<>();
 
     static {
+    	if (!BASE_DIR.exists()) {
+    		throw new AssertionError("User directory " + BASE_DIR.getAbsolutePath() + " does not exist");
+    	}
         for (final File user : BASE_DIR.listFiles()) {
             loadUser(user);
         }

@@ -14,14 +14,13 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class TaskDB {
 
-    private static final TaskDB INSTANCE = new TaskDB();
+    private static TaskDB INSTANCE;
 
     private final AtomicReference<Task[]> tasks = new AtomicReference<>();
     private Random random;
 
-    private TaskDB() {
+    private TaskDB(File root) {
         try {
-            final File root = new File("taskdb");
             final List<Task> t = new ArrayList<>();
             for (final File dir : root.listFiles()) {
                 if (!dir.isDirectory()) {
@@ -57,7 +56,14 @@ public class TaskDB {
         }
     }
 
+    public static void init(File path) {
+    	INSTANCE = new TaskDB(path);
+    }
+
     public static TaskDB getInstance() {
+    	if (INSTANCE == null) {
+    		throw new AssertionError("TaskDB not yet initialized");
+    	}
         return INSTANCE;
     }
 

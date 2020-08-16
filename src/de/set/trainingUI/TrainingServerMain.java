@@ -1,5 +1,6 @@
 package de.set.trainingUI;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -79,6 +80,7 @@ public class TrainingServerMain {
             System.out.println("something is wrong with the classpath");
             return;
         }
+        TaskDB.init(new File(args[0]));
         Velocity.init();
 
         final TrainingServerMain m = new TrainingServerMain();
