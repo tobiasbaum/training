@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -106,6 +107,7 @@ public class TrainingServerMain {
     private Object login(final Request request, final Response response) {
         final String userName = request.queryParams("user");
         final Trainee u = UserDB.getUser(userName);
+        u.setCurrentSessionStart(Instant.now());
 
         response.cookie("userName", userName);
 
@@ -169,6 +171,7 @@ public class TrainingServerMain {
         data.put("trial", trial);
         data.put("stats", stats);
         data.put("solution", trial.getTask().getSolution());
+        data.put("trainee", u);
         return this.velocity(data, "/feedback.html.vm");
     }
 

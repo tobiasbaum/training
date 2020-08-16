@@ -3,6 +3,7 @@ package de.set.trainingUI;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ public class Trainee {
     private final File dir;
     private final String name;
     private final List<Trial> trials = new ArrayList<>();
+	private Instant currentSessionStart;
 
     public Trainee(final File dir) {
         this.dir = dir;
@@ -69,5 +71,16 @@ public class Trainee {
         }
         return Instant.EPOCH;
     }
+
+	public void setCurrentSessionStart(Instant instant) {
+		this.currentSessionStart = instant;
+	}
+
+	public int getMinutesInCurrentSession() {
+		if (this.currentSessionStart == null) {
+			return 0;
+		}
+		return (int) Duration.between(this.currentSessionStart, Instant.now()).toMinutes();
+	}
 
 }

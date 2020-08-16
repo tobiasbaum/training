@@ -64,17 +64,7 @@
 #end
   </p>
 
-#if( $trial.incorrect)
-    <form action="retryTask" method="post">
-        <button type="submit">Erneut versuchen</button>
-    </form>
-    <form action="nextTask" method="post">
-        <button type="submit">Aufgabe überspringen</button>
-    </form>
-    <form action="solveTask" method="post">
-        <button type="submit">Lösen und überspringen</button>
-    </form>
-#else
+#if(! $trial.incorrect)
     Lösung:<br/>
     <table border>
     #foreach( $line in $solution )
@@ -86,7 +76,23 @@
     #end
     </table>
     <br/>
+#end
 
+<p>
+Du trainierst seit $trainee.minutesInCurrentSession Minuten.
+</p>
+
+#if( $trial.incorrect)
+    <form action="retryTask" method="post">
+        <button type="submit">Erneut versuchen</button>
+    </form>
+    <form action="nextTask" method="post">
+        <button type="submit">Aufgabe überspringen</button>
+    </form>
+    <form action="solveTask" method="post">
+        <button type="submit">Lösen und überspringen</button>
+    </form>
+#else
     <form action="nextTask" method="post">
         <button type="submit">Nächste Aufgabe ►</button>
     </form>
