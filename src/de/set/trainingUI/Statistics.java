@@ -50,6 +50,10 @@ public class Statistics implements Cloneable {
         return ((double) this.trySum) / this.firstTryCount;
     }
 
+    public boolean areDefined() {
+    	return this.firstTryCount > 0;
+    }
+
     public int getBestTryCount() {
         return this.bestTryCount;
     }
