@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.github.javaparser.ast.expr.UnaryExpr;
 import com.github.javaparser.ast.stmt.IfStmt;
+import com.github.javaparser.ast.stmt.Statement;
 
 import de.set.trainingUI.DefectFindTask.RemarkType;
 import de.set.trainingUI.generators.MutationGenerator.Mutation;
@@ -21,9 +22,16 @@ final class InvertMutation extends Mutation {
 
     @Override
     public void apply(final Random r) {
-        this.ifStmt.setCondition(new UnaryExpr(
-                this.ifStmt.getCondition(),
-                UnaryExpr.Operator.LOGICAL_COMPLEMENT));
+    	if (this.ifStmt.getElseStmt().isPresent()) {
+    		final Statement t = this.ifStmt.getThenStmt();
+    		final Statement e = this.ifStmt.getElseStmt().get();
+    		this.ifStmt.setThenStmt(e);
+    		this.ifStmt.setElseStmt(t);
+    	} else {
+	        this.ifStmt.setCondition(new UnaryExpr(
+	                this.ifStmt.getCondition(),
+	                UnaryExpr.Operator.LOGICAL_COMPLEMENT));
+    	}
     }
 
     @Override

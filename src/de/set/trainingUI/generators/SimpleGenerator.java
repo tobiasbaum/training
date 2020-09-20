@@ -30,8 +30,8 @@ public class SimpleGenerator extends Generator {
     }
 
     @Override
-    public Properties getValues() {
-        return this.values;
+    public int getMaxCount() {
+    	return Integer.parseInt(this.values.getProperty("count"));
     }
 
     @Override

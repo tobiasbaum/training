@@ -5,29 +5,25 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
-
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.BinaryExpr;
+import com.github.javaparser.ast.expr.ConditionalExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
@@ -66,17 +62,35 @@ public class MutationGenerator extends Generator {
 
     }
 
-    private final File directory;
-    private final Properties values;
+    private final Properties properties;
+	private final File sourceFile;
+	private final int maxCount;
 
+
+	/**
+	 * MutationGenerator based on a template directory.
+	 */
     public MutationGenerator(final File template) throws IOException {
-        this.directory = template;
-        this.values = loadProperties(new File(template, "template.properties"));
+        this.sourceFile = new File(template, "source");
+        this.properties = loadProperties(new File(template, "task.properties"));
+        final Properties tp = loadProperties(new File(template, "template.properties"));
+        this.maxCount = Integer.parseInt(tp.getProperty("count"));
+    }
+
+	/**
+	 * MutationGenerator based on a single source file.
+	 */
+    public MutationGenerator(final File source, int maxCount) throws IOException {
+        this.sourceFile = source;
+        this.properties = new Properties();
+        this.properties.setProperty("type", "review");
+        this.properties.setProperty("family", source.getName());
+        this.maxCount = maxCount;
     }
 
     @Override
-    protected Properties getValues() {
-        return this.values;
+    protected int getMaxCount() {
+        return this.maxCount;
     }
 
     private static Properties loadProperties(final File file) throws IOException {
@@ -89,14 +103,7 @@ public class MutationGenerator extends Generator {
 
     @Override
     public void generate(final File targetDir, final Random rand) throws IOException, NoSuchAlgorithmException {
-        final VelocityContext params = new VelocityContext();
-        for (final Entry<Object, Object> e : this.values.entrySet()) {
-            final String valueSet = e.getValue().toString();
-            final List<String> values = Arrays.asList(valueSet.split("\\|"));
-            params.put(e.getKey().toString(), values.get(rand.nextInt(values.size())));
-        }
-
-        final Properties taskProperties = loadProperties(new File(this.directory, "task.properties"));
+        final Properties taskProperties = (Properties) this.properties.clone();
         final String s = this.mutateSource(taskProperties, rand);
         final String id = this.hash(s);
 
@@ -110,8 +117,11 @@ public class MutationGenerator extends Generator {
     }
 
     private String mutateSource(final Properties taskProperties, final Random rand) throws FileNotFoundException {
-        final CompilationUnit ast = this.parseNormalized(new File(this.directory, "source"));
+        final CompilationUnit ast = this.parseNormalized(this.sourceFile);
         final List<Mutation> mutations = findPossibleMutations(ast);
+        if (mutations.isEmpty()) {
+        	throw new IllegalArgumentException("no mutations found for " + this.sourceFile);
+        }
         final int count = this.determineCount(rand, mutations.size());
         Collections.shuffle(mutations, rand);
         final List<Mutation> chosen = mutations.subList(0, count);
@@ -151,16 +161,10 @@ public class MutationGenerator extends Generator {
 
     private CompilationUnit parseNormalized(final File file) throws FileNotFoundException {
         final CompilationUnit parsed = StaticJavaParser.parse(file);
+        //remove package statement, if contained
+        parsed.removePackageDeclaration();
         //parse twice to normalize line numbers
         return StaticJavaParser.parse(parsed.toString());
-    }
-
-    private String generateFile(final String string, final VelocityContext params) {
-        final org.apache.velocity.Template t = Velocity.getTemplate(new File(this.directory, string).getPath());
-
-        final StringWriter w = new StringWriter();
-        t.merge(params, w);
-        return w.toString();
     }
 
     private String hash(final String s) throws NoSuchAlgorithmException {
@@ -199,6 +203,12 @@ public class MutationGenerator extends Generator {
                 return null;
             }
             @Override
+            public Void visit(final ConditionalExpr n, final Void v) {
+                super.visit(n, v);
+                ret.add(new InvertConditionalExprMutation(n));
+                return null;
+            }
+            @Override
             public Void visit(final ExpressionStmt n, final Void v) {
                 super.visit(n, v);
                 if (RemoveMutation.isApplicable(n)) {
@@ -211,6 +221,14 @@ public class MutationGenerator extends Generator {
                 super.visit(n, v);
                 if (FlipOperatorMutation.isApplicable(n)) {
                     ret.add(new FlipOperatorMutation(n));
+                }
+                return null;
+            }
+            @Override
+            public Void visit(final AssignExpr n, final Void v) {
+                super.visit(n, v);
+                if (FlipAssignMutation.isApplicable(n)) {
+                    ret.add(new FlipAssignMutation(n));
                 }
                 return null;
             }
