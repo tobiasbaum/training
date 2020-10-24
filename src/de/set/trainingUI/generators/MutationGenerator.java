@@ -21,6 +21,8 @@ import java.util.stream.Collectors;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.FieldDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.ConditionalExpr;
@@ -196,6 +198,22 @@ public class MutationGenerator extends Generator {
         final SwapVariableData swapVariableData = SwapVariableExpressionMutation.analyze(ast);
         final List<Mutation> ret = new ArrayList<>();
         ast.accept(new GenericVisitorAdapter<Void, Void>() {
+            @Override
+            public Void visit(final FieldDeclaration n, final Void v) {
+                super.visit(n, v);
+                if (DeleteVolatileMutation.isApplicable(n)) {
+                	ret.add(new DeleteVolatileMutation(n));
+                }
+                return null;
+            }
+            @Override
+            public Void visit(final MethodDeclaration n, final Void v) {
+                super.visit(n, v);
+                if (DeleteSynchronizedMutation.isApplicable(n)) {
+                	ret.add(new DeleteSynchronizedMutation(n));
+                }
+                return null;
+            }
             @Override
             public Void visit(final IfStmt n, final Void v) {
                 super.visit(n, v);
