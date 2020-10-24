@@ -19,6 +19,39 @@ public class Trial {
         this.retryCount = retryCount;
     }
 
+    private Trial(String serialized, TaskDB tasks) {
+    	final String[] parts = serialized.split(";");
+    	if (parts.length != 5) {
+    		throw new RuntimeException("parse error at " + serialized);
+    	}
+    	this.task = tasks.getTaskById(parts[0]);
+    	this.startTime = this.parseInstant(parts[1]);
+    	this.retryCount = Integer.parseInt(parts[2]);
+    	this.endTime = this.parseInstant(parts[3]);
+    	this.incorrect = Boolean.parseBoolean(parts[4]);
+    }
+
+    private Instant parseInstant(String string) {
+    	if (string.equals("null")) {
+    		return null;
+    	} else {
+    		return Instant.ofEpochMilli(Long.parseLong(string));
+    	}
+	}
+
+	public String serialize() {
+        return this.task.getId()
+            + ";" + this.startTime.toEpochMilli()
+            + ";" + this.retryCount
+            + ";" + (this.endTime == null ? "null" : this.endTime.toEpochMilli())
+            + ";" + this.incorrect;
+    }
+
+    public static Trial deserialize(String serialized, TaskDB tasks) {
+    	final Trial t = new Trial(serialized, tasks);
+    	return t.task == null ? null : t;
+    }
+
     public Task getTask() {
         return this.task;
     }
@@ -57,12 +90,12 @@ public class Trial {
         return this.startTime;
     }
 
-    public String serialize() {
-        return this.task.getId()
-            + ";" + this.startTime.toEpochMilli()
-            + ";" + this.retryCount
-            + ";" + (this.endTime == null ? "null" : this.endTime.toEpochMilli())
-            + ";" + this.incorrect;
-    }
+    /**
+     * The start time (with millisecond granularity) is also used as a key for trials of a user.
+     * This method can be used to check if two trials have the same.
+     */
+	public boolean hasSameStartAs(Trial t) {
+		return this.getStartTime().toEpochMilli() == t.getStartTime().toEpochMilli();
+	}
 
 }

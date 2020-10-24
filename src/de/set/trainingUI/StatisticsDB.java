@@ -17,8 +17,10 @@ public class StatisticsDB {
     public Statistics getFor(final Task task) {
         final Statistics t = this.getOrCreate(this.taskStatistics, task.getId(), false);
         if (t.getFirstTryCount() >= 5) {
+        	// if there is enough data for this single task, return it
             return t.copy();
         }
+        // otherwise return the statistics for the whole family
         return this.getOrCreate(this.familyStatistics, task.getFamilyId(), true).copy();
     }
 

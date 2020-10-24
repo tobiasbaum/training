@@ -162,8 +162,7 @@ public class TrainingServerMain {
     private Object checkTask(final Request request, final Response response) {
         final Trainee u = this.getUserFromCookie(request);
 
-        final Trial trial = u.getCurrentTrial();
-        trial.checkAnswer(request);
+        final Trial trial = u.checkCurrentTrialAnswer(request);
         final FeedbackStatistics stats = this.determineStatistics(trial);
         StatisticsDB.getInstance().count(trial);
 

@@ -70,11 +70,14 @@ public class TaskDB {
     public Task getNextTask(final Trainee trainee) {
         final Task[] tasks = this.tasks.get();
 
+        // get a random sample of 10 tasks
         final List<Task> sample = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             sample.add(tasks[this.nextRandomInt(tasks.length)]);
         }
 
+        // sort by last time a task from the same family was done
+        // and remove the half that has been done most recently
         Collections.sort(sample, Comparator.comparing(trainee::getLastTrialFromFamily));
         while (sample.size() > 5) {
             sample.remove(sample.size() - 1);
@@ -84,12 +87,14 @@ public class TaskDB {
         if (lastTrial != null) {
             final int lastTrialIndex = this.indexOf(tasks, lastTrial.getTask());
             if (lastTrial.isIncorrect()) {
+            	// if the last trial was incorrect, choose the first trial that is easier
                 for (final Task t : sample) {
                     if (this.indexOf(tasks, t) < lastTrialIndex) {
                         return t;
                     }
                 }
             } else {
+            	// if the last trial was correct, choose the first trial that is harder
                 for (final Task t : sample) {
                     if (this.indexOf(tasks, t) > lastTrialIndex) {
                         return t;
@@ -98,6 +103,7 @@ public class TaskDB {
             }
         }
 
+        // if none of the previous applied, just use the least recently used (random) one
         return sample.get(0);
     }
 
@@ -113,5 +119,15 @@ public class TaskDB {
     private synchronized int nextRandomInt(final int max) {
         return this.random.nextInt(max);
     }
+
+	public Task getTaskById(String id) {
+		final Task[] taskArray = this.tasks.get();
+		for (final Task t : taskArray) {
+			if (t.getId().contentEquals(id)) {
+				return t;
+			}
+		}
+		return null;
+	}
 
 }
