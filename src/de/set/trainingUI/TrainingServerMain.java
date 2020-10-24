@@ -91,6 +91,7 @@ public class TrainingServerMain {
         m.staticFile("/experiment.js");
         m.staticFile("/experiment.css");
         m.staticFile("/codemirror.js");
+        m.staticFile("/clike.js");
         m.staticFile("/codemirror.css");
         m.staticFile("/jquery.min.js");
         m.staticFile("/favicon.ico");
