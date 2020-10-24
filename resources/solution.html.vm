@@ -13,6 +13,7 @@
 	
 	<!-- Requires CodeMirror -->
 	<script type="text/javascript" src="/codemirror.js"></script>
+    <script type="text/javascript" src="/clike.js"></script>
 	<link type="text/css" rel="stylesheet" href="/codemirror.css" />
 	
 	<script type="text/javascript" src="/experiment.js"></script>
@@ -21,7 +22,7 @@
         $(document).ready(function () {
 			let cm = CodeMirror(document.getElementById('editor'), {
 			  value: '$item.contentEscaped',
-			  mode:  'java',
+			  mode:  'text/x-java',
 			  readOnly: true,
 			  viewportMargin: Infinity,
 			  lineWrapping: true,
