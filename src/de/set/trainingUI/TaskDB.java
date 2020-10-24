@@ -14,7 +14,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class TaskDB {
 
-    private static TaskDB INSTANCE;
+    private static final int SAMPLE_SIZE = 10;
+
+	private static TaskDB INSTANCE;
 
     private final AtomicReference<Task[]> tasks = new AtomicReference<>();
     private Random random;
@@ -28,7 +30,7 @@ public class TaskDB {
                 }
                 t.add(this.loadTask(dir));
             }
-            this.sortByDifficulty(t);
+            sortByDifficulty(t);
             this.tasks.set(t.toArray(new Task[t.size()]));
             this.random = new Random(1234);
         } catch (final IOException e) {
@@ -36,7 +38,7 @@ public class TaskDB {
         }
     }
 
-    private void sortByDifficulty(final List<Task> taskList) {
+    private static void sortByDifficulty(final List<Task> taskList) {
         taskList.sort(Comparator.comparingDouble(Task::estimateDifficulty));
     }
 
@@ -70,16 +72,16 @@ public class TaskDB {
     public Task getNextTask(final Trainee trainee) {
         final Task[] tasks = this.tasks.get();
 
-        // get a random sample of 10 tasks
+        // get a random sample of 20 tasks
         final List<Task> sample = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < SAMPLE_SIZE; i++) {
             sample.add(tasks[this.nextRandomInt(tasks.length)]);
         }
 
         // sort by last time a task from the same family was done
         // and remove the half that has been done most recently
         Collections.sort(sample, Comparator.comparing(trainee::getLastTrialFromFamily));
-        while (sample.size() > 5) {
+        while (sample.size() > SAMPLE_SIZE / 2) {
             sample.remove(sample.size() - 1);
         }
 
@@ -87,14 +89,20 @@ public class TaskDB {
         if (lastTrial != null) {
             final int lastTrialIndex = this.indexOf(tasks, lastTrial.getTask());
             if (lastTrial.isIncorrect()) {
-            	// if the last trial was incorrect, choose the first trial that is easier
+            	// if the last trial was incorrect, drop to the middle of the easier tasks
+            	final List<Task> easierTasks = new ArrayList<>();
                 for (final Task t : sample) {
                     if (this.indexOf(tasks, t) < lastTrialIndex) {
-                        return t;
+                        easierTasks.add(t);
                     }
                 }
+                if (!easierTasks.isEmpty()) {
+                	sortByDifficulty(easierTasks);
+                	return easierTasks.get(easierTasks.size() / 2);
+                }
             } else {
-            	// if the last trial was correct, choose the first trial that is harder
+            	// if the last trial was correct, choose the trial that is minimally harder
+            	sortByDifficulty(sample);
                 for (final Task t : sample) {
                     if (this.indexOf(tasks, t) > lastTrialIndex) {
                         return t;
