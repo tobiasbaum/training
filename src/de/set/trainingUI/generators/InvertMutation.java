@@ -5,6 +5,8 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 
+import com.github.javaparser.ast.expr.BinaryExpr;
+import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.UnaryExpr;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.Statement;
@@ -20,6 +22,14 @@ final class InvertMutation extends Mutation {
         this.ifStmt = n;
     }
 
+	public static boolean isApplicable(IfStmt n) {
+		if (n.getElseStmt().isPresent()) {
+			return true;
+		}
+		// don't invert simple comparisons because this looks strange in the code
+		return !(n.getCondition() instanceof BinaryExpr);
+	}
+
     @Override
     public void apply(final Random r) {
     	if (this.ifStmt.getElseStmt().isPresent()) {
@@ -28,13 +38,22 @@ final class InvertMutation extends Mutation {
     		this.ifStmt.setThenStmt(e);
     		this.ifStmt.setElseStmt(t);
     	} else {
-	        this.ifStmt.setCondition(new UnaryExpr(
-	                this.ifStmt.getCondition(),
-	                UnaryExpr.Operator.LOGICAL_COMPLEMENT));
+    		if (this.isNegated(this.ifStmt.getCondition())) {
+    			this.ifStmt.setCondition(((UnaryExpr) this.ifStmt.getCondition()).getExpression());
+    		} else {
+    			this.ifStmt.setCondition(new UnaryExpr(
+    					this.ifStmt.getCondition(),
+    					UnaryExpr.Operator.LOGICAL_COMPLEMENT));
+    		}
     	}
     }
 
-    @Override
+    private boolean isNegated(Expression condition) {
+		return condition instanceof UnaryExpr
+			&& ((UnaryExpr) condition).getOperator() == UnaryExpr.Operator.LOGICAL_COMPLEMENT;
+	}
+
+	@Override
     public int getAnchorLine() {
         return this.ifStmt.getBegin().get().line;
     }

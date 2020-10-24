@@ -217,7 +217,9 @@ public class MutationGenerator extends Generator {
             @Override
             public Void visit(final IfStmt n, final Void v) {
                 super.visit(n, v);
-                ret.add(new InvertMutation(n));
+                if (InvertMutation.isApplicable(n)) {
+                	ret.add(new InvertMutation(n));
+                }
                 return null;
             }
             @Override
