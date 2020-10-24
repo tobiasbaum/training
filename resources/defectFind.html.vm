@@ -33,9 +33,9 @@
 	</script>
 </head>
 <body>
-	<i><p>Der folgende Code enthält einen fachlichen Fehler. Ihre Aufgabe ist, diesen zu finden.</p></i>
-	<i><p>Um einen Fehler in einer Zeile anzumerken, klicken Sie auf die betreffende Zeilennummer. Falls Sie eine Anmerkung löschen
-	möchten, klicken Sie erneut darauf und entfernen Sie den Text.</p></i><br/><br/>
+	<i><p>Finde den fachlichen Fehler im folgenden Code!</p></i>
+	<i><p>Um einen Fehler in einer Zeile anzumerken, klicke auf die betreffende Zeilennummer. Falls du eine Anmerkung löschen
+	möchtest, klicke erneut darauf und entferne den Text.</p></i><br/><br/>
 	
 	<div id="editor">
 	</div><br/>
