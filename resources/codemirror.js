@@ -5988,7 +5988,7 @@
     },
     eatSpace: function() {
       var start = this.pos;
-      while (/[\s\u00a0]/.test(this.string.charAt(this.pos))) ++this.pos;
+      while (/[\s\u00a0\u180E]/.test(this.string.charAt(this.pos))) ++this.pos;
       return this.pos > start;
     },
     skipToEnd: function() {this.pos = this.string.length;},

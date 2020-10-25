@@ -104,19 +104,22 @@
 .cm-link {text-decoration: underline;}
 .cm-strikethrough {text-decoration: line-through;}
 
-.cm-s-default .cm-keyword {color: #708;}
-.cm-s-default .cm-atom {color: #219;}
-.cm-s-default .cm-number {color: #164;}
+.cm-s-default .cm-keyword {color: #7f0055; font-weight: bold;}
+.cm-s-default .cm-atom {color: #7f0055; font-weight: bold;}
+.cm-s-default .cm-type {color: #000000;}
+.cm-s-default .cm-number {color: #000000;}
 .cm-s-default .cm-def {color: #00f;}
-.cm-s-default .cm-variable,
+.cm-s-default .cm-variable {color: #6a3e3e;}
+.cm-s-default .cm-call {color: #000000;}
 .cm-s-default .cm-punctuation,
 .cm-s-default .cm-property,
 .cm-s-default .cm-operator {}
 .cm-s-default .cm-variable-2 {color: #05a;}
 .cm-s-default .cm-variable-3 {color: #085;}
-.cm-s-default .cm-comment {color: #a50;}
-.cm-s-default .cm-string {color: #a11;}
-.cm-s-default .cm-string-2 {color: #f50;}
+.cm-s-default .cm-comment {color: #3f7f5f;}
+.cm-s-default .cm-javadoc {color: #7a67cb;}
+.cm-s-default .cm-string {color: #3436ff;}
+.cm-s-default .cm-string-2 {color: #3436ff;}
 .cm-s-default .cm-meta {color: #555;}
 .cm-s-default .cm-qualifier {color: #555;}
 .cm-s-default .cm-builtin {color: #30a;}

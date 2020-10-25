@@ -122,6 +122,11 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
       return "builtin";
     }
     if (contains(atoms, cur)) return "atom";
+    ch = stream.next();
+    stream.backUp(1);
+    if (ch == '(') {
+	  return "call"
+    }
     return "variable";
   }
 
@@ -139,7 +144,15 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
   }
 
   function tokenComment(stream, state) {
-    var maybeEnd = false, ch;
+    var maybeEnd, ch, javadoc;
+    ch = stream.next();
+    if (ch == '*') {
+	  maybeEnd = true;
+      javadoc = true;
+    } else {
+   	  maybeEnd = false;
+      javadoc = true;
+    }
     while (ch = stream.next()) {
       if (ch == "/" && maybeEnd) {
         state.tokenize = null;
@@ -147,7 +160,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
       }
       maybeEnd = (ch == "*");
     }
-    return "comment";
+    return javadoc ? "javadoc" : "comment";
   }
 
   function maybeEOL(stream, state) {
@@ -483,9 +496,8 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
                     "do else enum extends final finally for goto if implements import " +
                     "instanceof interface native new package private protected public " +
                     "return static strictfp super switch synchronized this throw throws transient " +
-                    "try volatile while @interface"),
-    types: words("byte short int long float double boolean char void Boolean Byte Character Double Float " +
-                 "Integer Long Number Object Short String StringBuffer StringBuilder Void"),
+                    "try volatile while @interface byte short int long float double boolean char void"),
+    types: function(identifier) { return /^[A-Z]/.test(identifier); },
     blockKeywords: words("catch class do else finally for if switch try while"),
     defKeywords: words("class interface enum @interface"),
     typeFirstDefinitions: true,
