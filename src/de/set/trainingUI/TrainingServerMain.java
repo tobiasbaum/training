@@ -98,6 +98,18 @@ public class TrainingServerMain {
         Spark.post("/solveTask", m::solveTask);
         Spark.post("/retryTask", m::retryTask);
         Spark.get("/shutdown/" + SHUTDOWN_PASS, m::shutdown);
+
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+        	@Override
+			public void run() {
+        		cleanUp();
+        	}
+        });
+    }
+
+    private static void cleanUp() {
+    	TaskDB.getInstance().shutdown();
+    	StatisticsDB.getInstance().shutdown();
     }
 
     private Object login(final Request request, final Response response) {

@@ -10,6 +10,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class TaskDB {
@@ -20,23 +22,41 @@ public class TaskDB {
 
     private final AtomicReference<Task[]> tasks = new AtomicReference<>();
     private Random random;
+	private final Timer reloadTimer = new Timer("TaskDB update", true);
 
     private TaskDB(File root) {
         try {
-            final List<Task> t = new ArrayList<>();
-            for (final File dir : root.listFiles()) {
-                if (!dir.isDirectory()) {
-                    continue;
-                }
-                t.add(this.loadTask(dir));
-            }
-            sortByDifficulty(t);
-            this.tasks.set(t.toArray(new Task[t.size()]));
+            this.loadTasks(root);
             this.random = new Random(1234);
+            this.reloadTimer.schedule(
+            		new TimerTask() {
+						@Override
+						public void run() {
+							try {
+								TaskDB.this.loadTasks(root);
+							} catch (final IOException e) {
+								e.printStackTrace();
+							}
+						}
+            		},
+            		5 * 60 * 1000L,
+            		5 * 60 * 1000L);
         } catch (final IOException e) {
             throw new RuntimeException("problem while loading tasks", e);
         }
     }
+
+	private void loadTasks(File root) throws IOException {
+		final List<Task> t = new ArrayList<>();
+		for (final File dir : root.listFiles()) {
+		    if (!dir.isDirectory()) {
+		        continue;
+		    }
+		    t.add(this.loadTask(dir));
+		}
+		sortByDifficulty(t);
+		this.tasks.set(t.toArray(new Task[t.size()]));
+	}
 
     private static void sortByDifficulty(final List<Task> taskList) {
         taskList.sort(Comparator.comparingDouble(Task::estimateDifficulty));
@@ -136,6 +156,10 @@ public class TaskDB {
 			}
 		}
 		return null;
+	}
+
+	public void shutdown() {
+		this.reloadTimer.cancel();
 	}
 
 }

@@ -1,8 +1,12 @@
 package de.set.trainingUI;
 
-public class Statistics implements Cloneable {
+import java.io.Serializable;
 
-    private final boolean forFamily;
+public class Statistics implements Cloneable, Serializable {
+
+	private static final long serialVersionUID = 6934873524833747803L;
+
+	private final boolean forFamily;
     private int trySum;
     private int firstTryCount;
     private int firstTrySuccessCount;
