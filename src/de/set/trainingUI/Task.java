@@ -38,17 +38,6 @@ public abstract class Task {
 
     public abstract void addContextData(Map<String, Object> data);
 
-	public abstract void handleResultData(final AssessmentSuite a, int currentStep, Request request);
-
-	protected final void handleResultDataDefault(
-			final AssessmentSuite a, final int currentStep, final Request request, final String stepType) {
-		for (final String key : request.queryParams()) {
-	        for (final String line : request.queryParamOrDefault(key, "").split("\n")) {
-	            DataLog.log(a.getId(), key + " from " + stepType + ";step " + currentStep + ";" + line);
-	        }
-		}
-	}
-
 	protected static String loadFileAsString(final File path) throws IOException {
 		try (InputStream s = new FileInputStream(path)) {
 			final BufferedReader r = new BufferedReader(new InputStreamReader(s, "UTF-8"));

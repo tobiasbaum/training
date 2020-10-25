@@ -7,8 +7,6 @@ import java.io.OutputStream;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -24,9 +22,6 @@ import spark.template.velocity.VelocityTemplateEngine;
 public class TrainingServerMain {
 
 	private static final String SHUTDOWN_PASS = "asdrsqer1223as";
-
-    private final Map<Long, AssessmentSuite> assessments = new ConcurrentHashMap<>();
-    private final AtomicLong suiteCounter = new AtomicLong(System.currentTimeMillis() % 100000 + 10000);
 
     public TrainingServerMain() throws IOException {
     }

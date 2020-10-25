@@ -134,11 +134,6 @@ public class DefectFindTask extends Task {
 		return "/defectFind.html.vm";
 	}
 
-	@Override
-	public void handleResultData(final AssessmentSuite a, final int currentStep, final Request request) {
-		this.handleResultDataDefault(a, currentStep, request, this.toString());
-	}
-
 	public String getContentEscaped() {
 		return escapeForJsString(this.content);
 	}
