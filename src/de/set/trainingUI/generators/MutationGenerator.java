@@ -26,6 +26,7 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.ConditionalExpr;
+import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
@@ -264,6 +265,14 @@ public class MutationGenerator extends Generator {
                 super.visit(n, v);
                 if (swapVariableData.isApplicable(n)) {
                     ret.add(new SwapVariableExpressionMutation(swapVariableData, n));
+                }
+                return null;
+            }
+            @Override
+            public Void visit(final MethodCallExpr n, final Void v) {
+                super.visit(n, v);
+                if (RemovePartFromExpressionChainMutation.isApplicable(n)) {
+                    ret.add(new RemovePartFromExpressionChainMutation(n));
                 }
                 return null;
             }
