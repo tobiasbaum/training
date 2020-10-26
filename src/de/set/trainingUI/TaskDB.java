@@ -52,13 +52,20 @@ public class TaskDB {
 		    if (!dir.isDirectory()) {
 		        continue;
 		    }
+		    if (this.isIgnored(dir)) {
+		    	continue;
+		    }
 		    t.add(this.loadTask(dir));
 		}
 		sortByDifficulty(t);
 		this.tasks.set(t.toArray(new Task[t.size()]));
 	}
 
-    private static void sortByDifficulty(final List<Task> taskList) {
+    private boolean isIgnored(File dir) {
+		return new File(dir, "ignore").exists();
+	}
+
+	private static void sortByDifficulty(final List<Task> taskList) {
         taskList.sort(Comparator.comparingDouble(Task::estimateDifficulty));
     }
 
