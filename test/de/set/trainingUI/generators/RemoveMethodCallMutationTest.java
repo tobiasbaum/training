@@ -25,24 +25,33 @@ public class RemoveMethodCallMutationTest {
     	return mutations;
     }
 
-    private static void checkMutation(
+    static void checkMutation(
     		String input,
     		Class<? extends Mutation> mutationType,
     		int mutationIndex,
     		String expectedSource) {
+    	checkMutation(input, mutationType, mutationIndex, 123L, expectedSource);
+    }
+
+    static void checkMutation(
+    		String input,
+    		Class<? extends Mutation> mutationType,
+    		int mutationIndex,
+    		long seed,
+    		String expectedSource) {
     	final CompilationUnit cu = parse(input);
-        final List<Mutation> m = determineApplicableMutations(cu, RemoveStatementMutation.class);
-    	m.get(mutationIndex).apply(new Random(123));
+        final List<Mutation> m = determineApplicableMutations(cu, mutationType);
+    	m.get(mutationIndex).apply(new Random(seed));
 
     	assertEquals(expectedSource, cu.toString());
     }
 
-    private static void checkMutationCount(
+    static void checkMutationCount(
     		String input,
     		Class<? extends Mutation> mutationType,
     		int expectedCount) {
     	final CompilationUnit cu = parse(input);
-        final List<Mutation> m = determineApplicableMutations(cu, RemoveStatementMutation.class);
+        final List<Mutation> m = determineApplicableMutations(cu, mutationType);
         assertEquals(expectedCount, m.size());
     }
 

@@ -225,12 +225,14 @@ public class MutationGenerator extends Generator {
                 if (RemoveStatementMutation.isApplicable(n)) {
                     ret.add(new RemoveStatementMutation(n));
                 }
+                ret.add(new RemoveIfMutation(n));
                 return null;
             }
             @Override
             public Void visit(final ConditionalExpr n, final Void v) {
                 super.visit(n, v);
                 ret.add(new InvertConditionalExprMutation(n));
+                ret.add(new RemoveTernaryMutation(n));
                 return null;
             }
             @Override
