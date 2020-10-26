@@ -28,6 +28,8 @@ import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.ConditionalExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.stmt.BreakStmt;
+import com.github.javaparser.ast.stmt.ContinueStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
@@ -273,6 +275,22 @@ public class MutationGenerator extends Generator {
                 super.visit(n, v);
                 if (RemovePartFromExpressionChainMutation.isApplicable(n)) {
                     ret.add(new RemovePartFromExpressionChainMutation(n));
+                }
+                return null;
+            }
+            @Override
+            public Void visit(final ContinueStmt n, final Void v) {
+                super.visit(n, v);
+                if (RemoveStatementMutation.isApplicable(n)) {
+                    ret.add(new RemoveStatementMutation(n));
+                }
+                return null;
+            }
+            @Override
+            public Void visit(final BreakStmt n, final Void v) {
+                super.visit(n, v);
+                if (RemoveStatementMutation.isApplicable(n)) {
+                    ret.add(new RemoveStatementMutation(n));
                 }
                 return null;
             }

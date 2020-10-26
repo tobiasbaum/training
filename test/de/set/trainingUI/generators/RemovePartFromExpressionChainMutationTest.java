@@ -5,11 +5,11 @@ import org.junit.Test;
 public class RemovePartFromExpressionChainMutationTest {
 
 	private static void checkMutationCount(String input, int expectedCount) {
-		RemoveMethodCallMutationTest.checkMutationCount(input, RemovePartFromExpressionChainMutation.class, expectedCount);
+		RemoveStatementMutationTest.checkMutationCount(input, RemovePartFromExpressionChainMutation.class, expectedCount);
 	}
 
 	private static void checkMutation(String input, int i, String expected) {
-		RemoveMethodCallMutationTest.checkMutation(input, RemovePartFromExpressionChainMutation.class, i, expected);
+		RemoveStatementMutationTest.checkMutation(input, RemovePartFromExpressionChainMutation.class, i, expected);
 	}
 
     @Test

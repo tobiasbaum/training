@@ -5,11 +5,11 @@ import org.junit.Test;
 public class RemoveTernaryMutationTest {
 
 	private static void checkMutationCount(String input, int expectedCount) {
-		RemoveMethodCallMutationTest.checkMutationCount(input, RemoveTernaryMutation.class, expectedCount);
+		RemoveStatementMutationTest.checkMutationCount(input, RemoveTernaryMutation.class, expectedCount);
 	}
 
 	private static void checkMutation(String input, int i, long seed, String expected) {
-		RemoveMethodCallMutationTest.checkMutation(input, RemoveTernaryMutation.class, i, seed, expected);
+		RemoveStatementMutationTest.checkMutation(input, RemoveTernaryMutation.class, i, seed, expected);
 	}
 
     @Test

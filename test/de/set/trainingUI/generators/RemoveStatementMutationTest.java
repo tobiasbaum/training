@@ -12,7 +12,7 @@ import com.github.javaparser.ast.CompilationUnit;
 
 import de.set.trainingUI.generators.MutationGenerator.Mutation;
 
-public class RemoveMethodCallMutationTest {
+public class RemoveStatementMutationTest {
 
     private static CompilationUnit parse(final String fileContent) {
         return StaticJavaParser.parse(fileContent);
@@ -190,6 +190,148 @@ public class RemoveMethodCallMutationTest {
                 + "    }\n"
                 + "}\n");
         checkMutationCount(input, RemoveStatementMutation.class, 2);
+    }
+
+    @Test
+    public void testRemoveContinue() {
+        final String input =
+                "class A {\n"
+                + "    public void a() {\n"
+                + "        while (System.err != null) {\n"
+                + "            if (System.out == null) {\n"
+                + "                System.err.println(\"y\");\n"
+                + "                continue;\n"
+                + "            }\n"
+                + "            System.out.println(\"y\");\n"
+                + "        }\n"
+                + "    }\n"
+                + "}\n";
+
+        checkMutation(input,
+        		RemoveStatementMutation.class,
+        		0,
+                "class A {\n"
+                + "\n"
+                + "    public void a() {\n"
+                + "        while (System.err != null) {\n"
+                + "            if (System.out == null) {\n"
+                + "                continue;\n"
+                + "            }\n"
+                + "            System.out.println(\"y\");\n"
+                + "        }\n"
+                + "    }\n"
+                + "}\n");
+        checkMutation(input,
+        		RemoveStatementMutation.class,
+        		1,
+                "class A {\n"
+                + "\n"
+                + "    public void a() {\n"
+                + "        while (System.err != null) {\n"
+                + "            if (System.out == null) {\n"
+                + "                System.err.println(\"y\");\n"
+                + "            }\n"
+                + "            System.out.println(\"y\");\n"
+                + "        }\n"
+                + "    }\n"
+                + "}\n");
+        checkMutation(input,
+        		RemoveStatementMutation.class,
+        		2,
+                "class A {\n"
+                + "\n"
+                + "    public void a() {\n"
+                + "        while (System.err != null) {\n"
+                + "            System.out.println(\"y\");\n"
+                + "        }\n"
+                + "    }\n"
+                + "}\n");
+        checkMutation(input,
+        		RemoveStatementMutation.class,
+        		3,
+                "class A {\n"
+                + "\n"
+                + "    public void a() {\n"
+                + "        while (System.err != null) {\n"
+                + "            if (System.out == null) {\n"
+                + "                System.err.println(\"y\");\n"
+                + "                continue;\n"
+                + "            }\n"
+                + "        }\n"
+                + "    }\n"
+                + "}\n");
+        checkMutationCount(input, RemoveStatementMutation.class, 4);
+    }
+
+    @Test
+    public void testRemoveBreak() {
+        final String input =
+                "class A {\n"
+                + "    public void a() {\n"
+                + "        while (System.err != null) {\n"
+                + "            if (System.out == null) {\n"
+                + "                System.err.println(\"y\");\n"
+                + "                break;\n"
+                + "            }\n"
+                + "            System.out.println(\"y\");\n"
+                + "        }\n"
+                + "    }\n"
+                + "}\n";
+
+        checkMutation(input,
+        		RemoveStatementMutation.class,
+        		0,
+                "class A {\n"
+                + "\n"
+                + "    public void a() {\n"
+                + "        while (System.err != null) {\n"
+                + "            if (System.out == null) {\n"
+                + "                break;\n"
+                + "            }\n"
+                + "            System.out.println(\"y\");\n"
+                + "        }\n"
+                + "    }\n"
+                + "}\n");
+        checkMutation(input,
+        		RemoveStatementMutation.class,
+        		1,
+                "class A {\n"
+                + "\n"
+                + "    public void a() {\n"
+                + "        while (System.err != null) {\n"
+                + "            if (System.out == null) {\n"
+                + "                System.err.println(\"y\");\n"
+                + "            }\n"
+                + "            System.out.println(\"y\");\n"
+                + "        }\n"
+                + "    }\n"
+                + "}\n");
+        checkMutation(input,
+        		RemoveStatementMutation.class,
+        		2,
+                "class A {\n"
+                + "\n"
+                + "    public void a() {\n"
+                + "        while (System.err != null) {\n"
+                + "            System.out.println(\"y\");\n"
+                + "        }\n"
+                + "    }\n"
+                + "}\n");
+        checkMutation(input,
+        		RemoveStatementMutation.class,
+        		3,
+                "class A {\n"
+                + "\n"
+                + "    public void a() {\n"
+                + "        while (System.err != null) {\n"
+                + "            if (System.out == null) {\n"
+                + "                System.err.println(\"y\");\n"
+                + "                break;\n"
+                + "            }\n"
+                + "        }\n"
+                + "    }\n"
+                + "}\n");
+        checkMutationCount(input, RemoveStatementMutation.class, 4);
     }
 
 }

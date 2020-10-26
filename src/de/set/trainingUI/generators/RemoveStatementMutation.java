@@ -6,6 +6,8 @@ import java.util.Random;
 import java.util.Set;
 
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.stmt.BreakStmt;
+import com.github.javaparser.ast.stmt.ContinueStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.Statement;
@@ -55,6 +57,14 @@ final class RemoveStatementMutation extends Mutation {
     }
 
     public static boolean isApplicable(final IfStmt stmt) {
+        return hasSiblings(stmt);
+    }
+
+    public static boolean isApplicable(final ContinueStmt stmt) {
+        return hasSiblings(stmt);
+    }
+
+    public static boolean isApplicable(final BreakStmt stmt) {
         return hasSiblings(stmt);
     }
 

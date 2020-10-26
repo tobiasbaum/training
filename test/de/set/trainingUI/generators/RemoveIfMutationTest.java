@@ -5,15 +5,15 @@ import org.junit.Test;
 public class RemoveIfMutationTest {
 
 	private static void checkMutationCount(String input, int expectedCount) {
-		RemoveMethodCallMutationTest.checkMutationCount(input, RemoveIfMutation.class, expectedCount);
+		RemoveStatementMutationTest.checkMutationCount(input, RemoveIfMutation.class, expectedCount);
 	}
 
 	private static void checkMutation(String input, int i, String expected) {
-		RemoveMethodCallMutationTest.checkMutation(input, RemoveIfMutation.class, i, expected);
+		RemoveStatementMutationTest.checkMutation(input, RemoveIfMutation.class, i, expected);
 	}
 
 	private static void checkMutation(String input, int i, long seed, String expected) {
-		RemoveMethodCallMutationTest.checkMutation(input, RemoveIfMutation.class, i, seed, expected);
+		RemoveStatementMutationTest.checkMutation(input, RemoveIfMutation.class, i, seed, expected);
 	}
 
     @Test
