@@ -23,7 +23,6 @@ import spark.Request;
 public class DefectFindTask extends Task {
 
     public static enum RemarkType {
-        SYNTAX_ERROR("Syntaxfehler"),
         WRONG_CONDITION("Fehlerhafte Bedingung"),
         WRONG_COMPARISON("Fehlerhafter Vergleich"),
         WRONG_CALCULATION("Fehlerhafte Berechnung"),
