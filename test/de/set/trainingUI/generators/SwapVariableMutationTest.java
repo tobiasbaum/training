@@ -1,4 +1,4 @@
-package de.set.trainingUi.generators;
+package de.set.trainingUI.generators;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

@@ -222,6 +222,9 @@ public class MutationGenerator extends Generator {
                 if (InvertMutation.isApplicable(n)) {
                 	ret.add(new InvertMutation(n));
                 }
+                if (RemoveStatementMutation.isApplicable(n)) {
+                    ret.add(new RemoveStatementMutation(n));
+                }
                 return null;
             }
             @Override
@@ -233,8 +236,8 @@ public class MutationGenerator extends Generator {
             @Override
             public Void visit(final ExpressionStmt n, final Void v) {
                 super.visit(n, v);
-                if (RemoveMutation.isApplicable(n)) {
-                    ret.add(new RemoveMutation(n));
+                if (RemoveStatementMutation.isApplicable(n)) {
+                    ret.add(new RemoveStatementMutation(n));
                 }
                 return null;
             }

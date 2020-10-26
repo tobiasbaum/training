@@ -7,17 +7,18 @@ import java.util.Set;
 
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
+import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.Statement;
 
 import de.set.trainingUI.DefectFindTask.RemarkType;
 import de.set.trainingUI.generators.MutationGenerator.Mutation;
 
-final class RemoveMutation extends Mutation {
+final class RemoveStatementMutation extends Mutation {
 
     private final Statement n;
     private final Node parent;
 
-    public RemoveMutation(final Statement n) {
+    public RemoveStatementMutation(final Statement n) {
         this.n = n;
         this.parent = this.n.getParentNode().get();
     }
@@ -44,7 +45,7 @@ final class RemoveMutation extends Mutation {
     }
 
     public static boolean isApplicable(final ExpressionStmt stmt) {
-        if (stmt.getParentNode().get().getChildNodes().size() <= 1) {
+        if (!hasSiblings(stmt)) {
             return false;
         }
         if (!stmt.getExpression().isMethodCallExpr()) {
@@ -52,5 +53,13 @@ final class RemoveMutation extends Mutation {
         }
         return true;
     }
+
+    public static boolean isApplicable(final IfStmt stmt) {
+        return hasSiblings(stmt);
+    }
+
+	private static boolean hasSiblings(final Statement stmt) {
+		return stmt.getParentNode().get().getChildNodes().size() > 1;
+	}
 
 }
