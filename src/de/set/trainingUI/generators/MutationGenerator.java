@@ -135,6 +135,8 @@ public class MutationGenerator extends Generator {
         for (final Mutation m : chosen) {
             m.createRemark(i++, taskProperties);
         }
+        taskProperties.put("usedMutations",
+        		chosen.stream().map((Mutation m) -> m.getClass().getName()).collect(Collectors.joining(",")));
         return ast.toString();
     }
 
