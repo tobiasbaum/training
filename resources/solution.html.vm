@@ -46,11 +46,14 @@
     </table>
     <br/>
 	
+    <button onclick="registerTaskProblem()">Problem mit der Aufgabe melden</button>
+    <br/><br/>
+
 	<div id="editor">
 	</div><br/>
 	
     <form action="nextTask" method="post">
-        <button type="submit">Nächste Aufgabe</button>
+        <button type="submit">Nächste Aufgabe ►</button>
     </form>
    	
 </body>

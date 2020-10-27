@@ -420,3 +420,10 @@ function hashFnv32a(str) {
     }
     return ("0" + (hval >>> 0).toString(16)).substr(-8);
 }
+
+function registerTaskProblem() {
+	var msg = prompt("Beschreibung des Problems");
+	if (msg) {
+		$.post("/registerProblemWithCurrentTask", msg);		
+	}
+}

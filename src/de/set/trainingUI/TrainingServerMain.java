@@ -97,6 +97,7 @@ public class TrainingServerMain {
         Spark.post("/checkTask", m::checkTask);
         Spark.post("/solveTask", m::solveTask);
         Spark.post("/retryTask", m::retryTask);
+        Spark.post("/registerProblemWithCurrentTask", m::registerProblemWithCurrentTask);
         Spark.get("/shutdown/" + SHUTDOWN_PASS, m::shutdown);
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -223,4 +224,10 @@ public class TrainingServerMain {
     	return "Stopping ...";
     }
 
+    private Object registerProblemWithCurrentTask(final Request request, final Response response)
+    	throws IOException {
+        final Trainee u = this.getUserFromCookie(request);
+		ProblemLog.getInstance().registerProblem(u, request.body());
+        return "";
+    }
 }
