@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AssignExpr;
@@ -58,6 +59,14 @@ public class MutationGenerator extends Generator {
                     + ";" + type.name()
                     + ";" + text);
         }
+
+    	protected static void addBeginToEnd(final Set<Integer> lines, Node node) {
+    		final int start = node.getBegin().get().line;
+            final int end = node.getEnd().get().line;
+            for (int i = start; i < end; i++) {
+                lines.add(i);
+            }
+    	}
 
         protected static<T> T pickRandom(final List<T> choices, final Random r) {
             return choices.get(r.nextInt(choices.size()));
@@ -227,6 +236,9 @@ public class MutationGenerator extends Generator {
                 }
                 if (RemoveStatementMutation.isApplicable(n)) {
                     ret.add(new RemoveStatementMutation(n));
+                }
+                if (MoveOutOfIfMutation.isApplicable(n)) {
+                	ret.add(new MoveOutOfIfMutation(n));
                 }
                 ret.add(new RemoveIfMutation(n));
                 return null;

@@ -38,11 +38,7 @@ final class RemoveStatementMutation extends Mutation {
     @Override
     public void createRemark(final int nbr, final Properties p) {
         final Set<Integer> lines = new LinkedHashSet<>();
-        final int start = this.parent.getBegin().get().line;
-        final int end = this.parent.getEnd().get().line;
-        for (int i = start; i < end; i++) {
-            lines.add(i);
-        }
+        addBeginToEnd(lines, this.parent);
         this.setRemark(nbr, p, lines, RemarkType.MISSING_CODE, ".+", this.n.toString() + " fehlt");
     }
 
