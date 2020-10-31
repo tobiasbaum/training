@@ -37,3 +37,7 @@ form.remarkInputContent {
     transform: translate(0%, -50%);
     background-color: white;
 }
+
+pre.CodeMirror-line:hover {
+	background-color: #FFFFAA;
+}
