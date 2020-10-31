@@ -56,7 +56,7 @@ public class ReviewResultRating implements AnnotatedSolution {
 	}
 
     @Override
-    public List<List<String>> format() {
+    public List<List<String>> formatSolution() {
         final List<List<String>> ret = new ArrayList<>();
         for (final Entry<Remark, Boolean> e : this.getAnnotatedSolution().entrySet()) {
             ret.add(Arrays.asList(

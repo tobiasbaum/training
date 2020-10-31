@@ -49,7 +49,7 @@ public class UnderstandingTask extends Task {
 				return correct;
 			}
 			@Override
-			public List<List<String>> format() {
+			public List<List<String>> formatSolution() {
 		        return Collections.singletonList(Collections.singletonList(
 		        		UnderstandingTask.this.expectedAnswer));
 			}
