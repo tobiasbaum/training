@@ -5,13 +5,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.EnumSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
@@ -22,90 +18,7 @@ import spark.Request;
 @SuppressWarnings("nls")
 public class DefectFindTask extends Task {
 
-    public static enum RemarkType {
-        WRONG_CONDITION("Fehlerhafte Bedingung"),
-        WRONG_COMPARISON("Fehlerhafter Vergleich"),
-        WRONG_CALCULATION("Fehlerhafte Berechnung"),
-        MISSING_CODE("Fehlender Code"),
-        OTHER_ALGORITHMIC_PROBLEM("Anderes algorithmisches Problem"),
-        DUPLICATE_CODE("Doppelter Code");
-
-        private String text;
-
-        private RemarkType(final String text) {
-            this.text = text;
-        }
-
-        public String getValue() {
-            return this.name();
-        }
-
-        public String getText() {
-            return this.text;
-        }
-    }
-
-    public static final class Remark {
-        private final int line;
-        private final RemarkType type;
-        private final String message;
-
-        public Remark(final int line, final RemarkType type, final String message) {
-            this.line = line;
-            this.type = type;
-            this.message = message;
-        }
-    }
-
-    public static final class RemarkPattern {
-        private final Set<Integer> allowedLines;
-        private final Set<RemarkType> allowedTypes;
-        private final Pattern allowedMessages;
-        private final Remark example;
-
-        public RemarkPattern(final String patternProperty, final String exampleProperty) {
-            final String[] patternParts = patternProperty.split(";", 3);
-            this.allowedLines = this.parseNumberSet(patternParts[0]);
-            this.allowedTypes = this.parseTypeSet(patternParts[1]);
-            this.allowedMessages = Pattern.compile(patternParts[2]);
-            final String[] exampleParts = exampleProperty.split(";", 3);
-            this.example = new Remark(
-                    Integer.parseInt(exampleParts[0]),
-                    RemarkType.valueOf(exampleParts[1]),
-                    exampleParts[2]);
-
-            if (!this.matches(this.example)) {
-                throw new RuntimeException("example is invalid");
-            }
-        }
-
-        private Set<Integer> parseNumberSet(final String string) {
-            final Set<Integer> ret = new LinkedHashSet<>();
-            final String[] parts = string.split(",");
-            for (final String part : parts) {
-                ret.add(Integer.parseInt(part));
-            }
-            return ret;
-        }
-
-        private Set<RemarkType> parseTypeSet(final String string) {
-            final Set<RemarkType> ret = EnumSet.noneOf(RemarkType.class);
-            final String[] parts = string.split(",");
-            for (final String part : parts) {
-                ret.add(RemarkType.valueOf(part));
-            }
-            return ret;
-        }
-
-        private boolean matches(final Remark remark) {
-            return this.allowedLines.contains(remark.line)
-                && this.allowedTypes.contains(remark.type)
-                && this.allowedMessages.matcher(remark.message).find();
-        }
-
-    }
-
-	private final String content;
+    private final String content;
     private final List<RemarkPattern> expectedRemarks;
 
     public static Task load(final Properties p, final File taskDirectory) throws IOException {
@@ -125,7 +38,7 @@ public class DefectFindTask extends Task {
 		    }
 		}
 		Collections.sort(this.expectedRemarks,
-	        (final RemarkPattern p1, final RemarkPattern p2) -> Integer.compare(p1.example.line, p2.example.line));
+	        (final RemarkPattern p1, final RemarkPattern p2) -> Integer.compare(p1.getExample().getLine(), p2.getExample().getLine()));
 	}
 
 	@Override
@@ -157,21 +70,8 @@ public class DefectFindTask extends Task {
                     e.getValue().asObject().get("m").asString()));
         }
 
-        for (final RemarkPattern expected : this.expectedRemarks) {
-            if (!this.matchesAny(expected, actualRemarks)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private boolean matchesAny(final RemarkPattern expected, final List<Remark> remarks) {
-        for (final Remark remark : remarks) {
-            if (expected.matches(remark)) {
-                return true;
-            }
-        }
-        return false;
+        final ReviewResultRating rrr = new ReviewResultRating(this.expectedRemarks, actualRemarks);
+        return rrr.isCorrect();
     }
 
     @Override
@@ -189,9 +89,9 @@ public class DefectFindTask extends Task {
         final List<List<String>> ret = new ArrayList<>();
         for (final RemarkPattern r : this.expectedRemarks) {
             ret.add(Arrays.asList(
-                    "Zeile " + r.example.line,
-                    r.example.type.getText(),
-                    r.example.message));
+                    "Zeile " + r.getExample().getLine(),
+                    r.getExample().getType().getText(),
+                    r.getExample().getMessage()));
         }
         return ret;
     }

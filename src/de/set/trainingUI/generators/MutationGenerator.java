@@ -35,7 +35,7 @@ import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
 
-import de.set.trainingUI.DefectFindTask.RemarkType;
+import de.set.trainingUI.RemarkType;
 import de.set.trainingUI.generators.SwapVariableExpressionMutation.SwapVariableData;
 
 @SuppressWarnings("nls")

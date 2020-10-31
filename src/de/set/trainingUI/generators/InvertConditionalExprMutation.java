@@ -8,7 +8,7 @@ import java.util.Set;
 import com.github.javaparser.ast.expr.ConditionalExpr;
 import com.github.javaparser.ast.expr.Expression;
 
-import de.set.trainingUI.DefectFindTask.RemarkType;
+import de.set.trainingUI.RemarkType;
 import de.set.trainingUI.generators.MutationGenerator.Mutation;
 
 public class InvertConditionalExprMutation extends Mutation {

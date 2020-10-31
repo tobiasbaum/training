@@ -11,7 +11,7 @@ import java.util.Set;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.BinaryExpr.Operator;
 
-import de.set.trainingUI.DefectFindTask.RemarkType;
+import de.set.trainingUI.RemarkType;
 import de.set.trainingUI.generators.MutationGenerator.Mutation;
 
 final class FlipOperatorMutation extends Mutation {

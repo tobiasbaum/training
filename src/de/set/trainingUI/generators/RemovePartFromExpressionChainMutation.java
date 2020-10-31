@@ -9,7 +9,7 @@ import java.util.Set;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 
-import de.set.trainingUI.DefectFindTask.RemarkType;
+import de.set.trainingUI.RemarkType;
 import de.set.trainingUI.generators.MutationGenerator.Mutation;
 
 public class RemovePartFromExpressionChainMutation extends Mutation {

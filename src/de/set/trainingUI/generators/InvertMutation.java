@@ -11,7 +11,7 @@ import com.github.javaparser.ast.expr.UnaryExpr;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.Statement;
 
-import de.set.trainingUI.DefectFindTask.RemarkType;
+import de.set.trainingUI.RemarkType;
 import de.set.trainingUI.generators.MutationGenerator.Mutation;
 
 final class InvertMutation extends Mutation {
