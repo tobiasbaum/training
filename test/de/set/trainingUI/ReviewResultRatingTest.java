@@ -5,6 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -89,6 +91,20 @@ public class ReviewResultRatingTest {
 		checkSolution(actual, "a defect", Boolean.TRUE);
 		checkSolution(actual, "another defect", Boolean.FALSE);
 		assertEquals(2, actual.size());
+	}
+
+	@Test
+	public void testFormatInput() {
+		final ReviewResultRating rrr = new ReviewResultRating(
+				Arrays.asList(
+						new RemarkPattern("1;WRONG_CALCULATION;.+", "1;WRONG_CALCULATION;a defect"),
+						new RemarkPattern("2;MISSING_CODE;.+", "2;MISSING_CODE;another defect")),
+				Arrays.asList(
+						new Remark(1, RemarkType.WRONG_CALCULATION, "ein Fehler")));
+		final List<List<String>> actual = rrr.formatInput();
+		assertEquals(Collections.singletonList(
+				Arrays.asList("Zeile 1", "Fehlerhafte Berechnung", "ein Fehler", "OK")),
+				actual);
 	}
 
 	@Test

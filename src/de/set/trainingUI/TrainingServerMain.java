@@ -148,6 +148,7 @@ public class TrainingServerMain {
         final Map<String, Object> data = new HashMap<>();
         data.put("item", task);
         task.addContextData(data);
+        data.put("input", u.getCurrentSolution().formatInput());
         data.put("solution", u.getCurrentSolution().formatSolution());
         return this.velocity(data, "/solution.html.vm");
     }

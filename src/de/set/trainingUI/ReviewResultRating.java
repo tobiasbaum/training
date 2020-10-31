@@ -13,13 +13,17 @@ public class ReviewResultRating implements AnnotatedSolution {
 
 	private final List<RemarkPattern> expectedRemarks;
 	private final Set<RemarkPattern> unmatchedRemarks;
+	private final Map<Remark, Boolean> annotatedInput;
 
 	public ReviewResultRating(List<RemarkPattern> expectedRemarks, List<Remark> actualRemarks) {
 		this.expectedRemarks = expectedRemarks;
 
 		this.unmatchedRemarks = new LinkedHashSet<>(expectedRemarks);
+		this.annotatedInput = new LinkedHashMap<>();
 		for (final Remark actual : actualRemarks) {
-			this.unmatchedRemarks.remove(findBestMatch(this.unmatchedRemarks, actual));
+			final RemarkPattern match = findBestMatch(this.unmatchedRemarks, actual);
+			this.unmatchedRemarks.remove(match);
+			this.annotatedInput.put(actual, match != null);
 		}
 	}
 
@@ -57,8 +61,17 @@ public class ReviewResultRating implements AnnotatedSolution {
 
     @Override
     public List<List<String>> formatSolution() {
-        final List<List<String>> ret = new ArrayList<>();
-        for (final Entry<Remark, Boolean> e : this.getAnnotatedSolution().entrySet()) {
+        return format(this.getAnnotatedSolution());
+    }
+
+	@Override
+	public List<List<String>> formatInput() {
+		return format(this.annotatedInput);
+	}
+
+	private static List<List<String>> format(final Map<Remark, Boolean> annotatedSolution) {
+		final List<List<String>> ret = new ArrayList<>();
+		for (final Entry<Remark, Boolean> e : annotatedSolution.entrySet()) {
             ret.add(Arrays.asList(
                     "Zeile " + e.getKey().getLine(),
                     e.getKey().getType().getText(),
@@ -66,6 +79,6 @@ public class ReviewResultRating implements AnnotatedSolution {
                     e.getValue() ? "OK" : ""));
         }
         return ret;
-    }
+	}
 
 }

@@ -6,6 +6,8 @@ public interface AnnotatedSolution {
 
 	public abstract boolean isCorrect();
 
+	public abstract List<List<String>> formatInput();
+
 	public abstract List<List<String>> formatSolution();
 
 }

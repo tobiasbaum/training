@@ -53,6 +53,10 @@ public class UnderstandingTask extends Task {
 		        return Collections.singletonList(Collections.singletonList(
 		        		UnderstandingTask.this.expectedAnswer));
 			}
+			@Override
+			public List<List<String>> formatInput() {
+		        return Collections.singletonList(Collections.singletonList(answer));
+			}
 		};
     }
 

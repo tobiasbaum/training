@@ -34,7 +34,19 @@
 	</script>
 </head>
 <body>
-    Lösung:<br/>
+    Erhaltene Eingabe:<br/>
+    <table border>
+    #foreach( $line in $input )
+        <tr>
+        #foreach( $item in $line )
+              <td>$item</td>
+        #end
+        </tr>
+    #end
+    </table>
+    <br/>
+	
+    Musterlösung:<br/>
     <table border>
     #foreach( $line in $solution )
         <tr>
