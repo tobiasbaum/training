@@ -40,9 +40,20 @@ public class UnderstandingTask extends Task {
 	}
 
     @Override
-    protected boolean isCorrectAnswer(final Request request) {
+    protected AnnotatedSolution checkSolution(final Request request) {
         final String answer = request.queryParams("answer");
-        return this.expectedAnswer.equals(answer);
+        final boolean correct = this.expectedAnswer.equals(answer);
+        return new AnnotatedSolution() {
+			@Override
+			public boolean isCorrect() {
+				return correct;
+			}
+			@Override
+			public List<List<String>> format() {
+		        return Collections.singletonList(Collections.singletonList(
+		        		UnderstandingTask.this.expectedAnswer));
+			}
+		};
     }
 
     @Override
@@ -52,11 +63,6 @@ public class UnderstandingTask extends Task {
 
     @Override
     public void addContextData(final Map<String, Object> data) {
-    }
-
-    @Override
-    public List<List<String>> getSolution() {
-        return Collections.singletonList(Collections.singletonList(this.expectedAnswer));
     }
 
 }

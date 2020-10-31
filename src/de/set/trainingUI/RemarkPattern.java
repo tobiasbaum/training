@@ -52,7 +52,11 @@ public final class RemarkPattern {
     }
 
 	Remark getExample() {
-		return example;
+		return this.example;
+	}
+
+	public int distanceToExample(Remark remark) {
+		return Math.abs(this.example.getLine() - remark.getLine());
 	}
 
 }

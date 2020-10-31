@@ -79,11 +79,13 @@ public class Trial {
         return this.startTime.until(this.endTime, ChronoUnit.SECONDS);
     }
 
-    public void checkAnswer(final Request request) {
+    public AnnotatedSolution checkAnswer(final Request request) {
         assert this.endTime == null;
 
         this.endTime = Instant.now();
-        this.incorrect = !this.task.isCorrectAnswer(request);
+        final AnnotatedSolution result = this.task.checkSolution(request);
+        this.incorrect = !result.isCorrect();
+        return result;
     }
 
     public Instant getStartTime() {

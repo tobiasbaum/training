@@ -20,6 +20,7 @@ public class Trainee {
     private final String name;
     private final List<Trial> trials = new ArrayList<>();
 	private Instant currentSessionStart;
+	private AnnotatedSolution curSolution;
 
     private Trainee(final File dir) {
         this.dir = dir;
@@ -85,9 +86,13 @@ public class Trainee {
 
 	public synchronized Trial checkCurrentTrialAnswer(Request request) {
 		final Trial t = this.getCurrentTrial();
-		t.checkAnswer(request);
+		this.curSolution = t.checkAnswer(request);
 		this.writeTrialToLog(t);
 		return t;
+	}
+
+	public synchronized AnnotatedSolution getCurrentSolution() {
+		return this.curSolution;
 	}
 
     public synchronized Trial retryCurrentTask() {

@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -60,10 +59,8 @@ public abstract class Task {
 				.replace("\"", "\\\"");
 	}
 
-    protected abstract boolean isCorrectAnswer(Request request);
+    protected abstract AnnotatedSolution checkSolution(Request request);
 
     protected abstract double estimateDifficulty();
-
-    public abstract List<List<String>> getSolution();
 
 }

@@ -56,10 +56,10 @@ public class DefectFindTask extends Task {
 	}
 
     @Override
-    protected boolean isCorrectAnswer(final Request request) {
+    protected AnnotatedSolution checkSolution(final Request request) {
         final String remarks = request.queryParams("remarks");
         if (remarks.isEmpty()) {
-            return this.expectedRemarks.isEmpty();
+            return new ReviewResultRating(this.expectedRemarks, Collections.emptyList());
         }
         final JsonObject json = Json.parse(remarks).asObject();
         final List<Remark> actualRemarks = new ArrayList<>();
@@ -70,8 +70,7 @@ public class DefectFindTask extends Task {
                     e.getValue().asObject().get("m").asString()));
         }
 
-        final ReviewResultRating rrr = new ReviewResultRating(this.expectedRemarks, actualRemarks);
-        return rrr.isCorrect();
+        return new ReviewResultRating(this.expectedRemarks, actualRemarks);
     }
 
     @Override
@@ -82,18 +81,6 @@ public class DefectFindTask extends Task {
     @Override
     public void addContextData(final Map<String, Object> data) {
         data.put("remarkTypes", Arrays.asList(RemarkType.values()));
-    }
-
-    @Override
-    public List<List<String>> getSolution() {
-        final List<List<String>> ret = new ArrayList<>();
-        for (final RemarkPattern r : this.expectedRemarks) {
-            ret.add(Arrays.asList(
-                    "Zeile " + r.getExample().getLine(),
-                    r.getExample().getType().getText(),
-                    r.getExample().getMessage()));
-        }
-        return ret;
     }
 
 }

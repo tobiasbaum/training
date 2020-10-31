@@ -148,7 +148,7 @@ public class TrainingServerMain {
         final Map<String, Object> data = new HashMap<>();
         data.put("item", task);
         task.addContextData(data);
-        data.put("solution", task.getSolution());
+        data.put("solution", u.getCurrentSolution().format());
         return this.velocity(data, "/solution.html.vm");
     }
 
@@ -178,7 +178,7 @@ public class TrainingServerMain {
         final Map<String, Object> data = new HashMap<>();
         data.put("trial", trial);
         data.put("stats", stats);
-        data.put("solution", trial.getTask().getSolution());
+        data.put("solution", u.getCurrentSolution().format());
         data.put("trainee", u);
         return this.velocity(data, "/feedback.html.vm");
     }
