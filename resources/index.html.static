@@ -10,11 +10,25 @@
 	
 	<!-- Requires jQuery -->
 	<script src="/jquery.min.js" type="text/javascript"></script>
+	
+	<script>
+	function init() {
+	    var red = window.location.origin + '/login';
+	    $('#redirect_uri').val(red);
+	    document.cookie = 'savedRedirect=' + red + ';max-age=3600;samesite=lax';
+	    var randomState = 'ct' + Math.random();
+	    $('#state').val(randomState);
+	    document.cookie = 'savedState=' + randomState + ';max-age=3600;samesite=lax';
+	}
+	</script>
 </head>
-<body>
-   <form action="login" method="post">
-      User: <input type="text" name="user"></input><br/>
-      <button type="submit">Login</button>
+<body onload="init()">
+   <form action="https://github.com/login/oauth/authorize" method="get">
+      <input type="hidden" name="client_id" value="e2a5802b4fb4398d7d51"></input>
+      <input type="hidden" name="redirect_uri" id="redirect_uri"></input>
+      <input type="hidden" name="state" id="state"></input>
+      Benutzer: <input type="text" name="login"></input><br/>
+      <button type="submit">Login mit GitHub</button>
    </form>
 </body>
 </html>

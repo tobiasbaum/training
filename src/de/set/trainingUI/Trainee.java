@@ -20,6 +20,7 @@ public class Trainee {
     private final String name;
     private final List<Trial> trials = new ArrayList<>();
 	private Instant currentSessionStart;
+	private String sessionId;
 	private AnnotatedSolution curSolution;
 
     private Trainee(final File dir) {
@@ -113,8 +114,13 @@ public class Trainee {
         return Instant.EPOCH;
     }
 
-	public void setCurrentSessionStart(Instant instant) {
+	public void setCurrentSessionStart(Instant instant, String sessionId) {
 		this.currentSessionStart = instant;
+		this.sessionId = sessionId;
+	}
+
+	public String getSessionId() {
+		return this.sessionId;
 	}
 
 	public int getMinutesInCurrentSession() {

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,9 +22,18 @@ import spark.template.velocity.VelocityTemplateEngine;
 @SuppressWarnings("nls")
 public class TrainingServerMain {
 
+	private static final String USER_SESSION_COOKIE = "userSession";
+	private static final String USER_NAME_COOKIE = "userName";
+
 	private static final String SHUTDOWN_PASS = "asdrsqer1223as";
 
+	private final SecureRandom random = new SecureRandom();
+	private final OAuth oAuth;
+
     public TrainingServerMain() throws IOException {
+    	this.oAuth = new OAuth(
+    			"e2a5802b4fb4398d7d51",
+    			System.getProperty("oauth.client.secret"));
     }
 
     private void sendFile(final String target, final HttpServletResponse response) throws IOException {
@@ -91,6 +101,7 @@ public class TrainingServerMain {
         m.staticFile("/jquery.min.js");
         m.staticFile("/favicon.ico");
         m.staticFile("/set_logo.png");
+        Spark.get("/login", m::login);
         Spark.post("/login", m::login);
         Spark.post("/overview", m::overview);
         Spark.post("/nextTask", m::nextTask);
@@ -113,12 +124,16 @@ public class TrainingServerMain {
     	StatisticsDB.getInstance().shutdown();
     }
 
-    private Object login(final Request request, final Response response) {
-        final String userName = request.queryParams("user");
-        final Trainee u = UserDB.getUser(userName);
-        u.setCurrentSessionStart(Instant.now());
+    private Object login(final Request request, final Response response) throws IOException {
+    	final String userName = this.oAuth.login(request);
 
-        response.cookie("userName", userName);
+        final Trainee u = UserDB.initUser(userName);
+
+        response.cookie(USER_NAME_COOKIE, userName);
+        final String userSession = Long.toString(this.random.nextLong());
+        response.cookie(USER_SESSION_COOKIE, userSession);
+
+        u.setCurrentSessionStart(Instant.now(), userSession);
 
     	return this.showOverview(u);
     }
@@ -189,7 +204,12 @@ public class TrainingServerMain {
     }
 
     private Trainee getUserFromCookie(final Request request) {
-        return UserDB.getUser(request.cookie("userName"));
+        final Trainee t = UserDB.getUser(request.cookie(USER_NAME_COOKIE));
+        final String expectedSession = request.cookie(USER_SESSION_COOKIE);
+        if (expectedSession == null || !expectedSession.equals(t.getSessionId())) {
+        	throw new IllegalStateException("session ID is invalid");
+        }
+        return t;
     }
 
 	private Object velocity(final Map<String, Object> data, final String template) {

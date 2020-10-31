@@ -28,8 +28,16 @@ public class UserDB {
         trainees.put(user.getName(), Trainee.load(user, TaskDB.getInstance()));
     }
 
-    public static Trainee getUser(final String userName) {
+    public static Trainee initUser(final String userName) {
         return trainees.computeIfAbsent(userName, (final String n) -> Trainee.createNew(n, BASE_DIR));
+    }
+
+    public static Trainee getUser(final String userName) {
+    	final Trainee t = trainees.get(userName);
+    	if (t == null) {
+    		throw new IllegalStateException("User not logged in: " + userName);
+    	}
+        return t;
     }
 
 }
