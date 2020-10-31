@@ -112,6 +112,7 @@ public class TaskDB {
             sample.remove(sample.size() - 1);
         }
 
+    	sortByDifficulty(sample);
         final Trial lastTrial = trainee.getCurrentTrial();
         if (lastTrial != null) {
             final int lastTrialIndex = this.indexOf(tasks, lastTrial.getTask());
@@ -123,24 +124,31 @@ public class TaskDB {
                         easierTasks.add(t);
                     }
                 }
-                if (!easierTasks.isEmpty()) {
-                	sortByDifficulty(easierTasks);
-                	return easierTasks.get(easierTasks.size() / 2);
+                if (easierTasks.isEmpty()) {
+                	// none of the tasks is easier, choose the easiest one from the sample
+                	return sample.get(0);
+                } else {
+                	return getMiddle(easierTasks);
                 }
             } else {
             	// if the last trial was correct, choose the trial that is minimally harder
-            	sortByDifficulty(sample);
                 for (final Task t : sample) {
                     if (this.indexOf(tasks, t) > lastTrialIndex) {
                         return t;
                     }
                 }
+            	// none of the tasks is harder, choose the hardest one from the sample
+                return sample.get(sample.size() - 1);
             }
+        } else {
+        	// if this is the first trial, choose a medium difficulty
+        	return getMiddle(sample);
         }
-
-        // if none of the previous applied, just use the least recently used (random) one
-        return sample.get(0);
     }
+
+	private static Task getMiddle(final List<Task> easierTasks) {
+		return easierTasks.get(easierTasks.size() / 2);
+	}
 
     private int indexOf(final Task[] array, final Task t) {
         for (int i = 0; i < array.length; i++) {
