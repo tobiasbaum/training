@@ -24,16 +24,16 @@ public class TaskDB {
     private Random random;
 	private final Timer reloadTimer = new Timer("TaskDB update", true);
 
-    private TaskDB(File root) {
+    private TaskDB(List<File> roots) {
         try {
-            this.loadTasks(root);
+            this.loadTasks(roots);
             this.random = new Random(1234);
             this.reloadTimer.schedule(
             		new TimerTask() {
 						@Override
 						public void run() {
 							try {
-								TaskDB.this.loadTasks(root);
+								TaskDB.this.loadTasks(roots);
 							} catch (final IOException e) {
 								e.printStackTrace();
 							}
@@ -46,16 +46,18 @@ public class TaskDB {
         }
     }
 
-	private void loadTasks(File root) throws IOException {
+	private void loadTasks(List<File> roots) throws IOException {
 		final List<Task> t = new ArrayList<>();
-		for (final File dir : root.listFiles()) {
-		    if (!dir.isDirectory()) {
-		        continue;
-		    }
-		    if (this.isIgnored(dir)) {
-		    	continue;
-		    }
-		    t.add(this.loadTask(dir));
+		for (final File root: roots) {
+			for (final File dir : root.listFiles()) {
+			    if (!dir.isDirectory()) {
+			        continue;
+			    }
+			    if (this.isIgnored(dir)) {
+			    	continue;
+			    }
+			    t.add(this.loadTask(dir));
+			}
 		}
 		sortByDifficulty(t);
 		this.tasks.set(t.toArray(new Task[t.size()]));
@@ -85,8 +87,8 @@ public class TaskDB {
         }
     }
 
-    public static void init(File path) {
-    	INSTANCE = new TaskDB(path);
+    public static void init(List<File> paths) {
+    	INSTANCE = new TaskDB(paths);
     }
 
     public static TaskDB getInstance() {

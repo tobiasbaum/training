@@ -6,7 +6,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.SecureRandom;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -86,7 +88,11 @@ public class TrainingServerMain {
             System.out.println("something is wrong with the classpath");
             return;
         }
-        TaskDB.init(new File(args[0]));
+        final List<File> taskDirectories = new ArrayList<>();
+        for (final String arg : args) {
+        	taskDirectories.add(new File(arg));
+        }
+        TaskDB.init(taskDirectories);
         Velocity.init();
 
         final TrainingServerMain m = new TrainingServerMain();
