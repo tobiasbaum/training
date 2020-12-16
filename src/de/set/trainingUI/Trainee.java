@@ -174,4 +174,8 @@ public class Trainee {
 		return max;
 	}
 
+	List<Trial> getTrials() {
+		return this.trials;
+	}
+
 }

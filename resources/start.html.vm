@@ -14,6 +14,9 @@
 </head>
 <body>
 
+<table>
+<tr>
+<td>
 <p>Eingeloggt als $trainee.name</p>
 <p>$taskCount Aufgaben bearbeitet</p>
 <p>$correctTaskCount davon erfolgreich</p>
@@ -23,5 +26,11 @@
    <form action="nextTask" method="post">
       <button type="submit">Training starten ►</button>
    </form>
+</td>
+<td>
+<img src="diagrams/tasksPerWeek.svg" />
+</td>
+</tr>
+</table>
 </body>
 </html>

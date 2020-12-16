@@ -1,5 +1,6 @@
 package de.set.trainingUI;
 
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,6 +16,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.velocity.app.Velocity;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
+import org.jfree.graphics2d.svg.SVGGraphics2D;
 
 import spark.ModelAndView;
 import spark.Request;
@@ -121,6 +125,7 @@ public class TrainingServerMain {
         Spark.post("/retryTask", m::retryTask);
         Spark.post("/registerProblemWithCurrentTask", m::registerProblemWithCurrentTask);
         Spark.get("/shutdown/" + SHUTDOWN_PASS, m::shutdown);
+        Spark.get("/diagrams/tasksPerWeek.svg", m::diagramTasksPerWeek);
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
         	@Override
@@ -265,5 +270,20 @@ public class TrainingServerMain {
         final Trainee u = this.getUserFromCookie(request);
 		ProblemLog.getInstance().registerProblem(u, request.body());
         return "";
+    }
+
+    private Object diagramTasksPerWeek(final Request request, final Response response) {
+    	final Trainee t = this.getUserFromCookie(request);
+
+    	final int widthOfSVG = 600;
+    	final int heightOfSVG = 200;
+    	final SVGGraphics2D svg2d = new SVGGraphics2D(widthOfSVG, heightOfSVG);
+
+		final JFreeChart chart = ChartFactory.createLineChart(null, "KW", "bearbeitete Aufgaben", DiagramData.getTasksPerWeek(t));
+		chart.removeLegend();
+    	chart.draw(svg2d,new Rectangle2D.Double(0, 0, widthOfSVG, heightOfSVG));
+
+    	response.type("image/svg+xml");
+    	return svg2d.getSVGElement();
     }
 }
