@@ -15,6 +15,10 @@
 <body>
 
 <p>Eingeloggt als $trainee.name</p>
+<p>$taskCount Aufgaben bearbeitet</p>
+<p>$correctTaskCount davon erfolgreich</p>
+<p>Aktuell $correctStreak Aufgaben am Stück erfolgreich</p>
+<p>Bestleistung: $longestCorrectStreak Aufgaben am Stück erfolgreich</p>
 
    <form action="nextTask" method="post">
       <button type="submit">Training starten ►</button>

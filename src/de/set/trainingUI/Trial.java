@@ -100,4 +100,8 @@ public class Trial {
 		return this.getStartTime().toEpochMilli() == t.getStartTime().toEpochMilli();
 	}
 
+	public boolean isCorrect() {
+		return this.endTime != null && !this.isIncorrect();
+	}
+
 }

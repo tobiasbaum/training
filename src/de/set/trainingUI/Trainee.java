@@ -130,4 +130,48 @@ public class Trainee {
 		return (int) Duration.between(this.currentSessionStart, Instant.now()).toMinutes();
 	}
 
+	public int getTrialCount() {
+		return this.trials.size();
+	}
+
+	public int getCorrectTrialCount() {
+		int count = 0;
+		for (final Trial t : this.trials) {
+			if (t.isCorrect()) {
+				count++;
+			}
+		}
+		return count;
+	}
+
+	public int getCurrentCorrectStreakLength() {
+		int len = 0;
+		for (int i = this.trials.size() - 1; i >= 0; i--) {
+			if (this.trials.get(i).isIncorrect()) {
+				break;
+			}
+			len++;
+		}
+		return len;
+	}
+
+	public int getLongestCorrectStreakLength() {
+		int max = 0;
+		int len = 0;
+		for (int i = this.trials.size() - 1; i >= 0; i--) {
+			if (this.trials.get(i).isIncorrect()) {
+				if (len > max) {
+					max = len;
+				}
+				len = 0;
+			} else {
+				len++;
+			}
+		}
+		if (len > max) {
+			max = len;
+		}
+		return max;
+	}
+
 }

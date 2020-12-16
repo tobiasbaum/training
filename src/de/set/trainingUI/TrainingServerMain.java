@@ -145,6 +145,10 @@ public class TrainingServerMain {
     private Object showOverview(final Trainee u) {
         final Map<String, Object> data = new HashMap<>();
         data.put("trainee", u);
+        data.put("taskCount", u.getTrialCount());
+        data.put("correctTaskCount", u.getCorrectTrialCount());
+        data.put("correctStreak", u.getCurrentCorrectStreakLength());
+        data.put("longestCorrectStreak", u.getLongestCorrectStreakLength());
         return this.velocity(data, "/start.html.vm");
     }
 
