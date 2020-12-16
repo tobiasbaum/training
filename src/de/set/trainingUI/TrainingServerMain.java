@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,25 +93,25 @@ public class TrainingServerMain {
         for (final String arg : args) {
         	taskDirectories.add(new File(arg));
         }
-        System.out.println("Task directories: " + taskDirectories);
+        System.out.println(new Date() + " Task directories: " + taskDirectories);
         TaskDB.init(taskDirectories);
-        System.out.println("Loaded " + TaskDB.getInstance().getTaskCount() + " tasks");
-        System.out.println("Initializing Velocity ...");
+        System.out.println(new Date() + " Loaded " + TaskDB.getInstance().getTaskCount() + " tasks");
+        System.out.println(new Date() + " Initializing Velocity ...");
         Velocity.init();
 
-        System.out.println("Starting server ...");
+        System.out.println(new Date() + " Starting server ...");
         final TrainingServerMain m = new TrainingServerMain();
         Spark.before((final Request request, final Response response) -> DataLog.log(0, "calling URL " + request.url()));
-        m.staticFile("/", "/index.html.static");
-        m.staticFile("/index.html", "/index.html.static");
-        m.staticFile("/experiment.js");
-        m.staticFile("/experiment.css");
-        m.staticFile("/codemirror.js");
-        m.staticFile("/clike.js");
-        m.staticFile("/codemirror.css");
-        m.staticFile("/jquery.min.js");
-        m.staticFile("/favicon.ico");
-        m.staticFile("/set_logo.png");
+        m.staticFile("/", "text/html", "/index.html.static");
+        m.staticFile("/index.html", "text/html", "/index.html.static");
+        m.staticFile("/experiment.js", "text/javascript");
+        m.staticFile("/experiment.css", "text/css");
+        m.staticFile("/codemirror.js", "text/javascript");
+        m.staticFile("/clike.js", "text/javascript");
+        m.staticFile("/codemirror.css", "text/css");
+        m.staticFile("/jquery.min.js", "text/javascript");
+        m.staticFile("/favicon.ico", "image/vnd.microsoft.icon");
+        m.staticFile("/set_logo.png", "image/png");
         Spark.get("/login", m::login);
         Spark.post("/login", m::login);
         Spark.post("/overview", m::overview);
@@ -230,18 +231,18 @@ public class TrainingServerMain {
     	return new VelocityTemplateEngine().render(new ModelAndView(data, template));
     }
 
-    private void staticFile(final String path) {
-    	this.staticFile(path, path);
+    private void staticFile(final String path, String acceptType) {
+    	this.staticFile(path, acceptType, path);
 	}
 
-    private void staticFile(final String urlPath, final String cpPath) {
-    	Spark.get(urlPath, (final Request request, final Response response) -> this.getStaticFile(request, response, cpPath));
-    	Spark.head(urlPath, (final Request request, final Response response) -> this.getStaticFile(request, response, cpPath));
+    private void staticFile(final String urlPath, String acceptType, final String cpPath) {
+    	Spark.get(urlPath, acceptType, (final Request request, final Response response) -> this.getStaticFile(request, response, cpPath));
+    	Spark.head(urlPath, acceptType, (final Request request, final Response response) -> this.getStaticFile(request, response, cpPath));
     }
 
 	private Object getStaticFile(final Request request, final Response response, final String cpPath) throws IOException {
 		this.sendFile(cpPath, response.raw());
-		return null;
+		return response;
 	}
 
     private Object shutdown(final Request request, final Response response) {
