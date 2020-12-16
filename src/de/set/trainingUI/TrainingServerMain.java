@@ -92,9 +92,13 @@ public class TrainingServerMain {
         for (final String arg : args) {
         	taskDirectories.add(new File(arg));
         }
+        System.out.println("Task directories: " + taskDirectories);
         TaskDB.init(taskDirectories);
+        System.out.println("Loaded " + TaskDB.getInstance().getTaskCount() + " tasks");
+        System.out.println("Initializing Velocity ...");
         Velocity.init();
 
+        System.out.println("Starting server ...");
         final TrainingServerMain m = new TrainingServerMain();
         Spark.before((final Request request, final Response response) -> DataLog.log(0, "calling URL " + request.url()));
         m.staticFile("/", "/index.html.static");

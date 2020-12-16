@@ -179,4 +179,8 @@ public class TaskDB {
 		this.reloadTimer.cancel();
 	}
 
+	public int getTaskCount() {
+		return this.tasks.get().length;
+	}
+
 }
