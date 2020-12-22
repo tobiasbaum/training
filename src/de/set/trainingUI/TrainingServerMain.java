@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.velocity.app.Velocity;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.data.category.CategoryDataset;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
 
 import spark.ModelAndView;
@@ -126,6 +127,9 @@ public class TrainingServerMain {
         Spark.post("/registerProblemWithCurrentTask", m::registerProblemWithCurrentTask);
         Spark.get("/shutdown/" + SHUTDOWN_PASS, m::shutdown);
         Spark.get("/diagrams/tasksPerWeek.svg", m::diagramTasksPerWeek);
+        Spark.get("/diagrams/correctnessPerWeek.svg", m::diagramCorrectnessPerWeek);
+        Spark.get("/diagrams/durationPerWeek.svg", m::diagramDurationPerWeek);
+        Spark.get("/diagrams/trainingDurationPerWeek.svg", m::diagramTrainingDurationPerWeek);
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
         	@Override
@@ -273,17 +277,31 @@ public class TrainingServerMain {
     }
 
     private Object diagramTasksPerWeek(final Request request, final Response response) {
-    	final Trainee t = this.getUserFromCookie(request);
+    	return this.createDiagram(response, "bearbeitete Aufgaben", DiagramData.getTasksPerWeek(this.getUserFromCookie(request)));
+    }
 
+    private Object diagramCorrectnessPerWeek(final Request request, final Response response) {
+    	return this.createDiagram(response, "Anteil korrekt", DiagramData.getCorrectnessPerWeek(this.getUserFromCookie(request)));
+    }
+
+    private Object diagramDurationPerWeek(final Request request, final Response response) {
+    	return this.createDiagram(response, "Durchschnittszeit (s)", DiagramData.getDurationPerWeek(this.getUserFromCookie(request)));
+    }
+
+    private Object diagramTrainingDurationPerWeek(final Request request, final Response response) {
+    	return this.createDiagram(response, "Trainingsdauer (Min.)", DiagramData.getTrainingDurationPerWeek(this.getUserFromCookie(request)));
+    }
+
+	private String createDiagram(Response response, String dataTitle, CategoryDataset dataset) {
     	final int widthOfSVG = 600;
-    	final int heightOfSVG = 200;
+    	final int heightOfSVG = 220;
     	final SVGGraphics2D svg2d = new SVGGraphics2D(widthOfSVG, heightOfSVG);
 
-		final JFreeChart chart = ChartFactory.createLineChart(null, "KW", "bearbeitete Aufgaben", DiagramData.getTasksPerWeek(t));
+		final JFreeChart chart = ChartFactory.createLineChart(null, "KW", dataTitle, dataset);
 		chart.removeLegend();
     	chart.draw(svg2d,new Rectangle2D.Double(0, 0, widthOfSVG, heightOfSVG));
 
     	response.type("image/svg+xml");
     	return svg2d.getSVGElement();
-    }
+	}
 }

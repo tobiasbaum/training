@@ -104,4 +104,8 @@ public class Trial {
 		return this.endTime != null && !this.isIncorrect();
 	}
 
+	public boolean isFinished() {
+		return this.endTime != null;
+	}
+
 }

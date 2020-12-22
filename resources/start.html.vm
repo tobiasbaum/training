@@ -28,6 +28,9 @@
    </form>
 </td>
 <td>
+<img src="diagrams/trainingDurationPerWeek.svg" /><br/>
+<img src="diagrams/correctnessPerWeek.svg" /><br/>
+<img src="diagrams/durationPerWeek.svg" /><br/>
 <img src="diagrams/tasksPerWeek.svg" />
 </td>
 </tr>
