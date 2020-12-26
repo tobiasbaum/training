@@ -90,53 +90,60 @@ public class TrainingServerMain {
     }
 
     public static void main(final String[] args) throws Exception {
-        if (TrainingServerMain.class.getResource("/index.html.static") == null) {
-            System.out.println("something is wrong with the classpath");
-            return;
-        }
-        final List<File> taskDirectories = new ArrayList<>();
-        for (final String arg : args) {
-        	taskDirectories.add(new File(arg));
-        }
-        System.out.println(new Date() + " Task directories: " + taskDirectories);
-        TaskDB.init(taskDirectories);
-        System.out.println(new Date() + " Loaded " + TaskDB.getInstance().getTaskCount() + " tasks");
-        System.out.println(new Date() + " Initializing Velocity ...");
-        Velocity.init();
+    	try {
+	        if (TrainingServerMain.class.getResource("/index.html.static") == null) {
+	            System.out.println("something is wrong with the classpath");
+	            System.exit(-1);
+	            return;
+	        }
+	        final List<File> taskDirectories = new ArrayList<>();
+	        for (final String arg : args) {
+	        	taskDirectories.add(new File(arg));
+	        }
+	        System.out.println(new Date() + " Task directories: " + taskDirectories);
+	        TaskDB.init(taskDirectories);
+	        System.out.println(new Date() + " Loaded " + TaskDB.getInstance().getTaskCount() + " tasks");
+	        System.out.println(new Date() + " Initializing Velocity ...");
+	        Velocity.init();
 
-        System.out.println(new Date() + " Starting server ...");
-        final TrainingServerMain m = new TrainingServerMain();
-        Spark.before((final Request request, final Response response) -> DataLog.log(0, "calling URL " + request.url()));
-        m.staticFile("/", "text/html", "/index.html.static");
-        m.staticFile("/index.html", "text/html", "/index.html.static");
-        m.staticFile("/experiment.js", "text/javascript");
-        m.staticFile("/experiment.css", "text/css");
-        m.staticFile("/codemirror.js", "text/javascript");
-        m.staticFile("/clike.js", "text/javascript");
-        m.staticFile("/codemirror.css", "text/css");
-        m.staticFile("/jquery.min.js", "text/javascript");
-        m.staticFile("/favicon.ico", "image/vnd.microsoft.icon");
-        m.staticFile("/set_logo.png", "image/png");
-        Spark.get("/login", m::login);
-        Spark.post("/login", m::login);
-        Spark.post("/overview", m::overview);
-        Spark.post("/nextTask", m::nextTask);
-        Spark.post("/checkTask", m::checkTask);
-        Spark.post("/solveTask", m::solveTask);
-        Spark.post("/retryTask", m::retryTask);
-        Spark.post("/registerProblemWithCurrentTask", m::registerProblemWithCurrentTask);
-        Spark.get("/shutdown/" + SHUTDOWN_PASS, m::shutdown);
-        Spark.get("/diagrams/tasksPerWeek.svg", m::diagramTasksPerWeek);
-        Spark.get("/diagrams/correctnessPerWeek.svg", m::diagramCorrectnessPerWeek);
-        Spark.get("/diagrams/durationPerWeek.svg", m::diagramDurationPerWeek);
-        Spark.get("/diagrams/trainingDurationPerWeek.svg", m::diagramTrainingDurationPerWeek);
+	        System.out.println(new Date() + " Starting server ...");
+	        final TrainingServerMain m = new TrainingServerMain();
+	        Spark.before((final Request request, final Response response) -> DataLog.log(0, "calling URL " + request.url()));
+	        m.staticFile("/", "text/html", "/index.html.static");
+	        m.staticFile("/index.html", "text/html", "/index.html.static");
+	        m.staticFile("/experiment.js", "text/javascript");
+	        m.staticFile("/experiment.css", "text/css");
+	        m.staticFile("/codemirror.js", "text/javascript");
+	        m.staticFile("/clike.js", "text/javascript");
+	        m.staticFile("/codemirror.css", "text/css");
+	        m.staticFile("/jquery.min.js", "text/javascript");
+	        m.staticFile("/favicon.ico", "image/vnd.microsoft.icon");
+	        m.staticFile("/set_logo.png", "image/png");
+	        Spark.get("/login", m::login);
+	        Spark.post("/login", m::login);
+	        Spark.post("/overview", m::overview);
+	        Spark.post("/nextTask", m::nextTask);
+	        Spark.post("/checkTask", m::checkTask);
+	        Spark.post("/solveTask", m::solveTask);
+	        Spark.post("/retryTask", m::retryTask);
+	        Spark.post("/registerProblemWithCurrentTask", m::registerProblemWithCurrentTask);
+	        Spark.get("/shutdown/" + SHUTDOWN_PASS, m::shutdown);
+	        Spark.get("/diagrams/tasksPerWeek.svg", m::diagramTasksPerWeek);
+	        Spark.get("/diagrams/correctnessPerWeek.svg", m::diagramCorrectnessPerWeek);
+	        Spark.get("/diagrams/durationPerWeek.svg", m::diagramDurationPerWeek);
+	        Spark.get("/diagrams/trainingDurationPerWeek.svg", m::diagramTrainingDurationPerWeek);
 
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-        	@Override
-			public void run() {
-        		cleanUp();
-        	}
-        });
+	        Runtime.getRuntime().addShutdownHook(new Thread() {
+	        	@Override
+				public void run() {
+	        		cleanUp();
+	        	}
+	        });
+	        System.out.println(new Date() + " Server up and running");
+    	} catch (final Throwable t) {
+    		t.printStackTrace();
+    		System.exit(-2);
+    	}
     }
 
     private static void cleanUp() {
