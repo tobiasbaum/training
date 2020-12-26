@@ -1,0 +1,15 @@
+- name: include vaulted variables
+  hosts: trainingUi
+  tasks:
+    - include_vars: ./vault_vars
+
+- name: update training tasks
+  hosts: trainingUi
+  tasks:
+    - name: sync tasks
+      ansible.posix.synchronize:
+        src: ~/eclipse-workspace/training-tasks/
+        dest: /home/trainingUi/tasks
+        recursive: yes
+        delete: yes
+

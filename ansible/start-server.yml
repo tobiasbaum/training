@@ -1,0 +1,54 @@
+- name: include vaulted variables
+  hosts: trainingUi
+  tasks:
+    - include_vars: ./vault_vars
+
+- name: install trainingUi
+  hosts: trainingUi
+  tasks:
+    - name: Get running trainingUI processes list from remote host
+      ignore_errors: yes
+      shell: "ps -few | grep trainingUI | grep -v grep | awk '{print $2}'"
+      register: running_processes
+    - name: Kill running processes
+      ignore_errors: yes
+      command: "kill {{ item }}"
+      with_items: "{{ running_processes.stdout_lines }}"
+    - wait_for:
+        path: "/proc/{{ item }}/status"
+        state: absent
+      with_items: "{{ running_processes.stdout_lines }}"
+      ignore_errors: yes
+
+    - name: sync binaries
+      ansible.posix.synchronize:
+        src: ~/eclipse-workspace/trainingUI/build/install/trainingUI
+        dest: ~/trainingUI
+        recursive: yes
+        delete: yes
+        
+    - name: make sure there is no old log file
+      file:
+        path: ~/trainingUI/trainingUI/trainingUi.log
+        state: absent
+
+    - name: make sure the users directory exists
+      file:
+        path: ~/users/
+        state: directory
+
+    - name: start trainingUI
+      shell: nohup ~/trainingUI/trainingUI/bin/trainingUI ~/tasks/handcrafted ~/tasks/mutRev >~/trainingUI/trainingUI/trainingUi.log 2>&1 &
+      environment:
+        JAVA_HOME: "{{ansible_local.java.general.home}}"
+        PATH: "{{ansible_env.PATH}}:{{ansible_local.java.general.home}}"
+        JDK_JAVA_OPTIONS: "-Doauth.client.secret={{oauthSecret}}"
+
+    - name: wait for successful startup
+      wait_for:
+        path: ~/trainingUI/trainingUI/trainingUi.log
+        search_regex: Server up and running
+        state: present
+        timeout: 60
+        
+

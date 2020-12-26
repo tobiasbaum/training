@@ -1,0 +1,38 @@
+- name: include vaulted variables
+  hosts: trainingUi
+  tasks:
+    - include_vars: ./vault_vars
+
+- name: install java
+  hosts: trainingUi
+  roles:
+    - role: gantsign.java
+      java_version: '15'
+      
+- name: install fontconfig (needed for java swing)
+  hosts: trainingUi
+  tasks:
+    - name: install fontconfig package
+      become: yes
+      ansible.builtin.package:
+        name: fontconfig
+        state: present
+      
+- name: install rsync
+  hosts: trainingUi
+  tasks:
+    - name: install rsync package
+      become: yes
+      ansible.builtin.package:
+        name: rsync
+        state: present
+      
+- name: install git
+  hosts: trainingUi
+  tasks:
+    - name: install git package
+      become: yes
+      ansible.builtin.package:
+        name: git
+        state: present
+      
