@@ -28,6 +28,9 @@ public class OAuth {
 	}
 
 	public String login(Request request) throws IOException {
+		if (System.getProperty("de.set.trainingUi.skipAuth") != null) {
+			return System.getProperty("de.set.trainingUi.skipAuth");
+		}
     	final String savedState = request.cookie("savedState");
         final String requestState = request.queryParams("state");
         if (savedState == null || !savedState.equals(requestState)) {
