@@ -17,8 +17,12 @@ public abstract class Task {
     private final String id;
 
     public Task(final Properties p, final File taskDirectory) {
-        this.family = p.getProperty("type") + "." + p.getProperty("family");
-        this.id = taskDirectory.getName();
+        this(p.getProperty("type") + "." + p.getProperty("family"), taskDirectory.getName());
+    }
+
+    public Task(final String family, String id) {
+        this.family = family;
+        this.id = id;
     }
 
     public boolean isSameFamily(final Task task) {

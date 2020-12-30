@@ -24,7 +24,8 @@ public class Trial {
     	if (parts.length != 5) {
     		throw new RuntimeException("parse error at " + serialized);
     	}
-    	this.task = tasks.getTaskById(parts[0]);
+    	final Task loadedTask = tasks.getTaskById(parts[0]);
+    	this.task = loadedTask != null ? loadedTask : new MissingTask(parts[0]);
     	this.startTime = this.parseInstant(parts[1]);
     	this.retryCount = Integer.parseInt(parts[2]);
     	this.endTime = this.parseInstant(parts[3]);
@@ -48,8 +49,7 @@ public class Trial {
     }
 
     public static Trial deserialize(String serialized, TaskDB tasks) {
-    	final Trial t = new Trial(serialized, tasks);
-    	return t.task == null ? null : t;
+    	return new Trial(serialized, tasks);
     }
 
     public Task getTask() {
