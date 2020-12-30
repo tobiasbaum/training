@@ -6,6 +6,7 @@ import java.util.Random;
 import java.util.Set;
 
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.BreakStmt;
 import com.github.javaparser.ast.stmt.ContinueStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
@@ -70,7 +71,8 @@ final class RemoveStatementMutation extends Mutation {
     }
 
 	private static boolean hasSiblings(final Statement stmt) {
-		return stmt.getParentNode().get().getChildNodes().size() > 1;
+		return stmt.getParentNode().get().getChildNodes().size() > 1
+			&& stmt.getParentNode().get() instanceof BlockStmt;
 	}
 
 }

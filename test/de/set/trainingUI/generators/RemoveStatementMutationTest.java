@@ -334,4 +334,17 @@ public class RemoveStatementMutationTest {
         checkMutationCount(input, RemoveStatementMutation.class, 4);
     }
 
+    @Test
+    public void testLambda() {
+    	final String input =
+	        "class A {\n"
+	    	+ "	 public static<T> PriorityQueue<?> foo() {\n"
+	    	+ "		PriorityQueue<?> ret = new PriorityQueue<List<Predicate<T>>>(\n"
+	    	+ "				(List<Predicate<T>> l1, List<Predicate<T>> l2) -> Integer.compare(l2.size(), l1.size()));\n"
+	    	+ "		return ret;\n"
+	    	+ "    }\n"
+	    	+ "}\n";
+        checkMutationCount(input, RemoveStatementMutation.class, 0);
+    }
+
 }

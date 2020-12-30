@@ -70,6 +70,7 @@ public class MutationGenerator extends Generator {
     	protected static void addBeginToEnd(final Set<Integer> lines, Node node) {
     		final int start = node.getBegin().get().line;
             final int end = node.getEnd().get().line;
+            lines.add(start);
             for (int i = start; i < end; i++) {
                 lines.add(i);
             }
