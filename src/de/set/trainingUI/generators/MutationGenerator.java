@@ -36,6 +36,7 @@ import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
 
 import de.set.trainingUI.RemarkType;
+import de.set.trainingUI.generators.SwapCalledMethodMutation.SwapMethodData;
 import de.set.trainingUI.generators.SwapVariableExpressionMutation.SwapVariableData;
 
 @SuppressWarnings("nls")
@@ -73,6 +74,28 @@ public class MutationGenerator extends Generator {
         }
 
         public abstract int getAnchorLine();
+
+		public abstract boolean isStillValid();
+
+		protected static boolean isInCU(Node n) {
+			return getCU(n) != null;
+		}
+
+		protected static boolean isInSameCU(Node n1, Node n2) {
+			return getCU(n1) == getCU(n2);
+		}
+
+		private static CompilationUnit getCU(Node n) {
+			if (n instanceof CompilationUnit) {
+				return (CompilationUnit) n;
+			} else {
+				if (n.getParentNode().isPresent()) {
+					return getCU(n.getParentNode().get());
+				} else {
+					return null;
+				}
+			}
+		}
 
     }
 
@@ -140,15 +163,19 @@ public class MutationGenerator extends Generator {
         Collections.shuffle(mutations, rand);
         final List<Mutation> chosen = mutations.subList(0, count);
         this.removeInSameLine(chosen);
+        final List<Mutation> applied = new ArrayList<>();
         for (final Mutation m : chosen) {
-            m.apply(rand);
+        	if (m.isStillValid()) {
+        		m.apply(rand);
+        		applied.add(m);
+        	}
         }
         int i = 1;
-        for (final Mutation m : chosen) {
+        for (final Mutation m : applied) {
             m.createRemark(i++, taskProperties);
         }
         taskProperties.put("usedMutations",
-        		chosen.stream().map((Mutation m) -> m.getClass().getName()).collect(Collectors.joining(",")));
+        		applied.stream().map((Mutation m) -> m.getClass().getName()).collect(Collectors.joining(",")));
         return ast.toString();
     }
 
@@ -210,6 +237,7 @@ public class MutationGenerator extends Generator {
 
     static List<Mutation> findPossibleMutations(final CompilationUnit ast) {
         final SwapVariableData swapVariableData = SwapVariableExpressionMutation.analyze(ast);
+        final SwapMethodData swapMethodData = SwapCalledMethodMutation.analyze(ast);
         final List<Mutation> ret = new ArrayList<>();
         ast.accept(new GenericVisitorAdapter<Void, Void>() {
             @Override
@@ -287,6 +315,9 @@ public class MutationGenerator extends Generator {
                 super.visit(n, v);
                 if (RemovePartFromExpressionChainMutation.isApplicable(n)) {
                     ret.add(new RemovePartFromExpressionChainMutation(n));
+                }
+                if (swapMethodData.isApplicable(n)) {
+                    ret.add(new SwapCalledMethodMutation(swapMethodData, n));
                 }
                 return null;
             }

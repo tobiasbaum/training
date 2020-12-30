@@ -23,6 +23,11 @@ public class DeleteSynchronizedMutation extends Mutation {
     	return field.hasModifier(Keyword.SYNCHRONIZED);
     }
 
+	@Override
+	public boolean isStillValid() {
+		return isInCU(this.method);
+	}
+
     @Override
     public void apply(final Random r) {
     	this.method.removeModifier(Keyword.SYNCHRONIZED);

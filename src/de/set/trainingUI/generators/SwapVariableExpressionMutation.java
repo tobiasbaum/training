@@ -102,6 +102,11 @@ public class SwapVariableExpressionMutation extends Mutation {
         this.possibleOtherNames = data.getPossibleOtherNames(n);
     }
 
+	@Override
+	public boolean isStillValid() {
+		return isInCU(this.expr);
+	}
+
     @Override
     public void apply(final Random r) {
         this.expr.setName(pickRandom(this.possibleOtherNames, r));

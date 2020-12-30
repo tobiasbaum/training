@@ -16,7 +16,9 @@ public class MutateFromSource {
 
 	public static void main(String[] args) throws Exception {
 		final File baseDir = new File("/home/ich/eclipse-workspace/LearningSnippets/src");
-		final MutateFromSource m = new MutateFromSource(new File("mutRevTasks"), new Random(1234));
+		final File target = new File("mutRevTasks");
+		target.mkdirs();
+		final MutateFromSource m = new MutateFromSource(target, new Random(1234));
 		m.traverseFiles(baseDir);
 	}
 

@@ -20,6 +20,11 @@ public class RemoveTernaryMutation extends Mutation {
 	}
 
 	@Override
+	public boolean isStillValid() {
+		return isInCU(this.expr);
+	}
+
+	@Override
 	public void apply(Random r) {
 		Expression replacement;
 		if (r.nextBoolean()) {

@@ -19,6 +19,11 @@ public class InvertConditionalExprMutation extends Mutation {
 		this.expr = n;
 	}
 
+	@Override
+	public boolean isStillValid() {
+		return isInCU(this.expr);
+	}
+
     @Override
     public void apply(final Random r) {
 		final Expression t = this.expr.getThenExpr();

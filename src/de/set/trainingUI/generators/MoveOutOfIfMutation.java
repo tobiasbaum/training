@@ -44,6 +44,11 @@ public class MoveOutOfIfMutation extends Mutation {
 		return determineTopmostIf(s) != null;
 	}
 
+	@Override
+	public boolean isStillValid() {
+		return isInCU(this.topmostIf) && isInSameCU(this.stmt, this.topmostIf);
+	}
+
 	private static IfStmt determineTopmostIf(IfStmt s) {
 		final Node parent = s.getParentNode().orElse(null);
 		if (parent instanceof BlockStmt) {

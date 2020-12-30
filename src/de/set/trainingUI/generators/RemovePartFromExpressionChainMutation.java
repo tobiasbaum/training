@@ -20,6 +20,11 @@ public class RemovePartFromExpressionChainMutation extends Mutation {
         this.n = n;
     }
 
+	@Override
+	public boolean isStillValid() {
+		return isInCU(this.n);
+	}
+
     @Override
     public void apply(final Random r) {
         this.n.replace(this.n.getScope().get());

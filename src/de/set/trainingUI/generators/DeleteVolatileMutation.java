@@ -23,6 +23,11 @@ public class DeleteVolatileMutation extends Mutation {
     	return field.hasModifier(Keyword.VOLATILE);
     }
 
+	@Override
+	public boolean isStillValid() {
+		return isInCU(this.field);
+	}
+
     @Override
     public void apply(final Random r) {
     	this.field.removeModifier(Keyword.VOLATILE);

@@ -23,6 +23,11 @@ public class RemoveIfMutation extends Mutation {
         this.parent = this.n.getParentNode().get();
     }
 
+	@Override
+	public boolean isStillValid() {
+		return isInCU(this.n) && isInSameCU(this.n, this.parent);
+	}
+
     @Override
     public void apply(final Random r) {
     	if (this.n.hasElseBranch()) {
