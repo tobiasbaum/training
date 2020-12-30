@@ -66,7 +66,7 @@ final class InvertMutation extends Mutation {
     @Override
     public void createRemark(final int nbr, final Properties p) {
         final Set<Integer> lines = Collections.singleton(this.getAnchorLine());
-        this.setRemark(nbr, p, lines, RemarkType.WRONG_CONDITION, ".+", "die Bedingung muss invertiert werden");
+        this.setRemark(nbr, p, lines, RemarkType.WRONG_COMPARISON, ".+", "die Bedingung muss invertiert werden");
     }
 
 }

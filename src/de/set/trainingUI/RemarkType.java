@@ -1,8 +1,7 @@
 package de.set.trainingUI;
 
 public enum RemarkType {
-    WRONG_CONDITION("Fehlerhafte Bedingung"),
-    WRONG_COMPARISON("Fehlerhafter Vergleich"),
+    WRONG_COMPARISON("Fehlerhafte(r) Vergleich/Bedingung"),
     WRONG_CALCULATION("Fehlerhafte Berechnung"),
     MISSING_CODE("Fehlender Code"),
     OTHER_ALGORITHMIC_PROBLEM("Anderes algorithmisches Problem"),

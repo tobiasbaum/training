@@ -80,8 +80,6 @@ final class FlipOperatorMutation extends Mutation {
         switch (this.expr.getOperator()) {
         case AND:
         case OR:
-            type = RemarkType.WRONG_CONDITION;
-            break;
         case LESS:
         case GREATER:
         case GREATER_EQUALS:
