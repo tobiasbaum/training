@@ -5,6 +5,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.MessageDigest;
@@ -18,6 +21,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.StaticJavaParser;
@@ -156,9 +160,67 @@ public class MutationGenerator extends Generator {
         Files.write(dir.toPath().resolve("source"), s.getBytes("UTF-8"));
 
         try (FileOutputStream out = new FileOutputStream(new File(dir, "task.properties"))) {
-            taskProperties.store(out, null);
+            this.store(taskProperties, out);
         }
     }
+
+    private void store(Properties p, OutputStream out) throws IOException {
+    	final Set<String> keys = new TreeSet<>();
+    	for (final Object o : p.keySet()) {
+    		keys.add((String) o);
+    	}
+    	final Writer w = new OutputStreamWriter(out, "ISO-8859-1");
+    	for (final String key : keys) {
+    		w.write(escapeProperty(key));
+    		w.write('=');
+    		w.write(escapeProperty(p.getProperty(key)));
+    		w.write('\n');
+    	}
+    	w.flush();
+    }
+
+	private static String escapeProperty(String theString) {
+
+		final int len = theString.length();
+		final StringBuffer outBuffer = new StringBuffer(len * 2);
+
+		for (int x = 0; x < len; x++) {
+			final char aChar = theString.charAt(x);
+			switch (aChar) {
+			case '\t':
+				outBuffer.append('\\');
+				outBuffer.append('t');
+				break;
+			case '\n':
+				outBuffer.append('\\');
+				outBuffer.append('n');
+				break;
+			case '\r':
+				outBuffer.append('\\');
+				outBuffer.append('r');
+				break;
+			case '\f':
+				outBuffer.append('\\');
+				outBuffer.append('f');
+				break;
+			case '=':
+			case ':':
+			case '\\':
+			case '#':
+			case '!':
+				outBuffer.append('\\');
+				outBuffer.append(aChar);
+				break;
+			default:
+				if ((aChar < 0x0020) || (aChar > 0x007e)) {
+					outBuffer.append(String.format("\\%04x", Integer.valueOf(aChar)));
+				} else {
+					outBuffer.append(aChar);
+				}
+			}
+		}
+		return outBuffer.toString();
+	}
 
     private String mutateSource(final Properties taskProperties, final Random rand) throws FileNotFoundException {
         final CompilationUnit ast = this.parseNormalized(this.sourceFile);
