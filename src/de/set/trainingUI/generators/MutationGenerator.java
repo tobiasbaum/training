@@ -11,6 +11,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -50,14 +51,19 @@ public class MutationGenerator extends Generator {
 
         protected void setRemark(final int nbr, final Properties p, final Set<Integer> lines, final RemarkType type,
                 final String pattern, final String text) {
+        	this.setRemark(nbr, p, lines, EnumSet.of(type), pattern, text);
+        }
+
+        protected void setRemark(final int nbr, final Properties p, final Set<Integer> lines, final Set<RemarkType> type,
+                final String pattern, final String text) {
             assert lines.contains(this.getAnchorLine());
             p.setProperty("remark." + nbr + ".pattern",
                     lines.stream().map((final Integer i) -> i.toString()).collect(Collectors.joining(","))
-                    + ";" + type.name()
+                    + ";" + type.stream().map((final RemarkType t) -> t.name()).collect(Collectors.joining(","))
                     + ";" + pattern);
             p.setProperty("remark." + nbr + ".example",
                     this.getAnchorLine()
-                    + ";" + type.name()
+                    + ";" + type.iterator().next().name()
                     + ";" + text);
         }
 

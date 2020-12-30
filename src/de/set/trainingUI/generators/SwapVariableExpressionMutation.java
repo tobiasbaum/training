@@ -2,6 +2,7 @@ package de.set.trainingUI.generators;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -12,6 +13,8 @@ import com.github.javaparser.Position;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.expr.BinaryExpr;
+import com.github.javaparser.ast.expr.BinaryExpr.Operator;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
@@ -115,11 +118,33 @@ public class SwapVariableExpressionMutation extends Mutation {
     @Override
     public void createRemark(final int nbr, final Properties p) {
         final Set<Integer> lines = Collections.singleton(this.getAnchorLine());
-        this.setRemark(nbr, p, lines, RemarkType.OTHER_ALGORITHMIC_PROBLEM, ".+",
+        final Set<RemarkType> types = EnumSet.of(RemarkType.OTHER_ALGORITHMIC_PROBLEM);
+        if (this.isInCalculation()) {
+        	types.add(RemarkType.WRONG_CALCULATION);
+        }
+        this.setRemark(nbr, p, lines, types, ".+",
                 "die Variable " + this.correctName + " muss statt " + this.expr.getNameAsString() + " verwendet werden");
     }
 
-    @Override
+    private boolean isInCalculation() {
+    	return this.expr.getParentNode().isPresent()
+			&& this.expr.getParentNode().get() instanceof BinaryExpr
+			&& isCalculation(((BinaryExpr) this.expr.getParentNode().get()).getOperator());
+	}
+
+	private static boolean isCalculation(Operator operator) {
+		switch (operator) {
+		case PLUS:
+		case MINUS:
+		case MULTIPLY:
+		case DIVIDE:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	@Override
     public int getAnchorLine() {
         return this.expr.getBegin().get().line;
     }

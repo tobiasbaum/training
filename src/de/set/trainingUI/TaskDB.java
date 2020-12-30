@@ -72,19 +72,23 @@ public class TaskDB {
     }
 
     private Task loadTask(final File taskDirectory) throws IOException {
-        final Properties p = new Properties();
-        try (InputStream s = new FileInputStream(new File(taskDirectory, "task.properties"))) {
-            p.load(s);
-        }
-        final String type = p.getProperty("type");
-        switch (type) {
-        case "understanding":
-            return UnderstandingTask.load(p, taskDirectory);
-        case "review":
-            return DefectFindTask.load(p, taskDirectory);
-        default:
-            throw new RuntimeException("unknown task type " + type + " in " + taskDirectory);
-        }
+    	try {
+	        final Properties p = new Properties();
+	        try (InputStream s = new FileInputStream(new File(taskDirectory, "task.properties"))) {
+	            p.load(s);
+	        }
+	        final String type = p.getProperty("type");
+	        switch (type) {
+	        case "understanding":
+	            return UnderstandingTask.load(p, taskDirectory);
+	        case "review":
+	            return DefectFindTask.load(p, taskDirectory);
+	        default:
+	            throw new RuntimeException("unknown task type " + type + " in " + taskDirectory);
+	        }
+    	} catch (final Exception e) {
+    		throw new IOException("Problem parsing " + taskDirectory, e);
+    	}
     }
 
     public static void init(List<File> paths) {
