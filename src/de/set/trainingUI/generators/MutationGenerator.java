@@ -213,7 +213,7 @@ public class MutationGenerator extends Generator {
 				break;
 			default:
 				if ((aChar < 0x0020) || (aChar > 0x007e)) {
-					outBuffer.append(String.format("\\%04x", Integer.valueOf(aChar)));
+					outBuffer.append(String.format("\\u%04x", Integer.valueOf(aChar)));
 				} else {
 					outBuffer.append(aChar);
 				}
