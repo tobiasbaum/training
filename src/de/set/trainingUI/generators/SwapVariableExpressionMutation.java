@@ -122,6 +122,9 @@ public class SwapVariableExpressionMutation extends Mutation {
         if (this.isInCalculation()) {
         	types.add(RemarkType.WRONG_CALCULATION);
         }
+        if (this.isInComparison()) {
+        	types.add(RemarkType.WRONG_COMPARISON);
+        }
         this.setRemark(nbr, p, lines, types, ".+",
                 "die Variable " + this.correctName + " muss statt " + this.expr.getNameAsString() + " verwendet werden");
     }
@@ -132,12 +135,35 @@ public class SwapVariableExpressionMutation extends Mutation {
 			&& isCalculation(((BinaryExpr) this.expr.getParentNode().get()).getOperator());
 	}
 
+    private boolean isInComparison() {
+    	return this.expr.getParentNode().isPresent()
+			&& this.expr.getParentNode().get() instanceof BinaryExpr
+			&& isComparison(((BinaryExpr) this.expr.getParentNode().get()).getOperator());
+	}
+
 	private static boolean isCalculation(Operator operator) {
 		switch (operator) {
 		case PLUS:
 		case MINUS:
 		case MULTIPLY:
 		case DIVIDE:
+		case REMAINDER:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	private static boolean isComparison(Operator operator) {
+		switch (operator) {
+		case LESS:
+		case LESS_EQUALS:
+		case GREATER:
+		case GREATER_EQUALS:
+		case EQUALS:
+		case NOT_EQUALS:
+		case OR:
+		case AND:
 			return true;
 		default:
 			return false;
