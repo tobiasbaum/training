@@ -19,6 +19,7 @@ public class DataLog {
             final byte[] msg = fullString.getBytes("UTF-8");
             synchronized (LOCK) {
             	if (stream != null && time - lastOpen > ONE_DAY) {
+            		stream.write((experimentId + ";" + time + ";switching to next log\n").getBytes("UTF-8"));
             		stream.close();
             		stream = null;
             	}
