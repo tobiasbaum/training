@@ -11,9 +11,12 @@ import java.util.Set;
 
 public class ReviewResultRating implements AnnotatedSolution {
 
+	private final int ADDITIONAL_REMARK_THRESHOLD = 5;
+
 	private final List<RemarkPattern> expectedRemarks;
 	private final Set<RemarkPattern> unmatchedRemarks;
 	private final Map<Remark, Boolean> annotatedInput;
+	private int additionalRemarks;
 
 	public ReviewResultRating(List<RemarkPattern> expectedRemarks, List<Remark> actualRemarks) {
 		this.expectedRemarks = expectedRemarks;
@@ -22,6 +25,9 @@ public class ReviewResultRating implements AnnotatedSolution {
 		this.annotatedInput = new LinkedHashMap<>();
 		for (final Remark actual : actualRemarks) {
 			final RemarkPattern match = findBestMatch(this.unmatchedRemarks, actual);
+			if (match == null) {
+				this.additionalRemarks++;
+			}
 			this.unmatchedRemarks.remove(match);
 			this.annotatedInput.put(actual, match != null);
 		}
@@ -48,7 +54,7 @@ public class ReviewResultRating implements AnnotatedSolution {
 
 	@Override
 	public boolean isCorrect() {
-		return this.unmatchedRemarks.isEmpty();
+		return this.unmatchedRemarks.isEmpty() && this.additionalRemarks < this.ADDITIONAL_REMARK_THRESHOLD;
 	}
 
 	public Map<Remark, Boolean> getAnnotatedSolution() {
