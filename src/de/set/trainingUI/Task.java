@@ -65,6 +65,9 @@ public abstract class Task {
 
     protected abstract AnnotatedSolution checkSolution(Request request);
 
+    /**
+     * Returns an estimate of the task's difficulty. Larger numbers mean more difficult.
+     */
     protected abstract double estimateDifficulty();
 
 }

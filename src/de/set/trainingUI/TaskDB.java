@@ -147,8 +147,8 @@ public class TaskDB {
                 return sample.get(sample.size() - 1);
             }
         } else {
-        	// if this is the first trial, choose a medium difficulty
-        	return getMiddle(sample);
+        	// if this is the first trial, choose an easy task
+        	return sample.get(0);
         }
     }
 
