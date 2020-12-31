@@ -30,6 +30,11 @@
 			  gutters: ["remarks", "CodeMirror-linenumbers"]
 			});
 			cm.on("gutterClick", handleGutterClick);
+        	addToLog('view loaded,user agent=' + navigator.userAgent);
+			addToLog('window size ' + $(window).width() + ' x ' + $(window).height());
+			addToLog('screen size ' + screen.width + ' x ' + screen.height);
+			window.onscroll = function(ev) {scrollHandler()};
+			setupMouseAndKeyboardLogging();
 		});
 	</script>
 </head>
@@ -44,6 +49,7 @@
     <form action="checkTask" method="post">
 		<button title="Ergebnis prüfen" type="submit">Aufgabe prüfen ►</button>
 		<textarea id="remarks" name="remarks" style="display:none"></textarea>
+        <textarea id="logContent" name="logContent" style="display:none"></textarea>
    	</form>
    	
    	<div id="remarkInput" class="remarkInput" style="display:none">

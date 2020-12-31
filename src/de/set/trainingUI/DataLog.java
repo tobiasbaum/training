@@ -3,6 +3,8 @@ package de.set.trainingUI;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class DataLog {
 
@@ -12,14 +14,18 @@ public class DataLog {
     private static OutputStream stream;
     private static long lastOpen;
 
-    public static void log(final long experimentId, final String message) {
+    private static AtomicLong userCounter = new AtomicLong(System.currentTimeMillis());
+    private static ConcurrentHashMap<String, Long> userPseudonyms = new ConcurrentHashMap<String, Long>();
+
+    public static void log(final String user, final String message) {
         try {
+        	final long hashedUser = pseudonomize(user);
             final long time = System.currentTimeMillis();
-            final String fullString = experimentId + ";" + time + ";" + message.replace('\n', ' ').replace('\r', ' ') + "\n";
+            final String fullString = hashedUser + ";" + time + ";" + message.replace('\n', ' ').replace('\r', ' ') + "\n";
             final byte[] msg = fullString.getBytes("UTF-8");
             synchronized (LOCK) {
             	if (stream != null && time - lastOpen > ONE_DAY) {
-            		stream.write((experimentId + ";" + time + ";switching to next log\n").getBytes("UTF-8"));
+            		stream.write((hashedUser + ";" + time + ";switching to next log\n").getBytes("UTF-8"));
             		stream.close();
             		stream = null;
             	}
@@ -35,7 +41,14 @@ public class DataLog {
         }
     }
 
-    public static void close() throws IOException {
+    private static long pseudonomize(String user) {
+    	if (user == null) {
+    		return 0;
+    	}
+		return userPseudonyms.computeIfAbsent(user, (String u) -> userCounter.getAndIncrement());
+	}
+
+	public static void close() throws IOException {
         synchronized (LOCK) {
             if (stream != null) {
                 stream.close();

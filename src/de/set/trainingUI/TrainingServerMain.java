@@ -108,7 +108,7 @@ public class TrainingServerMain {
 
 	        System.out.println(new Date() + " Starting server ...");
 	        final TrainingServerMain m = new TrainingServerMain();
-	        Spark.before((final Request request, final Response response) -> DataLog.log(0, "calling URL " + request.url()));
+	        Spark.before((final Request request, final Response response) -> DataLog.log(request.cookie(USER_NAME_COOKIE), "call " + request.url()));
 	        m.staticFile("/", "text/html", "/index.html.static");
 	        m.staticFile("/index.html", "text/html", "/index.html.static");
 	        m.staticFile("/experiment.js", "text/javascript");
@@ -139,6 +139,7 @@ public class TrainingServerMain {
 	        		cleanUp();
 	        	}
 	        });
+	        DataLog.log(null, "server started");
 	        System.out.println(new Date() + " Server up and running");
     	} catch (final Throwable t) {
     		t.printStackTrace();
@@ -217,6 +218,11 @@ public class TrainingServerMain {
 
     private Object checkTask(final Request request, final Response response) {
         final Trainee u = this.getUserFromCookie(request);
+
+        final String log = request.queryParams("logContent");
+        for (final String logLine : log.split("\n")) {
+            DataLog.log(u.getName(), "log from review;" + logLine);
+        }
 
         final Trial trial = u.checkCurrentTrialAnswer(request);
         final FeedbackStatistics stats = this.determineStatistics(trial);

@@ -41,8 +41,7 @@ function handleGutterClick(instance, lineNumber, gutter, clickEvent) {
     	prevMsg = "";
     }
     var realLineNumber = lineNumber + instance.options.firstLineNumber;
-	var lineId = instance.hunkId + ';' + realLineNumber;
-    addToLog('startEnterReviewRemark;' + lineId);
+    addToLog('startEnterReviewRemark;' + realLineNumber);
     
     $('#remarkMessage').val(prevMsg);
     $('#remarkLine').val(realLineNumber);
@@ -51,6 +50,7 @@ function handleGutterClick(instance, lineNumber, gutter, clickEvent) {
 }    
     
 function handleRemarkInputCancel() {
+    addToLog('cancelEnterReviewRemark');
     $('#remarkInput').hide();
 }
 
@@ -64,14 +64,17 @@ function handleRemarkInputOk() {
     	if (msg == "") {
 			remarkInputInstance.setGutterMarker(lineNumber, "remarks", null);
 			delete reviewRemarks[realLineNumber];
+            addToLog('deleteReviewRemark;' + realLineNumber);
     	} else {
     		info.gutterMarkers.remarks.title = msg;
     		reviewRemarks[realLineNumber] = {t: type, m: msg};
+            addToLog('changeReviewRemark;' + realLineNumber + ';' + type + ';' + msg);
     	}
     } else {
     	if (msg != "") {
 			remarkInputInstance.setGutterMarker(lineNumber, "remarks", makeMarker(msg));
     		reviewRemarks[realLineNumber] = {t: type, m: msg};
+            addToLog('addReviewRemark;' + realLineNumber + ';' + type + ';' + msg);
 		}
     }
 
@@ -189,6 +192,7 @@ function endReview() {
 }
 
 function addToLog(message) {
+	document.getElementById('logContent').value += Date.now().toString(36) + ';' + message.replace('\n', ' ') + '\n';
 }
 
 var lastScrollTime = 0;
@@ -197,7 +201,6 @@ function scrollHandler() {
 	var curTime = Date.now();
 	if (curTime - lastScrollTime > 200) {
     	addToLog('scroll;' + window.pageXOffset + ';' + window.pageYOffset);
-    	addToLog('visibleHunks;' + determineVisibleHunks());
     	lastScrollTime = curTime;
     }
 }
