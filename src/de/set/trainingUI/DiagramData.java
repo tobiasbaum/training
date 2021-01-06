@@ -24,7 +24,7 @@ public class DiagramData {
 		public Week(Instant instant) {
 			final ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
 			this.week = zdt.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
-			this.year = zdt.getYear();
+			this.year = zdt.get(IsoFields.WEEK_BASED_YEAR);
 		}
 
 		@Override
