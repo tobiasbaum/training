@@ -10,6 +10,7 @@ import java.util.Set;
 
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.BinaryExpr.Operator;
+import com.github.javaparser.ast.expr.StringLiteralExpr;
 
 import de.set.trainingUI.RemarkType;
 import de.set.trainingUI.generators.MutationGenerator.Mutation;
@@ -25,7 +26,7 @@ final class FlipOperatorMutation extends Mutation {
     }
 
     public static boolean isApplicable(final BinaryExpr ex) {
-        return ex.getOperator() != flipOperator(ex.getOperator(), new Random(42));
+        return ex.getOperator() != flipOperator(ex.getOperator(), new Random(42), containsString(ex));
     }
 
 	@Override
@@ -35,12 +36,22 @@ final class FlipOperatorMutation extends Mutation {
 
     @Override
     public void apply(final Random r) {
-        this.expr.setOperator(flipOperator(this.expr.getOperator(), r));
+        this.expr.setOperator(flipOperator(this.expr.getOperator(), r, containsString(this.expr)));
     }
 
-    private static Operator flipOperator(final Operator operator, final Random r) {
+    private static boolean containsString(BinaryExpr expr2) {
+		return expr2.getLeft() instanceof StringLiteralExpr
+			|| expr2.getRight() instanceof StringLiteralExpr;
+	}
+
+	private static Operator flipOperator(final Operator operator, final Random r, boolean withString) {
         switch (operator) {
         case PLUS:
+        	if (withString) {
+        		return operator;
+        	} else {
+                return another(r, operator, Operator.MINUS, Operator.PLUS);
+        	}
         case MINUS:
             return another(r, operator, Operator.MINUS, Operator.PLUS);
         case LESS:
