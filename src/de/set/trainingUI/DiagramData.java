@@ -17,37 +17,80 @@ import org.jfree.data.category.DefaultCategoryDataset;
 
 public class DiagramData {
 
+	public static final class Week implements Comparable<Week> {
+		private final int week;
+		private final int year;
+
+		public Week(Instant instant) {
+			final ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
+			this.week = zdt.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+			this.year = zdt.getYear();
+		}
+
+		@Override
+		public int compareTo(Week other) {
+			final int cmp = Integer.compare(this.year, other.year);
+			if (cmp != 0) {
+				return cmp;
+			}
+			return Integer.compare(this.week, other.week);
+		}
+
+		@Override
+		public int hashCode() {
+			return 52 * this.year + this.week;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (!(o instanceof Week)) {
+				return false;
+			}
+			return this.compareTo((Week) o) == 0;
+		}
+
+		@Override
+		public String toString() {
+			if (this.week == 1) {
+				return this.week + "/" + this.year;
+			} else {
+				return Integer.toString(this.week);
+			}
+		}
+
+	}
+
 	public static CategoryDataset getTasksPerWeek(Trainee t) {
-		final Map<String, List<Trial>> trialsPerWeek = getTrialsPerWeek(t);
+		final Map<Week, List<Trial>> trialsPerWeek = getTrialsPerWeek(t);
     	final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-    	for (final Entry<String, List<Trial>> e : trialsPerWeek.entrySet()) {
+    	for (final Entry<Week, List<Trial>> e : trialsPerWeek.entrySet()) {
     		dataset.addValue(e.getValue().size(), "", e.getKey());
     	}
 		return dataset;
 	}
 
 	public static CategoryDataset getCorrectnessPerWeek(Trainee t) {
-		final Map<String, List<Trial>> trialsPerWeek = getTrialsPerWeek(t);
+		final Map<Week, List<Trial>> trialsPerWeek = getTrialsPerWeek(t);
     	final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-    	for (final Entry<String, List<Trial>> e : trialsPerWeek.entrySet()) {
+    	for (final Entry<Week, List<Trial>> e : trialsPerWeek.entrySet()) {
     		dataset.addValue(determineRelativeCorrectness(e.getValue()), "", e.getKey());
     	}
 		return dataset;
 	}
 
 	public static CategoryDataset getDurationPerWeek(Trainee t) {
-		final Map<String, List<Trial>> trialsPerWeek = getTrialsPerWeek(t);
+		final Map<Week, List<Trial>> trialsPerWeek = getTrialsPerWeek(t);
     	final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-    	for (final Entry<String, List<Trial>> e : trialsPerWeek.entrySet()) {
+    	for (final Entry<Week, List<Trial>> e : trialsPerWeek.entrySet()) {
     		dataset.addValue(determineTrimmedMeanCorrectDuration(e.getValue()), "", e.getKey());
     	}
 		return dataset;
 	}
 
 	public static CategoryDataset getTrainingDurationPerWeek(Trainee t) {
-		final Map<String, List<Trial>> trialsPerWeek = getTrialsPerWeek(t);
+		final Map<Week, List<Trial>> trialsPerWeek = getTrialsPerWeek(t);
     	final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-    	for (final Entry<String, List<Trial>> e : trialsPerWeek.entrySet()) {
+    	for (final Entry<Week, List<Trial>> e : trialsPerWeek.entrySet()) {
     		dataset.addValue(determineDurationSum(e.getValue()), "", e.getKey());
     	}
 		return dataset;
@@ -103,13 +146,13 @@ public class DiagramData {
 		return sum / 60.0;
 	}
 
-	private static Map<String, List<Trial>> getTrialsPerWeek(Trainee trainee) {
-		final Map<String, List<Trial>> ret = new TreeMap<>();
+	private static Map<Week, List<Trial>> getTrialsPerWeek(Trainee trainee) {
+		final Map<Week, List<Trial>> ret = new TreeMap<>();
 
 		// Trials den Wochen zuordnen
 		Instant minDate = null;
 		for (final Trial trial : trainee.getTrials()) {
-			final String week = getWeek(trial.getStartTime());
+			final Week week = new Week(trial.getStartTime());
 			List<Trial> list = ret.get(week);
 			if (list == null) {
 				list = new ArrayList<>();
@@ -125,7 +168,7 @@ public class DiagramData {
 		if (minDate != null) {
 			final Instant now = Instant.now();
 			while (minDate.isBefore(now)) {
-				final String week = getWeek(minDate);
+				final Week week = new Week(minDate);
 				if (!ret.containsKey(week)) {
 					ret.put(week, Collections.emptyList());
 				}
@@ -134,11 +177,6 @@ public class DiagramData {
 		}
 
 		return ret;
-	}
-
-	private static String getWeek(Instant instant) {
-		final ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
-		return String.format("%2d/%d", zdt.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR), zdt.getYear());
 	}
 
 }
