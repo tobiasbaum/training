@@ -79,6 +79,7 @@
     </table>
     <br/>
 #end
+<button onclick="registerTaskProblem()">Problem mit der Aufgabe melden</button><br/><br/>
 
 <p>
 Du trainierst seit $trainee.minutesInCurrentSession Minuten.
