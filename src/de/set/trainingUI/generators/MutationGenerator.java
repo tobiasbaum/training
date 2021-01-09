@@ -13,14 +13,12 @@ import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.StaticJavaParser;
@@ -156,60 +154,141 @@ public class MutationGenerator extends Generator {
 	}
 
     private String mutateSource(final Properties taskProperties, final Random rand) throws FileNotFoundException {
-        final CompilationUnit ast = this.parseNormalized(this.sourceFile);
-        final List<Mutation> mutations = findPossibleMutations(ast);
-        if (mutations.isEmpty()) {
-        	throw new IllegalArgumentException("no mutations found for " + this.sourceFile);
-        }
-        final int count = this.determineCount(rand, mutations.size());
-        Collections.shuffle(mutations, rand);
-        final List<Mutation> chosen = mutations.subList(0, count);
-        this.removeInSameLine(chosen);
-        final List<Mutation> applied = new ArrayList<>();
-        for (final Mutation m : chosen) {
-        	if (m.isStillValid()) {
-        		m.apply(rand);
-        		applied.add(m);
-        	}
-        }
-        int i = 1;
-        for (final Mutation m : applied) {
-            m.createRemark(i++, taskProperties);
+    	final int maxMutationCount = this.determineCount(rand);
+    	final String curFile = this.normalize(this.sourceFile);
+    	try {
+    		return applyMutations(taskProperties, rand, maxMutationCount, curFile, MutationGenerator::findPossibleMutations);
+    	} catch (final Exception e) {
+    		throw new RuntimeException("problem while mutating " + curFile, e);
+    	}
+    }
+
+	static String applyMutations(
+			final Properties taskProperties,
+			final Random rand,
+			int maxMutationCount,
+			String initialFile,
+			Function<CompilationUnit, List<Mutation>> mutationSource) {
+		int remainingMutationCount = maxMutationCount;
+		int firstAllowedLine = 0;
+		String curFile = initialFile;
+
+    	// to avoid that later mutations lead to changes in the line numbers or mutated code
+    	//  of earlier mutations, mutations are applied from top to bottom
+    	final List<Mutation> appliedMutations = new ArrayList<>();
+    	while (remainingMutationCount > 0) {
+            final CompilationUnit ast = StaticJavaParser.parse(curFile);
+            final List<Mutation> allMutations = mutationSource.apply(ast);
+    		final List<Mutation> withCorrectPos = selectWithCorrectPos(allMutations, firstAllowedLine);
+    		if (withCorrectPos.isEmpty()) {
+    			// no further mutations possible
+    			break;
+    		}
+    		final List<Mutation> randomSubset = selectRandomSubset(withCorrectPos, remainingMutationCount, rand);
+    		final Mutation toApply = pickTopmostMutation(randomSubset);
+    		toApply.apply(rand);
+    		final String nextFile = ast.toString();
+    		// It might happen that a mutation changes code before its anchor line and that
+    		//  this leads to a change too early in the file. Only use the mutation if this
+    		//  did not happen.
+    		final int firstChangedLine = findFirstChangedLine(curFile, nextFile);
+    		if (firstChangedLine >= firstAllowedLine) {
+    			appliedMutations.add(toApply);
+	    		toApply.createRemark(appliedMutations.size(), taskProperties);
+
+	    		firstAllowedLine = findStartOfUnchangedSuffix(curFile, nextFile);
+	    		if (firstAllowedLine <= 0) {
+	    			throw new IllegalArgumentException("mutation did not change anything: " + toApply + " in " + curFile);
+	    		}
+	    		// make sure that two remarks never occur in the same line
+	    		firstAllowedLine = Math.max(firstAllowedLine, toApply.getAnchorLine() + 1);
+	    		curFile = nextFile;
+    		}
+    		remainingMutationCount--;
+    	}
+        if (appliedMutations.isEmpty()) {
+        	throw new IllegalArgumentException("no mutations found for " + initialFile);
         }
         taskProperties.put("usedMutations",
-        		applied.stream().map((Mutation m) -> m.getClass().getName()).collect(Collectors.joining(",")));
-        return ast.toString();
+        		appliedMutations.stream().map((Mutation m) -> m.getClass().getName()).collect(Collectors.joining(",")));
+    	return curFile;
+	}
+
+    private static List<Mutation> selectWithCorrectPos(List<Mutation> mutations, int minPos) {
+    	final List<Mutation> ret = new ArrayList<Mutation>();
+    	for (final Mutation m : mutations) {
+    		if (m.getAnchorLine() >= minPos) {
+    			ret.add(m);
+    		}
+    	}
+		return ret;
+	}
+
+	private static int findFirstChangedLine(String curFile, String nextFile) {
+    	final String[] lines1 = curFile.split("\n");
+    	final String[] lines2 = nextFile.split("\n");
+    	final int minSize = Math.min(lines1.length, lines2.length);
+    	for (int prefixLength = 0; prefixLength < minSize; prefixLength++) {
+    		if (!lines1[prefixLength].equals(lines2[prefixLength])) {
+    			return prefixLength + 1;
+    		}
+    	}
+		return minSize + 1;
+	}
+
+	private static int findStartOfUnchangedSuffix(String curFile, String nextFile) {
+    	final String[] lines1 = curFile.split("\n");
+    	final String[] lines2 = nextFile.split("\n");
+    	final int minSize = Math.min(lines1.length, lines2.length);
+    	for (int suffixLength = 0; suffixLength < minSize; suffixLength++) {
+    		if (!lines1[lines1.length - 1 - suffixLength].equals(lines2[lines2.length - 1 - suffixLength])) {
+    			return lines2.length + 1 - suffixLength;
+    		}
+    	}
+		return 0;
+	}
+
+	private static List<Mutation> selectRandomSubset(List<Mutation> mutations, int maxCount, Random rand) {
+    	final Mutation[] copy = mutations.toArray(new Mutation[mutations.size()]);
+    	final int toPick = Math.min(maxCount, copy.length);
+    	final List<Mutation> ret = new ArrayList<Mutation>(toPick);
+    	while (ret.size() < toPick) {
+    		final int index = rand.nextInt(copy.length - ret.size());
+    		ret.add(copy[index]);
+    		copy[index] = copy[copy.length - ret.size()];
+    	}
+    	return ret;
+	}
+
+	private static Mutation pickTopmostMutation(List<Mutation> mutations) {
+    	Mutation topmost = null;
+    	int topmostPos = Integer.MAX_VALUE;
+    	for (final Mutation m : mutations) {
+    		if (m.getAnchorLine() < topmostPos) {
+    			topmost = m;
+    			topmostPos = m.getAnchorLine();
+    		}
+    	}
+		return topmost;
+	}
+
+    private int determineCount(final Random rand) {
+    	final double d = rand.nextDouble();
+    	if (d < 0.05) {
+    		return 3;
+    	} else if (d < 0.2) {
+    		return 2;
+    	} else {
+    		return 1;
+    	}
     }
 
-    private void removeInSameLine(final List<Mutation> chosen) {
-        final Set<Integer> usedLines = new HashSet<>();
-        final Iterator<Mutation> iter = chosen.iterator();
-        while (iter.hasNext()) {
-            final int line = iter.next().getAnchorLine();
-            if (usedLines.contains(line)) {
-                iter.remove();
-            } else {
-                usedLines.add(line);
-            }
-        }
-    }
-
-    private int determineCount(final Random rand, final int size) {
-        if (size <= 1 || rand.nextDouble() < 0.8) {
-            return 1;
-        }
-        if (size <= 2 || rand.nextDouble() < 0.8) {
-            return 2;
-        }
-        return 3;
-    }
-
-    private CompilationUnit parseNormalized(final File file) throws FileNotFoundException {
+    private String normalize(final File file) throws FileNotFoundException {
         final CompilationUnit parsed = StaticJavaParser.parse(file);
         //remove package statement, if contained
         parsed.removePackageDeclaration();
         //parse twice to normalize line numbers
-        return StaticJavaParser.parse(parsed.toString());
+        return parsed.toString();
     }
 
     private String hash(final String s) throws NoSuchAlgorithmException {

@@ -10,8 +10,6 @@ import org.junit.Test;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 
-import de.set.trainingUI.generators.MutationGenerator.Mutation;
-
 public class RemoveStatementMutationTest {
 
     private static CompilationUnit parse(final String fileContent) {

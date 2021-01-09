@@ -21,7 +21,6 @@ import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import de.set.trainingUI.RemarkType;
-import de.set.trainingUI.generators.MutationGenerator.Mutation;
 
 public class SwapCalledMethodMutation extends Mutation {
 

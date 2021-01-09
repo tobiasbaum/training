@@ -21,7 +21,6 @@ import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import de.set.trainingUI.RemarkType;
-import de.set.trainingUI.generators.MutationGenerator.Mutation;
 
 @SuppressWarnings("nls")
 public class SwapVariableExpressionMutation extends Mutation {
