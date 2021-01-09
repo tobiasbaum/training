@@ -22,6 +22,7 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ForEachStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
+import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import de.set.trainingUI.RemarkType;
@@ -141,7 +142,7 @@ public class SwapVariableExpressionMutation extends Mutation {
         if (this.isInCalculation()) {
         	types.add(RemarkType.WRONG_CALCULATION);
         }
-        if (this.isInComparison()) {
+        if (this.isBooleanExpr()) {
         	types.add(RemarkType.WRONG_COMPARISON);
         }
         this.setRemark(nbr, p, lines, types, ".+",
@@ -154,10 +155,19 @@ public class SwapVariableExpressionMutation extends Mutation {
 			&& isCalculation(((BinaryExpr) this.expr.getParentNode().get()).getOperator());
 	}
 
-    private boolean isInComparison() {
+    private boolean isBooleanExpr() {
+    	return this.isComparisonExpr() || this.isInIf();
+	}
+
+    private boolean isComparisonExpr() {
     	return this.expr.getParentNode().isPresent()
 			&& this.expr.getParentNode().get() instanceof BinaryExpr
 			&& isComparison(((BinaryExpr) this.expr.getParentNode().get()).getOperator());
+	}
+
+    private boolean isInIf() {
+    	return this.expr.getParentNode().isPresent()
+			&& this.expr.getParentNode().get() instanceof IfStmt;
 	}
 
 	private static boolean isCalculation(Operator operator) {

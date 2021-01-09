@@ -293,6 +293,30 @@ public class SwapVariableMutationTest {
     }
 
     @Test
+    public void testMutationInIfHasToTypes() {
+        final CompilationUnit u = parse(
+                "class A {\n"
+                + "    public void a(boolean a, boolean b) {\n"
+                + "        if (a) {\n"
+                + "        	System.out.println(\"x\");\n"
+                + "        }\n"
+                + "    }\n"
+                + "}\n");
+
+        final SwapVariableData data = SwapVariableExpressionMutation.analyze(u);
+        final List<NameExpr> applicable = new ArrayList<>();
+        findApplicableAndNonApplicable(u, data, applicable, new ArrayList<>());
+        final SwapVariableExpressionMutation mutation =
+                new SwapVariableExpressionMutation(data, applicable.get(0));
+        mutation.apply(new Random(123));
+        final Properties p = new Properties();
+        mutation.createRemark(42, p);
+        assertEquals("3;WRONG_COMPARISON,OTHER_ALGORITHMIC_PROBLEM;.+", p.getProperty("remark.42.pattern"));
+        assertEquals("3;WRONG_COMPARISON;die Variable a muss statt b verwendet werden", p.getProperty("remark.42.example"));
+        assertEquals(3, mutation.getAnchorLine());
+    }
+
+    @Test
     public void testMutationInConstructor() {
         for (int seed = 0; seed < 100; seed++) {
             final CompilationUnit u = parse(
