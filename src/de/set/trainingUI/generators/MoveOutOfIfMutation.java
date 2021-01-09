@@ -14,7 +14,6 @@ import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.Statement;
 
 import de.set.trainingUI.RemarkType;
-import de.set.trainingUI.generators.MutationGenerator.Mutation;
 
 public class MoveOutOfIfMutation extends Mutation {
 

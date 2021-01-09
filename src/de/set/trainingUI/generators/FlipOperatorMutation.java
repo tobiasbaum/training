@@ -13,7 +13,6 @@ import com.github.javaparser.ast.expr.BinaryExpr.Operator;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 
 import de.set.trainingUI.RemarkType;
-import de.set.trainingUI.generators.MutationGenerator.Mutation;
 
 final class FlipOperatorMutation extends Mutation {
 

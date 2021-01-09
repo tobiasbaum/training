@@ -14,7 +14,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -26,7 +25,6 @@ import java.util.stream.Collectors;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AssignExpr;
@@ -40,80 +38,15 @@ import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
 
-import de.set.trainingUI.RemarkType;
 import de.set.trainingUI.generators.SwapCalledMethodMutation.SwapMethodData;
 import de.set.trainingUI.generators.SwapVariableExpressionMutation.SwapVariableData;
 
 @SuppressWarnings("nls")
 public class MutationGenerator extends Generator {
 
-    abstract static class Mutation {
-
-        public abstract void apply(Random r);
-
-        public abstract void createRemark(final int nbr, Properties taskProperties);
-
-        protected void setRemark(final int nbr, final Properties p, final Set<Integer> lines, final RemarkType type,
-                final String pattern, final String text) {
-        	this.setRemark(nbr, p, lines, EnumSet.of(type), pattern, text);
-        }
-
-        protected void setRemark(final int nbr, final Properties p, final Set<Integer> lines, final Set<RemarkType> type,
-                final String pattern, final String text) {
-            assert lines.contains(this.getAnchorLine());
-            p.setProperty("remark." + nbr + ".pattern",
-                    lines.stream().map((final Integer i) -> i.toString()).collect(Collectors.joining(","))
-                    + ";" + type.stream().map((final RemarkType t) -> t.name()).collect(Collectors.joining(","))
-                    + ";" + pattern);
-            p.setProperty("remark." + nbr + ".example",
-                    this.getAnchorLine()
-                    + ";" + type.iterator().next().name()
-                    + ";" + text);
-        }
-
-    	protected static void addBeginToEnd(final Set<Integer> lines, Node node) {
-    		final int start = node.getBegin().get().line;
-            final int end = node.getEnd().get().line;
-            lines.add(start);
-            for (int i = start; i < end; i++) {
-                lines.add(i);
-            }
-    	}
-
-        protected static<T> T pickRandom(final List<T> choices, final Random r) {
-            return choices.get(r.nextInt(choices.size()));
-        }
-
-        public abstract int getAnchorLine();
-
-		public abstract boolean isStillValid();
-
-		protected static boolean isInCU(Node n) {
-			return getCU(n) != null;
-		}
-
-		protected static boolean isInSameCU(Node n1, Node n2) {
-			return getCU(n1) == getCU(n2);
-		}
-
-		private static CompilationUnit getCU(Node n) {
-			if (n instanceof CompilationUnit) {
-				return (CompilationUnit) n;
-			} else {
-				if (n.getParentNode().isPresent()) {
-					return getCU(n.getParentNode().get());
-				} else {
-					return null;
-				}
-			}
-		}
-
-    }
-
     private final Properties properties;
 	private final File sourceFile;
 	private final int maxCount;
-
 
 	/**
 	 * MutationGenerator based on a template directory.
