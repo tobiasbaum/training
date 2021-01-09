@@ -17,7 +17,6 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
-import de.set.trainingUI.generators.SwapVariableExpressionMutation;
 import de.set.trainingUI.generators.SwapVariableExpressionMutation.SwapVariableData;
 
 @SuppressWarnings("nls")
@@ -47,6 +46,13 @@ public class SwapVariableMutationTest {
 
     private static List<String> toStrings(final List<NameExpr> expr) {
         final List<String> ret = new ArrayList<>();
+        Collections.sort(expr, (NameExpr e1, NameExpr e2) -> {
+        	final int cmp = Integer.compare(e1.getRange().get().begin.line, e2.getRange().get().begin.line);
+        	if (cmp != 0) {
+        		return cmp;
+        	}
+        	return e1.getNameAsString().compareTo(e2.getNameAsString());
+        });
         for (final NameExpr e : expr) {
             ret.add(e.getNameAsString() + "," + e.getRange().get().begin.line);
         }
@@ -92,7 +98,7 @@ public class SwapVariableMutationTest {
         final SwapVariableData data = SwapVariableExpressionMutation.analyze(u);
         assertEquals(Collections.emptyList(),
                 findApplicable(u, data));
-        assertEquals(Arrays.asList("b,4", "System,4"),
+        assertEquals(Arrays.asList("System,4", "b,4"),
                 findNonApplicable(u, data));
     }
 
@@ -128,7 +134,7 @@ public class SwapVariableMutationTest {
         final SwapVariableData data = SwapVariableExpressionMutation.analyze(u);
         assertEquals(Collections.emptyList(),
                 findApplicable(u, data));
-        assertEquals(Arrays.asList("b,5", "c,5", "System,5"),
+        assertEquals(Arrays.asList("System,5", "b,5", "c,5"),
                 findNonApplicable(u, data));
     }
 
@@ -167,9 +173,9 @@ public class SwapVariableMutationTest {
                 + "}\n");
 
         final SwapVariableData data = SwapVariableExpressionMutation.analyze(u);
-        assertEquals(Arrays.asList("j,6", "i,7", "j,5", "j,5"),
+        assertEquals(Arrays.asList("j,5", "j,5", "j,6", "i,7"),
                 findApplicable(u, data));
-        assertEquals(Arrays.asList("i,4", "i,9", "i,3", "i,3"),
+        assertEquals(Arrays.asList("i,3", "i,3", "i,4", "i,9"),
                 findNonApplicable(u, data));
     }
 
@@ -192,9 +198,63 @@ public class SwapVariableMutationTest {
         mutation.apply(new Random(123));
         final Properties p = new Properties();
         mutation.createRemark(42, p);
-        assertEquals("5;OTHER_ALGORITHMIC_PROBLEM;.+", p.getProperty("remark.42.pattern"));
-        assertEquals("5;OTHER_ALGORITHMIC_PROBLEM;die Variable b muss statt c verwendet werden", p.getProperty("remark.42.example"));
+        assertEquals("5;WRONG_CALCULATION,OTHER_ALGORITHMIC_PROBLEM;.+", p.getProperty("remark.42.pattern"));
+        assertEquals("5;WRONG_CALCULATION;die Variable b muss statt c verwendet werden", p.getProperty("remark.42.example"));
         assertEquals(5, mutation.getAnchorLine());
+    }
+
+    @Test
+    public void testMutationIsNotMisledByAttributesInOtherClasses() {
+        final CompilationUnit u = parse(
+                "class Envelope {\n"
+                + "    private final double thickness;\n"
+                + "}\n"
+                + "\n"
+                + "class A {\n"
+                + "    public double getThickness() {\n"
+                + "        final Envelope env = this.envelope == null ? new Envelope(0.0, 1.0) : this.envelope;\n"
+                + "        double thickness = env.getThickness();\n"
+                + "        for (final Sheet s : this.sheets) {\n"
+                + "            thickness += s.getThickness() * env.getFoldingFactorFor(s.getSheetType());\n"
+                + "        }\n"
+                + "        return thickness;\n"
+                + "    }\n"
+                + "}\n");
+
+        final SwapVariableData data = SwapVariableExpressionMutation.analyze(u);
+        assertEquals(Collections.emptyList(),
+                findApplicable(u, data));
+        assertEquals(Arrays.asList("env,8", "env,10", "s,10", "s,10", "thickness,10", "thickness,12"),
+                findNonApplicable(u, data));
+    }
+
+    @Test
+    public void testMutationIsNotMisledByMultipleLoops() {
+        final CompilationUnit u = parse(
+                "class A {\n"
+                + "    public static Map<String, String> createToDuplexMap(List<MediumMap> mediumMaps) {\n"
+                + "        final Map<String, String> ret = new LinkedHashMap<>();\n"
+                + "        final List<MediumMap> nonDuplex = new ArrayList<>();\n"
+                + "        for (final MediumMap m : mediumMaps) {\n"
+                + "            if (m.isDuplex()) {\n"
+                + "                ret.put(m.getName(), m.getName());\n"
+                + "            } else {\n"
+                + "                nonDuplex.add(m);\n"
+                + "            }\n"
+                + "        }\n"
+                + "        for (final MediumMap m : nonDuplex) {\n"
+                + "            ret.put(m.getName(), \"x\");\n"
+                + "        }\n"
+                + "        return ret;\n"
+                + "    }\n"
+                + "}\n");
+
+        final SwapVariableData data = SwapVariableExpressionMutation.analyze(u);
+        assertEquals(Collections.emptyList(),
+                findApplicable(u, data));
+        assertEquals(Arrays.asList("mediumMaps,5", "m,6", "m,7", "m,7", "ret,7", "m,9", "nonDuplex,9",
+        		"nonDuplex,12", "m,13", "ret,13", "ret,15"),
+                findNonApplicable(u, data));
     }
 
 }

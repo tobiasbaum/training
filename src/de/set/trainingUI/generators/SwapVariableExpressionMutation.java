@@ -12,11 +12,13 @@ import java.util.Set;
 import com.github.javaparser.Position;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.BinaryExpr.Operator;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ForEachStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
@@ -111,7 +113,7 @@ public class SwapVariableExpressionMutation extends Mutation {
 
     @Override
     public void apply(final Random r) {
-        this.expr.setName(pickRandom(this.possibleOtherNames, r));
+		this.expr.setName(pickRandom(this.possibleOtherNames, r));
     }
 
     @Override
@@ -203,7 +205,9 @@ public class SwapVariableExpressionMutation extends Mutation {
 
     private static boolean isBlockBuilding(final Node node) {
         return node instanceof BlockStmt
-            || node instanceof ForStmt;
+            || node instanceof ForStmt
+            || node instanceof ForEachStmt
+            || node instanceof TypeDeclaration;
     }
 
 }
