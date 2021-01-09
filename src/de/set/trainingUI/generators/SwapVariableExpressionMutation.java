@@ -12,6 +12,8 @@ import java.util.Set;
 import com.github.javaparser.Position;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.CallableDeclaration;
+import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.BinaryExpr;
@@ -40,6 +42,20 @@ public class SwapVariableExpressionMutation extends Mutation {
             this.pos = pos;
             this.block = block;
         }
+
+        public boolean isAttribute() {
+        	return this.block instanceof TypeDeclaration;
+        }
+
+		public boolean isLessSpecificThan(VarInfo v) {
+			return this.isLessSpecificThan(v.block);
+		}
+
+		private boolean isLessSpecificThan(Node otherBlock) {
+			return otherBlock == this.block
+				|| (otherBlock.getParentNode().isPresent()
+					&& this.isLessSpecificThan(otherBlock.getParentNode().get()));
+		}
     }
 
     public static class SwapVariableData {
@@ -55,7 +71,7 @@ public class SwapVariableExpressionMutation extends Mutation {
             final String varName = n.getNameAsString();
             VarInfo cur = null;
             for (final VarInfo v : varsInScope) {
-                if (v.name.equals(varName)) {
+                if (v.name.equals(varName) && (cur == null || cur.isLessSpecificThan(v))) {
                     cur = v;
                 }
             }
@@ -64,7 +80,9 @@ public class SwapVariableExpressionMutation extends Mutation {
             }
             final List<String> ret = new ArrayList<>();
             for (final VarInfo v : varsInScope) {
-                if (v.type.equals(cur.type) && v != cur) {
+                if (v.type.equals(cur.type)
+                		&& v.isAttribute() == cur.isAttribute()
+                		&& !v.name.equals(cur.name)) {
                     ret.add(v.name);
                 }
             }
@@ -75,7 +93,7 @@ public class SwapVariableExpressionMutation extends Mutation {
             final List<VarInfo> ret = new ArrayList<>();
             final Position pos = n.getBegin().get();
             for (final VarInfo v : this.vars) {
-                if (v.pos.isBefore(pos) && this.belongsToBlock(n, v.block)) {
+                if ((v.pos.isBefore(pos) || v.isAttribute()) && this.belongsToBlock(n, v.block)) {
                     ret.add(v);
                 }
             }
@@ -188,6 +206,15 @@ public class SwapVariableExpressionMutation extends Mutation {
                         n.getEnd().get(),
                         getSurroundingBlock(n)));
             }
+            @Override
+            public void visit(final Parameter n, final Void v) {
+                super.visit(n, v);
+                d.vars.add(new VarInfo(
+                        n.getNameAsString(),
+                        n.getType().toString(),
+                        n.getEnd().get(),
+                        getSurroundingBlock(n)));
+            }
         }, null);
         return d;
     }
@@ -207,7 +234,13 @@ public class SwapVariableExpressionMutation extends Mutation {
         return node instanceof BlockStmt
             || node instanceof ForStmt
             || node instanceof ForEachStmt
+            || node instanceof CallableDeclaration
             || node instanceof TypeDeclaration;
+    }
+
+    @Override
+	public String toString() {
+    	return "SwapVariableExpressionMutation for " + this.correctName;
     }
 
 }

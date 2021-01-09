@@ -121,6 +121,95 @@ public class SwapVariableMutationTest {
     }
 
     @Test
+    public void testApplicableWithParameters() {
+        final CompilationUnit u = parse(
+                "class A {\n"
+                + "    public void a(int b, int c) {\n"
+                + "        System.out.println(b / c);\n"
+                + "    }\n"
+                + "}\n");
+
+        final SwapVariableData data = SwapVariableExpressionMutation.analyze(u);
+        assertEquals(Arrays.asList("b,3", "c,3"),
+                findApplicable(u, data));
+        assertEquals(Arrays.asList("System,3"),
+                findNonApplicable(u, data));
+    }
+
+    @Test
+    public void testApplicableWithAttributes() {
+        final CompilationUnit u = parse(
+                "class A {\n"
+        		+ "    public int b;\n"
+        		+ "    public int c;\n"
+                + "    public void a() {\n"
+                + "        System.out.println(b / c);\n"
+                + "    }\n"
+                + "}\n");
+
+        final SwapVariableData data = SwapVariableExpressionMutation.analyze(u);
+        assertEquals(Arrays.asList("b,5", "c,5"),
+                findApplicable(u, data));
+        assertEquals(Arrays.asList("System,5"),
+                findNonApplicable(u, data));
+    }
+
+    @Test
+    public void testApplicableWithAttributesAtEnd() {
+        final CompilationUnit u = parse(
+                "class A {\n"
+        		+ "    public void a() {\n"
+        		+ "        System.out.println(b / c);\n"
+        		+ "    }\n"
+        		+ "    public int b;\n"
+        		+ "    public int c;\n"
+                + "}\n");
+
+        final SwapVariableData data = SwapVariableExpressionMutation.analyze(u);
+        assertEquals(Arrays.asList("b,3", "c,3"),
+                findApplicable(u, data));
+        assertEquals(Arrays.asList("System,3"),
+                findNonApplicable(u, data));
+    }
+
+    @Test
+    public void testNotApplicableWithAttributes() {
+        final CompilationUnit u = parse(
+                "class A {\n"
+        		+ "    public int b;\n"
+                + "    public void a(int b) {\n"
+                + "        System.out.println(this.b / b);\n"
+                + "    }\n"
+                + "}\n");
+
+        final SwapVariableData data = SwapVariableExpressionMutation.analyze(u);
+        assertEquals(Collections.emptyList(),
+                findApplicable(u, data));
+        assertEquals(Arrays.asList("System,4", "b,4"),
+                findNonApplicable(u, data));
+    }
+
+    @Test
+    public void testNotApplicableWithNestedAttributes() {
+        final CompilationUnit u = parse(
+                "class A {\n"
+        		+ "    public int b;\n"
+        		+ "    class Sub {\n"
+        		+ "        public int b;\n"
+                + "        public void a() {\n"
+                + "            System.out.println(b);\n"
+                + "        }\n"
+                + "    }\n"
+                + "}\n");
+
+        final SwapVariableData data = SwapVariableExpressionMutation.analyze(u);
+        assertEquals(Collections.emptyList(),
+                findApplicable(u, data));
+        assertEquals(Arrays.asList("System,6", "b,6"),
+                findNonApplicable(u, data));
+    }
+
+    @Test
     public void testDifferentTypes() {
         final CompilationUnit u = parse(
                 "class A {\n"
@@ -204,6 +293,42 @@ public class SwapVariableMutationTest {
     }
 
     @Test
+    public void testMutationInConstructor() {
+        for (int seed = 0; seed < 100; seed++) {
+            final CompilationUnit u = parse(
+                    "class A {\n"
+                    + "    private double a;\n"
+                    + "    private double b;\n"
+                    + "    public A(double a, double b) {\n"
+                    + "        this.a = a;\n"
+                    + "        this.b = b;\n"
+                    + "    }\n"
+                    + "}\n");
+
+	        final SwapVariableData data = SwapVariableExpressionMutation.analyze(u);
+	        final List<NameExpr> applicable = new ArrayList<>();
+	        findApplicableAndNonApplicable(u, data, applicable, new ArrayList<>());
+	        final SwapVariableExpressionMutation mutation1 =
+	                new SwapVariableExpressionMutation(data, applicable.get(0));
+	        mutation1.apply(new Random(seed));
+	        final Properties p1 = new Properties();
+	        mutation1.createRemark(42, p1);
+	        assertEquals("with seed " + seed, "5;OTHER_ALGORITHMIC_PROBLEM;.+", p1.getProperty("remark.42.pattern"));
+	        assertEquals("with seed " + seed, "5;OTHER_ALGORITHMIC_PROBLEM;die Variable a muss statt b verwendet werden", p1.getProperty("remark.42.example"));
+	        assertEquals("with seed " + seed, 5, mutation1.getAnchorLine());
+
+	        final SwapVariableExpressionMutation mutation2 =
+	                new SwapVariableExpressionMutation(data, applicable.get(1));
+	        mutation2.apply(new Random(seed));
+	        final Properties p2 = new Properties();
+	        mutation2.createRemark(23, p2);
+	        assertEquals("with seed " + seed, "6;OTHER_ALGORITHMIC_PROBLEM;.+", p2.getProperty("remark.23.pattern"));
+	        assertEquals("with seed " + seed, "6;OTHER_ALGORITHMIC_PROBLEM;die Variable b muss statt a verwendet werden", p2.getProperty("remark.23.example"));
+	        assertEquals("with seed " + seed, 6, mutation2.getAnchorLine());
+        }
+    }
+
+    @Test
     public void testMutationIsNotMisledByAttributesInOtherClasses() {
         final CompilationUnit u = parse(
                 "class Envelope {\n"
@@ -250,10 +375,9 @@ public class SwapVariableMutationTest {
                 + "}\n");
 
         final SwapVariableData data = SwapVariableExpressionMutation.analyze(u);
-        assertEquals(Collections.emptyList(),
+        assertEquals(Arrays.asList("mediumMaps,5", "nonDuplex,9", "nonDuplex,12"),
                 findApplicable(u, data));
-        assertEquals(Arrays.asList("mediumMaps,5", "m,6", "m,7", "m,7", "ret,7", "m,9", "nonDuplex,9",
-        		"nonDuplex,12", "m,13", "ret,13", "ret,15"),
+        assertEquals(Arrays.asList("m,6", "m,7", "m,7", "ret,7", "m,9", "m,13", "ret,13", "ret,15"),
                 findNonApplicable(u, data));
     }
 
