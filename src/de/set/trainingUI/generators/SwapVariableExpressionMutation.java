@@ -18,6 +18,7 @@ import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.BinaryExpr.Operator;
+import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ForEachStmt;
@@ -166,9 +167,14 @@ public class SwapVariableExpressionMutation extends Mutation {
 	}
 
     private boolean isInIf() {
-    	return this.expr.getParentNode().isPresent()
-			&& this.expr.getParentNode().get() instanceof IfStmt;
+    	return isInIf(this.expr);
 	}
+
+    private static boolean isInIf(Expression ex) {
+    	final Node parent = ex.getParentNode().orElse(null);
+    	return parent instanceof IfStmt
+			|| (parent instanceof Expression && isInIf((Expression) parent));
+    }
 
 	private static boolean isCalculation(Operator operator) {
 		switch (operator) {
