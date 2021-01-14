@@ -78,13 +78,26 @@ public class MoveOutOfIfMutation extends Mutation {
 
 	private void applyOn(Random r, BlockStmt blockInIf) {
 		final int countToMove = r.nextInt(blockInIf.getStatements().size() - 1) + 1;
-		final List<Statement> toMove = new ArrayList<>();
-		for (int i = 0; i < countToMove; i++) {
-			toMove.add(blockInIf.getStatements().removeFirst());
-		}
-		final BlockStmt target = (BlockStmt) this.topmostIf.getParentNode().get();
-		for (final Statement s : toMove) {
-			target.getStatements().addBefore(s, this.topmostIf);
+		if (r.nextBoolean()) {
+			//move some of the last statements behind the if
+			final List<Statement> toMove = new ArrayList<>();
+			for (int i = 0; i < countToMove; i++) {
+				toMove.add(blockInIf.getStatements().removeLast());
+			}
+			final BlockStmt target = (BlockStmt) this.topmostIf.getParentNode().get();
+			for (final Statement s : toMove) {
+				target.getStatements().addAfter(s, this.topmostIf);
+			}
+		} else {
+			//move some of the first statements in front of the if
+			final List<Statement> toMove = new ArrayList<>();
+			for (int i = 0; i < countToMove; i++) {
+				toMove.add(blockInIf.getStatements().removeFirst());
+			}
+			final BlockStmt target = (BlockStmt) this.topmostIf.getParentNode().get();
+			for (final Statement s : toMove) {
+				target.getStatements().addBefore(s, this.topmostIf);
+			}
 		}
 	}
 
