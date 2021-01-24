@@ -190,10 +190,32 @@ public class TrainingServerMain {
         data.put("correctTaskCount", u.getCorrectTrialCount());
         data.put("correctStreak", u.getCurrentCorrectStreakLength());
         data.put("longestCorrectStreak", u.getLongestCorrectStreakLength());
+        final int trainingDuration = lastEntry(DiagramData.getTrainingDurationPerWeek(u));
+        data.put("currentWeek_missingForGoal", u.getTrainingGoal() - trainingDuration);
+		data.put("currentWeek_trainingDuration", trainingDuration);
+		data.put("currentWeek_correctShare", lastEntry(DiagramData.getCorrectnessPerWeek(u)));
+		data.put("currentWeek_taskDuration", lastEntry(DiagramData.getDurationPerWeek(u)));
+		data.put("currentWeek_taskCount", lastEntry(DiagramData.getTasksPerWeek(u)));
+		data.put("traingGoalReachedCount", this.countGoalReached(DiagramData.getTrainingDurationPerWeek(u), u.getTrainingGoal()));
         return this.velocity(data, "/start.html.vm");
     }
 
-    private Object nextTask(final Request request, final Response response) {
+    private int countGoalReached(CategoryDataset trainingDurationPerWeek, int trainingGoal) {
+    	int count = 0;
+    	for (int i = 0; i < trainingDurationPerWeek.getRowCount(); i++) {
+    		final double value = trainingDurationPerWeek.getValue(i, 1).doubleValue();
+    		if (value >= trainingGoal) {
+    			count++;
+    		}
+    	}
+		return count;
+	}
+
+	private static int lastEntry(CategoryDataset dataset) {
+    	return dataset.getValue(dataset.getRowCount() - 1, 1).intValue();
+	}
+
+	private Object nextTask(final Request request, final Response response) {
         final Trainee u = this.getUserFromCookie(request);
 
         final Task task = TaskDB.getInstance().getNextTask(u);

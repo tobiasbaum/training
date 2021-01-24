@@ -18,11 +18,27 @@
 <tr>
 <td>
 <p>Eingeloggt als $trainee.name</p>
-<p>Trainingsziel: $trainee.trainingGoal Minuten pro Woche</p>
+
+<fieldset>
+<legend>Aktuelle Woche</legend>
+#if( $currentWeek_missingForGoal > 0 )
+<p>Noch <b style="color: DarkOrange;">$currentWeek_missingForGoal Minuten</b> bis zum Erreichen deines Trainingsziels ($trainee.trainingGoal Min.)</p>
+#else
+<p><b style="color: green;">$currentWeek_trainingDuration Minuten trainiert. Trainingsziel erreicht!</b></p>
+#end
+<p>$currentWeek_correctShare % der Aufgaben korrekt beantwortet</p>
+<p>$currentWeek_taskDuration s durchschnittliche Bearbeitungszeit pro Aufgabe</p>
+<p>$currentWeek_taskCount Aufgaben bearbeitet</p>
+</fieldset>
+
+<fieldset>
+<legend>Insgesamt</legend>
 <p>$taskCount Aufgaben bearbeitet</p>
 <p>$correctTaskCount davon erfolgreich</p>
+<p>Wochen-Trainingsziel ${traingGoalReachedCount}-mal erreicht</p>
 <p>Aktuell $correctStreak Aufgaben am Stück erfolgreich</p>
 <p>Bestleistung: $longestCorrectStreak Aufgaben am Stück erfolgreich</p>
+</fieldset>
 
    <form action="nextTask" method="post">
       <button type="submit">Training starten ►</button>
