@@ -163,11 +163,24 @@ public class TrainingServerMain {
 
         u.setCurrentSessionStart(Instant.now(), userSession);
 
-    	return this.showOverview(u);
+        return this.handleMissingGoalOrShowOverview(request, u);
     }
 
-    private Object overview(final Request request, final Response response) {
-        return this.showOverview(this.getUserFromCookie(request));
+    private Object overview(final Request request, final Response response) throws IOException {
+        return this.handleMissingGoalOrShowOverview(request, this.getUserFromCookie(request));
+    }
+
+    private Object handleMissingGoalOrShowOverview(Request request, Trainee u) throws IOException {
+    	if (request.queryParams("trainingGoal") != null) {
+    		u.setTrainingGoal(Integer.parseInt(request.queryParams("trainingGoal")));
+    	}
+
+    	if (!u.hasTrainingGoal()) {
+            final Map<String, Object> data = new HashMap<>();
+            return this.velocity(data, "/chooseTrainingGoal.html.vm");
+    	}
+
+    	return this.showOverview(u);
     }
 
     private Object showOverview(final Trainee u) {

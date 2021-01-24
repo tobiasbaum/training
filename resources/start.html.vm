@@ -18,6 +18,7 @@
 <tr>
 <td>
 <p>Eingeloggt als $trainee.name</p>
+<p>Trainingsziel: $trainee.trainingGoal Minuten pro Woche</p>
 <p>$taskCount Aufgaben bearbeitet</p>
 <p>$correctTaskCount davon erfolgreich</p>
 <p>Aktuell $correctStreak Aufgaben am Stück erfolgreich</p>

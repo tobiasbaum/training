@@ -3,7 +3,9 @@ package de.set.trainingUI;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -22,11 +24,16 @@ public class Trainee {
 	private Instant currentSessionStart;
 	private String sessionId;
 	private AnnotatedSolution curSolution;
+	private Integer trainingGoal;
 
     private Trainee(final File dir) {
         this.dir = dir;
         this.name = dir.getName();
     }
+
+	private Path getTrainingGoalFile() {
+		return this.dir.toPath().resolve("trainingGoal");
+	}
 
     public static Trainee createNew(final String name, final File baseDir) {
         final File f = new File(baseDir, name);
@@ -45,6 +52,10 @@ public class Trainee {
     			.forEach((Trial t) -> trials.put(t.getStartTime(), t));
     		ret.trials.addAll(trials.values());
     	}
+        final Path trainingGoalFile = ret.getTrainingGoalFile();
+        if (Files.exists(trainingGoalFile)) {
+        	ret.trainingGoal = Integer.parseInt(Files.readString(trainingGoalFile, Charset.forName("UTF-8")));
+        }
     	return ret;
     }
 
@@ -176,6 +187,21 @@ public class Trainee {
 
 	List<Trial> getTrials() {
 		return this.trials;
+	}
+
+	public void setTrainingGoal(int trainingGoalInMinutesPerWeek) throws IOException {
+		this.trainingGoal = trainingGoalInMinutesPerWeek;
+		Files.writeString(this.getTrainingGoalFile(),
+				Integer.toString(trainingGoalInMinutesPerWeek),
+				Charset.forName("UTF-8"));
+	}
+
+	public boolean hasTrainingGoal() {
+		return this.trainingGoal != null;
+	}
+
+	public int getTrainingGoal() {
+		return this.trainingGoal != null ? this.trainingGoal : 0;
 	}
 
 }
