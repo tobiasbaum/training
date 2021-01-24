@@ -141,6 +141,17 @@ public class Trainee {
 		return (int) Duration.between(this.currentSessionStart, Instant.now()).toMinutes();
 	}
 
+	public int getNetMinutesInCurrentSession() {
+		if (this.currentSessionStart == null) {
+			return 0;
+		}
+		final long netSeconds = this.trials.stream()
+			.filter((Trial t) -> t.getStartTime().compareTo(this.currentSessionStart) >= 0)
+			.mapToLong((Trial t) -> t.getNeededTime())
+			.sum();
+		return (int) netSeconds / 60;
+	}
+
 	public int getTrialCount() {
 		return this.trials.size();
 	}

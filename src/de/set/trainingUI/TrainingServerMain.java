@@ -190,9 +190,7 @@ public class TrainingServerMain {
         data.put("correctTaskCount", u.getCorrectTrialCount());
         data.put("correctStreak", u.getCurrentCorrectStreakLength());
         data.put("longestCorrectStreak", u.getLongestCorrectStreakLength());
-        final int trainingDuration = lastEntry(DiagramData.getTrainingDurationPerWeek(u));
-        data.put("currentWeek_missingForGoal", u.getTrainingGoal() - trainingDuration);
-		data.put("currentWeek_trainingDuration", trainingDuration);
+        this.setGoalStats(u, data);
 		data.put("currentWeek_correctShare", lastEntry(DiagramData.getCorrectnessPerWeek(u)));
 		data.put("currentWeek_taskDuration", lastEntry(DiagramData.getDurationPerWeek(u)));
 		data.put("currentWeek_taskCount", lastEntry(DiagramData.getTasksPerWeek(u)));
@@ -200,10 +198,16 @@ public class TrainingServerMain {
         return this.velocity(data, "/start.html.vm");
     }
 
+	private void setGoalStats(final Trainee u, final Map<String, Object> data) {
+		final int trainingDuration = lastEntry(DiagramData.getTrainingDurationPerWeek(u));
+        data.put("currentWeek_missingForGoal", u.getTrainingGoal() - trainingDuration);
+		data.put("currentWeek_trainingDuration", trainingDuration);
+	}
+
     private int countGoalReached(CategoryDataset trainingDurationPerWeek, int trainingGoal) {
     	int count = 0;
-    	for (int i = 0; i < trainingDurationPerWeek.getRowCount(); i++) {
-    		final double value = trainingDurationPerWeek.getValue(i, 1).doubleValue();
+    	for (int i = 0; i < trainingDurationPerWeek.getColumnCount(); i++) {
+    		final double value = trainingDurationPerWeek.getValue(0, i).doubleValue();
     		if (value >= trainingGoal) {
     			count++;
     		}
@@ -212,7 +216,7 @@ public class TrainingServerMain {
 	}
 
 	private static int lastEntry(CategoryDataset dataset) {
-    	return dataset.getValue(dataset.getRowCount() - 1, 1).intValue();
+    	return dataset.getValue(0, dataset.getColumnCount() - 1).intValue();
 	}
 
 	private Object nextTask(final Request request, final Response response) {
@@ -268,6 +272,7 @@ public class TrainingServerMain {
         data.put("stats", stats);
         data.put("solution", u.getCurrentSolution().formatSolution());
         data.put("trainee", u);
+        this.setGoalStats(u, data);
         return this.velocity(data, "/feedback.html.vm");
     }
 
