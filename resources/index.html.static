@@ -28,6 +28,8 @@
 	</script>
 </head>
 <body onload="init()">
+   <p>Übe das Verstehen und Prüfen von Programm-Quelltext! Bei "Code Training" werden dir kleine Aufgaben gestellt, bei denen du die Funktion eines Programms
+   nachvollziehen oder Fehler in Quellcode finden sollst. Regelmäßiges Training hilft dir dabei, mit der Zeit immer besser zu werden.</p>
    <form action="https://github.com/login/oauth/authorize" method="get">
       <input type="hidden" name="client_id" value="e2a5802b4fb4398d7d51"></input>
       <input type="hidden" name="redirect_uri" id="redirect_uri"></input>
@@ -35,5 +37,11 @@
       Benutzer: <input type="text" name="login" id="login"></input><br/>
       <button type="submit" onclick="saveLogin()">Login mit GitHub</button>
    </form>
+   <br/><br/><br/><br/>
+   <p style="font-size: small;">Datenschutz-Hinweis: "Code Training" speichert deine Trainingsergebnisse und Interaktionen zu folgenden Zwecken:
+   (1) Zur Steuerung des Trainingsablaufs, u.a. zur Auswahl der nächsten Aufgabe,
+   (2) zur Ausgabe von Statistiken zu deiner Trainings-Performance und
+   (3) zur wissenschaftlichen Auswertung anonymisierter Nutzungsdaten.
+   Kontaktiere <a href="http://tobias-baum.de">mich</a>, falls deine Daten gelöscht werden sollen oder du andere Wünsche oder Anregungen hast.</p>
 </body>
 </html>
