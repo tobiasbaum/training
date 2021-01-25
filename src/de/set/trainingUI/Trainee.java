@@ -138,7 +138,7 @@ public class Trainee {
 		if (this.currentSessionStart == null) {
 			return 0;
 		}
-		return (int) Duration.between(this.currentSessionStart, Instant.now()).toMinutes();
+		return Math.max((int) Duration.between(this.currentSessionStart, Instant.now()).toMinutes(), 1);
 	}
 
 	public int getNetMinutesInCurrentSession() {
@@ -149,7 +149,7 @@ public class Trainee {
 			.filter((Trial t) -> t.getStartTime().compareTo(this.currentSessionStart) >= 0)
 			.mapToLong((Trial t) -> t.getNeededTime())
 			.sum();
-		return (int) netSeconds / 60;
+		return Math.max((int) netSeconds / 60, 1);
 	}
 
 	public int getTrialCount() {

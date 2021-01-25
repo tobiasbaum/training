@@ -82,13 +82,13 @@
 <button onclick="registerTaskProblem()">Problem mit der Aufgabe melden</button><br/><br/>
 
 <p>
-Du trainierst seit $trainee.netMinutesInCurrentSession Minuten (brutto: $trainee.minutesInCurrentSession).
+Aktuelle Sitzung: $trainee.netMinutesInCurrentSession Min. netto ($trainee.minutesInCurrentSession Min. brutto).
 </p>
 
 <p>
-In der aktuellen Woche hast du bereits $currentWeek_trainingDuration Minuten trainiert.
+Aktuelle Woche: $currentWeek_trainingDuration Min. trainiert.
 #if( $currentWeek_missingForGoal > 0 )
-Noch $currentWeek_missingForGoal Minuten bis zum Erreichen deines Trainingsziels.
+Noch $currentWeek_missingForGoal Min. bis zum Trainingsziel.
 #else
 Trainingsziel erreicht!
 #end
