@@ -216,6 +216,9 @@ public class TrainingServerMain {
 	}
 
 	private static int lastEntry(CategoryDataset dataset) {
+		if (dataset.getColumnCount() <= 0) {
+			return 0;
+		}
     	return dataset.getValue(0, dataset.getColumnCount() - 1).intValue();
 	}
 
