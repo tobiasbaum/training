@@ -3,7 +3,6 @@ package de.set.trainingUI;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.time.temporal.IsoFields;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,6 +55,13 @@ public class DiagramData {
 			} else {
 				return Integer.toString(this.week);
 			}
+		}
+
+		public Week nextWeek() {
+			final ZonedDateTime zdt = ZonedDateTime.of(2020, 4, 28, 11, 0, 0, 0, ZoneId.systemDefault())
+					.with(IsoFields.WEEK_OF_WEEK_BASED_YEAR, this.week)
+					.with(IsoFields.WEEK_BASED_YEAR, this.year);
+			return new Week(zdt.plusDays(7).toInstant());
 		}
 
 	}
@@ -166,13 +172,13 @@ public class DiagramData {
 
 		// fehlende Wochen ergänzen
 		if (minDate != null) {
-			final Instant now = Instant.now();
-			while (minDate.isBefore(now)) {
-				final Week week = new Week(minDate);
+			Week week = new Week(minDate);
+			final Week currentWeek = new Week(Instant.now());
+			while (week.compareTo(currentWeek) <= 0) {
 				if (!ret.containsKey(week)) {
 					ret.put(week, Collections.emptyList());
 				}
-				minDate = minDate.plus(7, ChronoUnit.DAYS);
+				week = week.nextWeek();
 			}
 		}
 
