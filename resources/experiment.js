@@ -75,6 +75,9 @@ function handleRemarkInputOk() {
 			remarkInputInstance.setGutterMarker(lineNumber, "remarks", makeMarker(msg));
     		reviewRemarks[realLineNumber] = {t: type, m: msg};
             addToLog('addReviewRemark;' + realLineNumber + ';' + type + ';' + msg);
+		} else {
+			alert('Bitte gib eine kurze Beschreibung des Problems ein.');
+			return;
 		}
     }
 
