@@ -4,10 +4,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Timer;
@@ -59,17 +62,13 @@ public class TaskDB {
 			    t.add(this.loadTask(dir));
 			}
 		}
-		sortByDifficulty(t);
+		t.sort(Comparator.comparingDouble(Task::estimateDifficulty));
 		this.tasks.set(t.toArray(new Task[t.size()]));
 	}
 
     private boolean isIgnored(File dir) {
 		return new File(dir, "ignore").exists();
 	}
-
-	private static void sortByDifficulty(final List<Task> taskList) {
-        taskList.sort(Comparator.comparingDouble(Task::estimateDifficulty));
-    }
 
     private Task loadTask(final File taskDirectory) throws IOException {
     	try {
@@ -102,68 +101,102 @@ public class TaskDB {
         return INSTANCE;
     }
 
+    private static final class TaskFamilyStats {
+    	private final List<Task> tasks;
+    	private final Instant lastTrial;
+    	private final double difficulty;
+
+    	public TaskFamilyStats(Trainee trainee, Task t) {
+    		this.tasks = new ArrayList<Task>();
+    		this.add(t);
+			this.lastTrial = trainee.getLastTrialFromFamily(t);
+    		this.difficulty = t.estimateDifficulty();
+		}
+
+		public Instant getLastTrial() {
+    		return this.lastTrial;
+    	}
+
+    	public double getDifficulty() {
+    		return this.difficulty;
+    	}
+
+		public void add(Task t) {
+			this.tasks.add(t);
+		}
+    }
+
     public Task getNextTask(final Trainee trainee) {
-        final Task[] tasks = this.tasks.get();
+        final List<TaskFamilyStats> tasks = this.getFamilyStats(trainee);
 
         // get a random sample of 20 tasks
-        final List<Task> sample = new ArrayList<>();
+        final List<TaskFamilyStats> sample = new ArrayList<>();
         for (int i = 0; i < SAMPLE_SIZE; i++) {
-            sample.add(tasks[this.nextRandomInt(tasks.length)]);
+            sample.add(tasks.get(this.nextRandomInt(tasks.size())));
         }
 
         // sort by last time a task from the same family was done
         // and remove the half that has been done most recently
-        Collections.sort(sample, Comparator.comparing(trainee::getLastTrialFromFamily));
+        Collections.sort(sample, Comparator.comparing(TaskFamilyStats::getLastTrial));
         while (sample.size() > SAMPLE_SIZE / 2) {
             sample.remove(sample.size() - 1);
         }
 
-    	sortByDifficulty(sample);
+		sample.sort(Comparator.comparingDouble(TaskFamilyStats::getDifficulty));
         final Trial lastTrial = trainee.getCurrentTrial();
         if (lastTrial != null) {
-            final int lastTrialIndex = this.indexOf(tasks, lastTrial.getTask());
+            final double lastTrialDifficulty = lastTrial.getTask().estimateDifficulty();
             if (lastTrial.isIncorrect()) {
             	// if the last trial was incorrect, drop to the middle of the easier tasks
-            	final List<Task> easierTasks = new ArrayList<>();
-                for (final Task t : sample) {
-                    if (this.indexOf(tasks, t) < lastTrialIndex) {
+            	final List<TaskFamilyStats> easierTasks = new ArrayList<>();
+                for (final TaskFamilyStats t : sample) {
+                    if (t.getDifficulty() < lastTrialDifficulty) {
                         easierTasks.add(t);
                     }
                 }
                 if (easierTasks.isEmpty()) {
                 	// none of the tasks is easier, choose the easiest one from the sample
-                	return sample.get(0);
+                	return this.pickFromFamily(sample.get(0));
                 } else {
-                	return getMiddle(easierTasks);
+                	return this.pickFromFamily(getMiddle(easierTasks));
                 }
             } else {
             	// if the last trial was correct, choose the trial that is minimally harder
-                for (final Task t : sample) {
-                    if (this.indexOf(tasks, t) > lastTrialIndex) {
-                        return t;
+                for (final TaskFamilyStats t : sample) {
+                    if (t.getDifficulty() > lastTrialDifficulty) {
+                        return this.pickFromFamily(t);
                     }
                 }
             	// none of the tasks is harder, choose the hardest one from the sample
-                return sample.get(sample.size() - 1);
+                return this.pickFromFamily(sample.get(sample.size() - 1));
             }
         } else {
         	// if this is the first trial, choose an easy task
-        	return sample.get(0);
+        	return this.pickFromFamily(sample.get(0));
         }
     }
 
-	private static Task getMiddle(final List<Task> easierTasks) {
-		return easierTasks.get(easierTasks.size() / 2);
+	private List<TaskFamilyStats> getFamilyStats(Trainee trainee) {
+		final Map<String, TaskFamilyStats> stats = new LinkedHashMap<>();
+		for (final Task t : this.tasks.get()) {
+			TaskFamilyStats fs = stats.get(t.getFamilyId());
+			if (fs == null) {
+				fs = new TaskFamilyStats(trainee, t);
+				stats.put(t.getFamilyId(), fs);
+			} else {
+				fs.add(t);
+			}
+		}
+		return new ArrayList<>(stats.values());
 	}
 
-    private int indexOf(final Task[] array, final Task t) {
-        for (int i = 0; i < array.length; i++) {
-            if (array[i] == t) {
-                return i;
-            }
-        }
-        return -1;
-    }
+	private Task pickFromFamily(TaskFamilyStats family) {
+		return family.tasks.get(this.nextRandomInt(family.tasks.size()));
+	}
+
+	private static TaskFamilyStats getMiddle(final List<TaskFamilyStats> easierTasks) {
+		return easierTasks.get(easierTasks.size() / 2);
+	}
 
     private synchronized int nextRandomInt(final int max) {
         return this.random.nextInt(max);
