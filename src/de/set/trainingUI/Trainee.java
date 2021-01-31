@@ -215,4 +215,16 @@ public class Trainee {
 		return this.trainingGoal != null ? this.trainingGoal : 0;
 	}
 
+	public long getBestTimeForTask(Trial trial) {
+		long best = Long.MAX_VALUE;
+		for (final Trial t : this.trials) {
+			if (t != trial && t.getTask().getId().equals(trial.getTask().getId())) {
+				if (t.getNeededTime() < best) {
+					best = t.getNeededTime();
+				}
+			}
+		}
+		return best;
+	}
+
 }

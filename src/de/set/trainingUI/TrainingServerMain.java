@@ -267,7 +267,7 @@ public class TrainingServerMain {
         }
 
         final Trial trial = u.checkCurrentTrialAnswer(request);
-        final FeedbackStatistics stats = this.determineStatistics(trial);
+        final FeedbackStatistics stats = this.determineStatistics(trial, u);
         StatisticsDB.getInstance().count(trial);
 
         final Map<String, Object> data = new HashMap<>();
@@ -279,8 +279,8 @@ public class TrainingServerMain {
         return this.velocity(data, "/feedback.html.vm");
     }
 
-    private FeedbackStatistics determineStatistics(final Trial trial) {
-        return new FeedbackStatistics(StatisticsDB.getInstance().getFor(trial.getTask()), trial);
+    private FeedbackStatistics determineStatistics(final Trial trial, Trainee trainee) {
+        return new FeedbackStatistics(StatisticsDB.getInstance().getFor(trial.getTask()), trial, trainee);
     }
 
     private Trainee getUserFromCookie(final Request request) {

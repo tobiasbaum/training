@@ -4,10 +4,12 @@ public class FeedbackStatistics {
 
     private final Statistics stats;
     private final Trial trial;
+	private final Trainee trainee;
 
-    public FeedbackStatistics(final Statistics s, final Trial trial) {
+    public FeedbackStatistics(final Statistics s, final Trial trial, Trainee trainee) {
         this.stats = s;
         this.trial = trial;
+        this.trainee = trainee;
     }
 
     public boolean isForFamily() {
@@ -73,8 +75,9 @@ public class FeedbackStatistics {
     }
 
     public boolean isRecordTimeBestPersonal() {
-        //TEST TODO
-        return false;
+    	return this.trial.getNeededTime() < this.trainee.getBestTimeForTask(this.trial)
+			&& !this.isRecordFirst()
+			&& !this.isRecordTimeBest();
     }
 
     public boolean isRecordTryMean() {
