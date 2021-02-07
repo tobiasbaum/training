@@ -337,6 +337,9 @@ public class MutationGenerator extends Generator {
                 if (DeleteSynchronizedMutation.isApplicable(n)) {
                 	ret.add(new DeleteSynchronizedMutation(n));
                 }
+                if (CopyPasteMethodMutation.isApplicable(n)) {
+                	ret.add(new CopyPasteMethodMutation(n));
+                }
                 return null;
             }
             @Override

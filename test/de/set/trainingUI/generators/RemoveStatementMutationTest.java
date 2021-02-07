@@ -20,11 +20,15 @@ public class RemoveStatementMutationTest {
         return StaticJavaParser.parse(fileContent);
     }
 
-    private static List<Mutation> determineApplicableMutations(
-    		CompilationUnit cu, Class<? extends Mutation> mutationType) {
+    static<T extends Mutation> List<T> determineApplicableMutations(
+    		String code, Class<T> mutationType) {
+    	return determineApplicableMutations(parse(code), mutationType);
+    }
+    private static<T extends Mutation> List<T> determineApplicableMutations(
+    		CompilationUnit cu, Class<T> mutationType) {
     	final List<Mutation> mutations = MutationGenerator.findPossibleMutations(cu);
     	mutations.removeIf((Mutation m) -> !mutationType.isInstance(m));
-    	return mutations;
+    	return (List<T>) mutations;
     }
 
     static void checkMutation(
@@ -42,7 +46,7 @@ public class RemoveStatementMutationTest {
     		long seed,
     		String expectedSource) {
     	final CompilationUnit cu = parse(input);
-        final List<Mutation> m = determineApplicableMutations(cu, mutationType);
+        final List<? extends Mutation> m = determineApplicableMutations(cu, mutationType);
     	m.get(mutationIndex).apply(new Random(seed));
 
     	assertEquals(expectedSource, cu.toString());
@@ -56,7 +60,7 @@ public class RemoveStatementMutationTest {
     	final Set<String> allPossibilities = new LinkedHashSet<>();
     	for (int seed = -10; seed < 1000; seed++) {
 	    	final CompilationUnit cu = parse(input);
-	        final List<Mutation> m = determineApplicableMutations(cu, mutationType);
+	        final List<? extends Mutation> m = determineApplicableMutations(cu, mutationType);
 	    	m.get(mutationIndex).apply(new Random(seed));
 	    	allPossibilities.add(cu.toString());
     	}
@@ -69,7 +73,7 @@ public class RemoveStatementMutationTest {
     		Class<? extends Mutation> mutationType,
     		int expectedCount) {
     	final CompilationUnit cu = parse(input);
-        final List<Mutation> m = determineApplicableMutations(cu, mutationType);
+        final List<? extends Mutation> m = determineApplicableMutations(cu, mutationType);
         assertEquals(expectedCount, m.size());
     }
 
