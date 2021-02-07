@@ -28,6 +28,7 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.ConditionalExpr;
+import com.github.javaparser.ast.expr.EnclosedExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.BreakStmt;
@@ -364,6 +365,14 @@ public class MutationGenerator extends Generator {
                 super.visit(n, v);
                 if (RemoveStatementMutation.isApplicable(n)) {
                     ret.add(new RemoveStatementMutation(n));
+                }
+                return null;
+            }
+            @Override
+            public Void visit(final EnclosedExpr n, final Void v) {
+                super.visit(n, v);
+                if (RemoveParenthesesMutation.isApplicable(n)) {
+                	ret.add(new RemoveParenthesesMutation(n));
                 }
                 return null;
             }
