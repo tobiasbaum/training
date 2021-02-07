@@ -7,7 +7,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 
 import de.set.trainingUI.RemarkType;
@@ -50,27 +49,5 @@ abstract class Mutation {
     }
 
     public abstract int getAnchorLine();
-
-	public abstract boolean isStillValid();
-
-	protected static boolean isInCU(Node n) {
-		return getCU(n) != null;
-	}
-
-	protected static boolean isInSameCU(Node n1, Node n2) {
-		return getCU(n1) == getCU(n2);
-	}
-
-	private static CompilationUnit getCU(Node n) {
-		if (n instanceof CompilationUnit) {
-			return (CompilationUnit) n;
-		} else {
-			if (n.getParentNode().isPresent()) {
-				return getCU(n.getParentNode().get());
-			} else {
-				return null;
-			}
-		}
-	}
 
 }

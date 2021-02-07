@@ -29,11 +29,6 @@ final class InvertMutation extends Mutation {
 		return !(n.getCondition() instanceof BinaryExpr);
 	}
 
-	@Override
-	public boolean isStillValid() {
-		return isInCU(this.ifStmt);
-	}
-
     @Override
     public void apply(final Random r) {
     	if (this.ifStmt.getElseStmt().isPresent()) {

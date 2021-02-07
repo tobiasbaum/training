@@ -57,11 +57,6 @@ public class MutationGeneratorTest {
 			return this.expr.getBegin().get().line;
 		}
 
-		@Override
-		public boolean isStillValid() {
-			throw new AssertionError();
-		}
-
 	}
 
 	private static class DeleteTextMutation extends Mutation {
@@ -91,11 +86,6 @@ public class MutationGeneratorTest {
 			return this.expr.getBegin().get().line;
 		}
 
-		@Override
-		public boolean isStillValid() {
-			throw new AssertionError();
-		}
-
 	}
 
 	private static class NoOpMutation extends Mutation {
@@ -114,11 +104,6 @@ public class MutationGeneratorTest {
 		@Override
 		public int getAnchorLine() {
 			return 1;
-		}
-
-		@Override
-		public boolean isStillValid() {
-			throw new AssertionError();
 		}
 
 	}

@@ -27,11 +27,6 @@ public class FlipAssignMutation extends Mutation {
         return ex.getOperator() != flipOperator(ex.getOperator(), new Random(42));
     }
 
-	@Override
-	public boolean isStillValid() {
-		return isInCU(this.expr);
-	}
-
     @Override
     public void apply(final Random r) {
         this.expr.setOperator(flipOperator(this.expr.getOperator(), r));
