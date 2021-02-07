@@ -1,9 +1,13 @@
 package de.set.trainingUI.generators;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -42,6 +46,22 @@ public class RemoveStatementMutationTest {
     	m.get(mutationIndex).apply(new Random(seed));
 
     	assertEquals(expectedSource, cu.toString());
+    }
+
+    static void checkMutations(
+    		String input,
+    		Class<? extends Mutation> mutationType,
+    		int mutationIndex,
+    		String... expectedSources) {
+    	final Set<String> allPossibilities = new LinkedHashSet<>();
+    	for (int seed = -10; seed < 1000; seed++) {
+	    	final CompilationUnit cu = parse(input);
+	        final List<Mutation> m = determineApplicableMutations(cu, mutationType);
+	    	m.get(mutationIndex).apply(new Random(seed));
+	    	allPossibilities.add(cu.toString());
+    	}
+
+    	assertThat(allPossibilities, containsInAnyOrder(expectedSources));
     }
 
     static void checkMutationCount(

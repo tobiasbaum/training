@@ -373,6 +373,9 @@ public class MutationGenerator extends Generator {
                 if (FlipOperatorMutation.isApplicable(n)) {
                     ret.add(new FlipOperatorMutation(n));
                 }
+                if (RemoveBinaryExprMutation.isApplicable(n)) {
+                	ret.add(new RemoveBinaryExprMutation(n));
+                }
                 return null;
             }
             @Override

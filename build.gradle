@@ -42,5 +42,5 @@ dependencies {
         'org.jfree:jfreechart:1.5.1',
         'org.jfree:jfreesvg:3.4'
 		
-    testCompile 'junit:junit:4.+'
+    testCompile 'junit:junit:4.+', 'org.hamcrest:hamcrest-all:1.3'
 }

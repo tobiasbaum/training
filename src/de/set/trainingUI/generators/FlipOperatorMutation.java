@@ -81,26 +81,41 @@ final class FlipOperatorMutation extends Mutation {
     @Override
     public void createRemark(final int nbr, final Properties p) {
         final Set<Integer> lines = Collections.singleton(this.getAnchorLine());
-        final RemarkType type;
-        switch (this.expr.getOperator()) {
+        final RemarkType type = determineTypeForOperator(this.expr.getOperator());
+        this.setRemark(nbr, p, lines,
+                type, ".+", "korrekt wäre " + this.correct);
+    }
+
+    /**
+     * Returns {@link RemarkType.WRONG_COMPARISON} for operators usually used in a boolean
+     * context and {@link RemarkType.WRONG_CALCULATION} for operators usually used in calculations.
+     */
+	static RemarkType determineTypeForOperator(Operator operator) throws AssertionError {
+        switch (operator) {
         case AND:
         case OR:
         case LESS:
         case GREATER:
         case GREATER_EQUALS:
         case LESS_EQUALS:
-            type = RemarkType.WRONG_COMPARISON;
-            break;
+        case EQUALS:
+            return RemarkType.WRONG_COMPARISON;
         case PLUS:
         case MINUS:
-            type = RemarkType.WRONG_CALCULATION;
-            break;
+        case MULTIPLY:
+        case DIVIDE:
+        case REMAINDER:
+        case BINARY_AND:
+        case BINARY_OR:
+        case XOR:
+        case LEFT_SHIFT:
+        case UNSIGNED_RIGHT_SHIFT:
+        case SIGNED_RIGHT_SHIFT:
+            return RemarkType.WRONG_CALCULATION;
         //$CASES-OMITTED$
         default:
             throw new AssertionError("invalid operator");
         }
-        this.setRemark(nbr, p, lines,
-                type, ".+", "korrekt wäre " + this.correct);
-    }
+	}
 
 }
