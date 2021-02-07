@@ -1,6 +1,7 @@
 package de.set.trainingUI.generators;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
@@ -11,6 +12,7 @@ import com.github.javaparser.ast.stmt.BreakStmt;
 import com.github.javaparser.ast.stmt.ContinueStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
 
 import de.set.trainingUI.RemarkType;
@@ -63,6 +65,24 @@ final class RemoveStatementMutation extends Mutation {
     public static boolean isApplicable(final BreakStmt stmt) {
         return hasSiblings(stmt);
     }
+
+    public static boolean isApplicable(final ReturnStmt stmt) {
+        if (!hasSiblings(stmt)) {
+        	return false;
+        }
+        if (stmt.getExpression().isEmpty()) {
+        	return true;
+        } else {
+        	final BlockStmt parent = (BlockStmt) stmt.getParentNode().get();
+    		return parent.findAncestor(BlockStmt.class,
+    				(BlockStmt b) -> getLast(b.getChildNodes()) instanceof ReturnStmt)
+    			.isPresent();
+        }
+    }
+
+	private static<T> T getLast(List<T> list) {
+		return list.isEmpty() ? null : list.get(list.size() - 1);
+	}
 
 	private static boolean hasSiblings(final Statement stmt) {
 		return stmt.getParentNode().get().getChildNodes().size() > 1

@@ -35,6 +35,7 @@ import com.github.javaparser.ast.stmt.BreakStmt;
 import com.github.javaparser.ast.stmt.ContinueStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
 
 import de.set.trainingUI.generators.SwapCalledMethodMutation.SwapMethodData;
@@ -424,6 +425,14 @@ public class MutationGenerator extends Generator {
             }
             @Override
             public Void visit(final BreakStmt n, final Void v) {
+                super.visit(n, v);
+                if (RemoveStatementMutation.isApplicable(n)) {
+                    ret.add(new RemoveStatementMutation(n));
+                }
+                return null;
+            }
+            @Override
+            public Void visit(final ReturnStmt n, final Void v) {
                 super.visit(n, v);
                 if (RemoveStatementMutation.isApplicable(n)) {
                     ret.add(new RemoveStatementMutation(n));

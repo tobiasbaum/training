@@ -365,4 +365,114 @@ public class RemoveStatementMutationTest {
         checkMutationCount(input, RemoveStatementMutation.class, 0);
     }
 
+    @Test
+    public void testRemoveVoidReturn() {
+        final String input =
+                "class A {\n"
+                + "    public void a() {\n"
+                + "        if (x) {\n"
+                + "            doStuff();\n"
+                + "            return;\n"
+                + "        }\n"
+                + "        doOtherStuff();\n"
+                + "    }\n"
+                + "}\n";
+
+        checkMutation(input,
+        		RemoveStatementMutation.class,
+        		0,
+                "class A {\n"
+        		+ "\n"
+                + "    public void a() {\n"
+                + "        if (x) {\n"
+                + "            return;\n"
+                + "        }\n"
+                + "        doOtherStuff();\n"
+                + "    }\n"
+                + "}\n");
+        checkMutation(input,
+        		RemoveStatementMutation.class,
+        		1,
+                "class A {\n"
+        		+ "\n"
+                + "    public void a() {\n"
+                + "        if (x) {\n"
+                + "            doStuff();\n"
+                + "        }\n"
+                + "        doOtherStuff();\n"
+                + "    }\n"
+                + "}\n");
+        checkMutation(input,
+        		RemoveStatementMutation.class,
+        		2,
+                "class A {\n"
+        		+ "\n"
+                + "    public void a() {\n"
+                + "        doOtherStuff();\n"
+                + "    }\n"
+                + "}\n");
+        checkMutation(input,
+        		RemoveStatementMutation.class,
+        		3,
+                "class A {\n"
+        		+ "\n"
+                + "    public void a() {\n"
+                + "        if (x) {\n"
+                + "            doStuff();\n"
+                + "            return;\n"
+                + "        }\n"
+                + "    }\n"
+                + "}\n");
+        checkMutationCount(input, RemoveStatementMutation.class, 4);
+    }
+
+    @Test
+    public void testRemoveValuedReturn() {
+        final String input =
+                "class A {\n"
+                + "    public int a() {\n"
+                + "        if (x) {\n"
+                + "            doStuff();\n"
+                + "            return 47;\n"
+                + "        }\n"
+                + "        return 5;\n"
+                + "    }\n"
+                + "}\n";
+
+        checkMutation(input,
+        		RemoveStatementMutation.class,
+        		0,
+                "class A {\n"
+        		+ "\n"
+                + "    public int a() {\n"
+                + "        if (x) {\n"
+                + "            return 47;\n"
+                + "        }\n"
+                + "        return 5;\n"
+                + "    }\n"
+                + "}\n");
+        checkMutation(input,
+        		RemoveStatementMutation.class,
+        		1,
+                "class A {\n"
+        		+ "\n"
+                + "    public int a() {\n"
+                + "        if (x) {\n"
+                + "            doStuff();\n"
+                + "        }\n"
+                + "        return 5;\n"
+                + "    }\n"
+                + "}\n");
+        checkMutation(input,
+        		RemoveStatementMutation.class,
+        		2,
+                "class A {\n"
+        		+ "\n"
+                + "    public int a() {\n"
+                + "        return 5;\n"
+                + "    }\n"
+                + "}\n");
+        checkMutationCount(input, RemoveStatementMutation.class, 3);
+    }
+
 }
