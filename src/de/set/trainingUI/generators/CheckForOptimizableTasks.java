@@ -16,7 +16,10 @@ public class CheckForOptimizableTasks {
 			}
 			final File source = new File(child, "source");
 			final CompilationUnit cu = StaticJavaParser.parse(source);
-			final boolean changed = new RemoveUnusedVariableOptimization().optimize(cu);
+			final CodeOptimization opt = new CompositeOptimization(
+					new RemoveUnnecessaryParenthesesOptimization(),
+					new RemoveUnusedVariableOptimization());
+			final boolean changed = opt.optimize(cu);
 			if (changed) {
 				System.out.println(source + " can be optimized");
 			}

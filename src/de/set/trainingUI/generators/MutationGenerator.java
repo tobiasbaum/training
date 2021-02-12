@@ -160,7 +160,8 @@ public class MutationGenerator extends Generator {
     	final String curFile = this.normalize(this.sourceFile);
     	try {
     		final CodeOptimization opt = new CompositeOptimization(
-    				new RemoveUnusedVariableOptimization());
+    				new RemoveUnusedVariableOptimization(),
+    				new RemoveUnnecessaryParenthesesOptimization());
     		return applyMutations(taskProperties, rand, maxMutationCount, curFile, MutationGenerator::findPossibleMutations, opt);
     	} catch (final Exception e) {
     		throw new RuntimeException("problem while mutating " + curFile, e);
