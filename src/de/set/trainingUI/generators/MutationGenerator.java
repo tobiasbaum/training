@@ -159,7 +159,9 @@ public class MutationGenerator extends Generator {
     	final int maxMutationCount = this.determineCount(rand);
     	final String curFile = this.normalize(this.sourceFile);
     	try {
-    		return applyMutations(taskProperties, rand, maxMutationCount, curFile, MutationGenerator::findPossibleMutations);
+    		final CodeOptimization opt = new CompositeOptimization(
+    				new RemoveUnusedVariableOptimization());
+    		return applyMutations(taskProperties, rand, maxMutationCount, curFile, MutationGenerator::findPossibleMutations, opt);
     	} catch (final Exception e) {
     		throw new RuntimeException("problem while mutating " + curFile, e);
     	}
@@ -170,7 +172,8 @@ public class MutationGenerator extends Generator {
 			final Random rand,
 			int maxMutationCount,
 			String initialFile,
-			Function<CompilationUnit, List<Mutation>> mutationSource) {
+			Function<CompilationUnit, List<Mutation>> mutationSource,
+			CodeOptimization optimizer) {
 		int remainingMutationCount = maxMutationCount;
 		int firstAllowedLine = 0;
 		String curFile = initialFile;
@@ -189,6 +192,7 @@ public class MutationGenerator extends Generator {
     		final List<Mutation> randomSubset = selectRandomSubset(withCorrectPos, remainingMutationCount, rand);
     		final Mutation toApply = pickTopmostMutation(randomSubset);
     		toApply.apply(rand);
+    		CodeOptimization.optimizeUntilSteadyState(ast, optimizer);
     		final String nextFile = ast.toString();
     		// It might happen that a mutation changes code before its anchor line and that
     		//  this leads to a change too early in the file. Only use the mutation if this
@@ -216,7 +220,7 @@ public class MutationGenerator extends Generator {
     	return curFile;
 	}
 
-    private static List<Mutation> selectWithCorrectPos(List<Mutation> mutations, int minPos) {
+	private static List<Mutation> selectWithCorrectPos(List<Mutation> mutations, int minPos) {
     	final List<Mutation> ret = new ArrayList<Mutation>();
     	for (final Mutation m : mutations) {
     		if (m.getAnchorLine() >= minPos) {

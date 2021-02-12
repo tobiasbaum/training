@@ -164,7 +164,8 @@ public class MutationGeneratorTest {
 	    			new Random(123),
 	    			1,
 	    			TESTCODE,
-	    			(ast) -> Collections.emptyList());
+	    			(ast) -> Collections.emptyList(),
+	    			CompositeOptimization.empty());
     	} catch (final IllegalArgumentException e) {
     		assertThat(e.getMessage(), startsWith("no mutations found"));
     	}
@@ -179,7 +180,8 @@ public class MutationGeneratorTest {
 	    			new Random(123),
 	    			1,
 	    			TESTCODE,
-	    			(ast) -> Collections.singletonList(new NoOpMutation()));
+	    			(ast) -> Collections.singletonList(new NoOpMutation()),
+	    			CompositeOptimization.empty());
     	} catch (final IllegalArgumentException e) {
     		assertThat(e.getMessage(), startsWith("mutation did not change anything"));
     	}
@@ -193,7 +195,8 @@ public class MutationGeneratorTest {
     			new Random(123),
     			1,
     			TESTCODE,
-    			change("test1"));
+    			change("test1"),
+    			CompositeOptimization.empty());
     	assertEquals(
                 "class A {\n"
                 + "\n"
@@ -216,7 +219,8 @@ public class MutationGeneratorTest {
     			new Random(123),
     			2,
     			TESTCODE,
-    			change("test1"));
+    			change("test1"),
+    			CompositeOptimization.empty());
     	assertEquals(
                 "class A {\n"
                 + "\n"
@@ -239,7 +243,8 @@ public class MutationGeneratorTest {
     			new Random(123),
     			2,
     			TESTCODE,
-    			change("test1", "test3"));
+    			change("test1", "test3"),
+    			CompositeOptimization.empty());
     	assertEquals(
                 "class A {\n"
                 + "\n"
@@ -265,7 +270,8 @@ public class MutationGeneratorTest {
     			new Random(123),
     			3,
     			TESTCODE,
-    			change("test1", "test2", "test3"));
+    			change("test1", "test2", "test3"),
+    			CompositeOptimization.empty());
     	assertEquals(
                 "class A {\n"
                 + "\n"
@@ -291,7 +297,8 @@ public class MutationGeneratorTest {
     			new Random(123),
     			1,
     			TESTCODE,
-    			change("test1", "test3"));
+    			change("test1", "test3"),
+    			CompositeOptimization.empty());
     	assertEquals(
                 "class A {\n"
                 + "\n"
@@ -313,7 +320,8 @@ public class MutationGeneratorTest {
     			new Random(-1),
     			1,
     			TESTCODE,
-    			change("test1", "test3"));
+    			change("test1", "test3"),
+    			CompositeOptimization.empty());
     	assertEquals(
                 "class A {\n"
                 + "\n"
@@ -335,7 +343,8 @@ public class MutationGeneratorTest {
     			new Random(123),
     			1,
     			TESTCODE,
-    			delete("test1"));
+    			delete("test1"),
+    			CompositeOptimization.empty());
     	assertEquals(
                 "class A {\n"
                 + "\n"
@@ -357,7 +366,8 @@ public class MutationGeneratorTest {
     			new Random(123),
     			3,
     			TESTCODE,
-    			delete("test1", "test2", "test3"));
+    			delete("test1", "test2", "test3"),
+    			CompositeOptimization.empty());
     	assertEquals(
                 "class A {\n"
                 + "\n"
@@ -379,7 +389,8 @@ public class MutationGeneratorTest {
     			new Random(-1),
     			3,
     			TESTCODE,
-    			delete("test1", "test2", "test3"));
+    			delete("test1", "test2", "test3"),
+    			CompositeOptimization.empty());
     	assertEquals(
                 "class A {\n"
                 + "\n"
@@ -401,7 +412,8 @@ public class MutationGeneratorTest {
     			new Random(123),
     			6,
     			TESTCODE,
-    			deleteOrChange("test1", "test2", "test3"));
+    			deleteOrChange("test1", "test2", "test3"),
+    			CompositeOptimization.empty());
     	assertEquals(
                 "class A {\n"
                 + "\n"
@@ -424,7 +436,8 @@ public class MutationGeneratorTest {
     			new Random(1000),
     			6,
     			TESTCODE,
-    			deleteOrChange("test1", "test2", "test3"));
+    			deleteOrChange("test1", "test2", "test3"),
+    			CompositeOptimization.empty());
     	assertEquals(
                 "class A {\n"
                 + "\n"
