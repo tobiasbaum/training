@@ -201,7 +201,7 @@ public class MutationGenerator extends Generator {
     		final int firstChangedLine = findFirstChangedLine(curFile, nextFile);
     		if (firstChangedLine >= firstAllowedLine) {
     			appliedMutations.add(toApply);
-	    		toApply.createRemark(appliedMutations.size(), taskProperties);
+	    		toApply.createRemark(appliedMutations.size(), new RemarkCreator(taskProperties));
 
 	    		firstAllowedLine = findStartOfUnchangedSuffix(curFile, nextFile);
 	    		if (firstAllowedLine <= 0) {

@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 
@@ -132,7 +131,7 @@ public class SwapVariableExpressionMutation extends Mutation {
     }
 
     @Override
-    public void createRemark(final int nbr, final Properties p) {
+    public void createRemark(final int nbr, final RemarkCreator p) {
         final Set<Integer> lines = Collections.singleton(this.getAnchorLine());
         final Set<RemarkType> types = EnumSet.of(RemarkType.OTHER_ALGORITHMIC_PROBLEM);
         if (this.isInCalculation()) {

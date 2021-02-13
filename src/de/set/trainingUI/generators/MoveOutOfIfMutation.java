@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 
@@ -97,7 +96,7 @@ public class MoveOutOfIfMutation extends Mutation {
 	}
 
 	@Override
-	public void createRemark(int nbr, Properties p) {
+	public void createRemark(int nbr, RemarkCreator p) {
         final Set<Integer> lines = new LinkedHashSet<>();
         addBeginToEnd(lines, this.topmostIf.getParentNode().get());
         this.setRemark(nbr, p, lines, RemarkType.OTHER_ALGORITHMIC_PROBLEM, ".+", "muss in if(" + this.stmt.getCondition() + ")");

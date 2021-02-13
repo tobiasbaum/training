@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 
@@ -86,7 +85,7 @@ public class CopyPasteMethodMutation extends Mutation {
 	}
 
 	@Override
-	public void createRemark(int nbr, Properties p) {
+	public void createRemark(int nbr, RemarkCreator p) {
         final Set<Integer> lines = new LinkedHashSet<>();
         assert this.newBodyLength > 0;
         final int anchor = this.getAnchorLine();

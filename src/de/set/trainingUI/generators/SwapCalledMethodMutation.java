@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 
@@ -135,7 +134,7 @@ public class SwapCalledMethodMutation extends Mutation {
     }
 
     @Override
-    public void createRemark(final int nbr, final Properties p) {
+    public void createRemark(final int nbr, final RemarkCreator p) {
         final Set<Integer> lines = Collections.singleton(this.getAnchorLine());
         this.setRemark(nbr, p, lines, RemarkType.OTHER_ALGORITHMIC_PROBLEM, ".+",
                 "die Methode " + this.correctName + " muss statt " + this.expr.getNameAsString() + " verwendet werden");

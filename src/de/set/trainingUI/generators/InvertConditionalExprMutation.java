@@ -1,7 +1,6 @@
 package de.set.trainingUI.generators;
 
 import java.util.Collections;
-import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 
@@ -32,7 +31,7 @@ public class InvertConditionalExprMutation extends Mutation {
     }
 
     @Override
-    public void createRemark(final int nbr, final Properties p) {
+    public void createRemark(final int nbr, final RemarkCreator p) {
         final Set<Integer> lines = Collections.singleton(this.getAnchorLine());
         this.setRemark(nbr, p, lines, RemarkType.WRONG_COMPARISON, ".+", "die Bedingung muss invertiert werden");
     }

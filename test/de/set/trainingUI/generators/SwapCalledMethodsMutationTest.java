@@ -138,7 +138,7 @@ public class SwapCalledMethodsMutationTest {
                 new SwapCalledMethodMutation(data, applicable.get(0));
         mutation.apply(new Random(123));
         final Properties p = new Properties();
-        mutation.createRemark(42, p);
+        mutation.createRemark(42, new RemarkCreator(p));
         assertEquals("10;OTHER_ALGORITHMIC_PROBLEM;.+", p.getProperty("remark.42.pattern"));
         assertEquals("10;OTHER_ALGORITHMIC_PROBLEM;die Methode p2 muss statt p1 verwendet werden", p.getProperty("remark.42.example"));
         assertEquals(10, mutation.getAnchorLine());

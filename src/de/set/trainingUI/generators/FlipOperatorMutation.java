@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 
@@ -79,7 +78,7 @@ final class FlipOperatorMutation extends Mutation {
     }
 
     @Override
-    public void createRemark(final int nbr, final Properties p) {
+    public void createRemark(final int nbr, final RemarkCreator p) {
         final Set<Integer> lines = Collections.singleton(this.getAnchorLine());
         final RemarkType type = determineTypeForOperator(this.expr.getOperator());
         this.setRemark(nbr, p, lines,

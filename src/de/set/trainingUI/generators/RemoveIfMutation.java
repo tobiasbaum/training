@@ -1,7 +1,6 @@
 package de.set.trainingUI.generators;
 
 import java.util.LinkedHashSet;
-import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 
@@ -57,7 +56,7 @@ public class RemoveIfMutation extends Mutation {
     }
 
     @Override
-    public void createRemark(final int nbr, final Properties p) {
+    public void createRemark(final int nbr, final RemarkCreator p) {
         final Set<Integer> lines = new LinkedHashSet<>();
         addBeginToEnd(lines, this.parent);
         this.setRemark(nbr, p, lines, RemarkType.MISSING_CODE, ".+", "Prüfung auf " + this.n.getCondition() + " fehlt");

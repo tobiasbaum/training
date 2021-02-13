@@ -286,13 +286,17 @@ public class SwapVariableMutationTest {
                 new SwapVariableExpressionMutation(data, applicable.get(0));
         mutation.apply(new Random(123));
         final Properties p = new Properties();
-        mutation.createRemark(42, p);
+        mutation.createRemark(42, remarkCreator(p));
         assertEquals("5;WRONG_CALCULATION,OTHER_ALGORITHMIC_PROBLEM;.+", p.getProperty("remark.42.pattern"));
         assertEquals("5;WRONG_CALCULATION;die Variable b muss statt c verwendet werden", p.getProperty("remark.42.example"));
         assertEquals(5, mutation.getAnchorLine());
     }
 
-    @Test
+    private static RemarkCreator remarkCreator(Properties p) {
+		return new RemarkCreator(p);
+	}
+
+	@Test
     public void testMutationInIfHasToTypes() {
         final CompilationUnit u = parse(
                 "class A {\n"
@@ -310,7 +314,7 @@ public class SwapVariableMutationTest {
                 new SwapVariableExpressionMutation(data, applicable.get(0));
         mutation.apply(new Random(123));
         final Properties p = new Properties();
-        mutation.createRemark(42, p);
+        mutation.createRemark(42, remarkCreator(p));
         assertEquals("3;WRONG_COMPARISON,OTHER_ALGORITHMIC_PROBLEM;.+", p.getProperty("remark.42.pattern"));
         assertEquals("3;WRONG_COMPARISON;die Variable a muss statt b verwendet werden", p.getProperty("remark.42.example"));
         assertEquals(3, mutation.getAnchorLine());
@@ -336,7 +340,7 @@ public class SwapVariableMutationTest {
 	                new SwapVariableExpressionMutation(data, applicable.get(0));
 	        mutation1.apply(new Random(seed));
 	        final Properties p1 = new Properties();
-	        mutation1.createRemark(42, p1);
+	        mutation1.createRemark(42, remarkCreator(p1));
 	        assertEquals("with seed " + seed, "5;OTHER_ALGORITHMIC_PROBLEM;.+", p1.getProperty("remark.42.pattern"));
 	        assertEquals("with seed " + seed, "5;OTHER_ALGORITHMIC_PROBLEM;die Variable a muss statt b verwendet werden", p1.getProperty("remark.42.example"));
 	        assertEquals("with seed " + seed, 5, mutation1.getAnchorLine());
@@ -345,7 +349,7 @@ public class SwapVariableMutationTest {
 	                new SwapVariableExpressionMutation(data, applicable.get(1));
 	        mutation2.apply(new Random(seed));
 	        final Properties p2 = new Properties();
-	        mutation2.createRemark(23, p2);
+	        mutation2.createRemark(23, remarkCreator(p2));
 	        assertEquals("with seed " + seed, "6;OTHER_ALGORITHMIC_PROBLEM;.+", p2.getProperty("remark.23.pattern"));
 	        assertEquals("with seed " + seed, "6;OTHER_ALGORITHMIC_PROBLEM;die Variable b muss statt a verwendet werden", p2.getProperty("remark.23.example"));
 	        assertEquals("with seed " + seed, 6, mutation2.getAnchorLine());

@@ -21,6 +21,8 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.Statement;
 
+import de.set.trainingUI.RemarkType;
+
 public class MutationGeneratorTest {
 
 	private static final String TESTCODE =
@@ -48,8 +50,9 @@ public class MutationGeneratorTest {
 		}
 
 		@Override
-		public void createRemark(int nbr, Properties taskProperties) {
-			taskProperties.put("rem" + nbr, "changed at " + this.getAnchorLine());
+		public void createRemark(int nbr, RemarkCreator taskProperties) {
+			taskProperties.setRemark(nbr, this.getAnchorLine(), Collections.singleton(this.getAnchorLine()),
+					RemarkType.OTHER_ALGORITHMIC_PROBLEM, "...", "changed");
 		}
 
 		@Override
@@ -77,8 +80,9 @@ public class MutationGeneratorTest {
 		}
 
 		@Override
-		public void createRemark(int nbr, Properties taskProperties) {
-			taskProperties.put("rem" + nbr, "deleted at " + this.getAnchorLine());
+		public void createRemark(int nbr, RemarkCreator taskProperties) {
+			taskProperties.setRemark(nbr, this.getAnchorLine(), Collections.singleton(this.getAnchorLine()),
+					RemarkType.OTHER_ALGORITHMIC_PROBLEM, "...", "deleted");
 		}
 
 		@Override
@@ -98,7 +102,7 @@ public class MutationGeneratorTest {
 		}
 
 		@Override
-		public void createRemark(int nbr, Properties taskProperties) {
+		public void createRemark(int nbr, RemarkCreator taskProperties) {
 		}
 
 		@Override
@@ -208,7 +212,7 @@ public class MutationGeneratorTest {
                 + "    }\n"
                 + "}\n",
     			result);
-    	assertEquals("changed at 4", taskProperties.getProperty("rem1"));
+    	assertEquals("4;OTHER_ALGORITHMIC_PROBLEM;changed", taskProperties.getProperty("remark.1.example"));
     }
 
     @Test
@@ -232,7 +236,7 @@ public class MutationGeneratorTest {
                 + "    }\n"
                 + "}\n",
     			result);
-    	assertEquals("changed at 4", taskProperties.getProperty("rem1"));
+    	assertEquals("4;OTHER_ALGORITHMIC_PROBLEM;changed", taskProperties.getProperty("remark.1.example"));
     }
 
     @Test
@@ -258,8 +262,10 @@ public class MutationGeneratorTest {
     			result);
 
     	assertEquals(
-    			toSet("changed at 4", "changed at 6"),
-    			toSet(taskProperties.getProperty("rem1"), taskProperties.getProperty("rem2")));
+    			toSet("4;OTHER_ALGORITHMIC_PROBLEM;changed",
+    					"6;OTHER_ALGORITHMIC_PROBLEM;changed"),
+    			toSet(taskProperties.getProperty("remark.1.example"),
+    					taskProperties.getProperty("remark.2.example")));
     }
 
     @Test
@@ -285,8 +291,12 @@ public class MutationGeneratorTest {
     			result);
 
     	assertEquals(
-    			toSet("changed at 4", "changed at 5", "changed at 6"),
-    			toSet(taskProperties.getProperty("rem1"), taskProperties.getProperty("rem2"), taskProperties.getProperty("rem3")));
+    			toSet("4;OTHER_ALGORITHMIC_PROBLEM;changed",
+    					"5;OTHER_ALGORITHMIC_PROBLEM;changed",
+    					"6;OTHER_ALGORITHMIC_PROBLEM;changed"),
+    			toSet(taskProperties.getProperty("remark.1.example"),
+    					taskProperties.getProperty("remark.2.example"),
+    					taskProperties.getProperty("remark.3.example")));
     }
 
     @Test
@@ -355,7 +365,7 @@ public class MutationGeneratorTest {
                 + "    }\n"
                 + "}\n",
     			result);
-    	assertEquals("deleted at 4", taskProperties.getProperty("rem1"));
+    	assertEquals("4;OTHER_ALGORITHMIC_PROBLEM;deleted", taskProperties.getProperty("remark.1.example"));
     }
 
     @Test
@@ -377,8 +387,10 @@ public class MutationGeneratorTest {
                 + "    }\n"
                 + "}\n",
     			result);
-    	assertEquals("deleted at 4", taskProperties.getProperty("rem1"));
-    	assertEquals("deleted at 5", taskProperties.getProperty("rem2"));
+    	assertEquals("4;OTHER_ALGORITHMIC_PROBLEM;deleted",
+    			taskProperties.getProperty("remark.1.example"));
+    	assertEquals("5;OTHER_ALGORITHMIC_PROBLEM;deleted",
+    			taskProperties.getProperty("remark.2.example"));
     }
 
     @Test
@@ -400,8 +412,10 @@ public class MutationGeneratorTest {
                 + "    }\n"
                 + "}\n",
     			result);
-    	assertEquals("deleted at 4", taskProperties.getProperty("rem1"));
-    	assertEquals("deleted at 5", taskProperties.getProperty("rem2"));
+    	assertEquals("4;OTHER_ALGORITHMIC_PROBLEM;deleted",
+    			taskProperties.getProperty("remark.1.example"));
+    	assertEquals("5;OTHER_ALGORITHMIC_PROBLEM;deleted",
+    			taskProperties.getProperty("remark.2.example"));
     }
 
     @Test
@@ -424,8 +438,8 @@ public class MutationGeneratorTest {
                 + "    }\n"
                 + "}\n",
     			result);
-    	assertEquals("changed at 4", taskProperties.getProperty("rem1"));
-    	assertEquals("deleted at 5", taskProperties.getProperty("rem2"));
+    	assertEquals("4;OTHER_ALGORITHMIC_PROBLEM;changed", taskProperties.getProperty("remark.1.example"));
+    	assertEquals("5;OTHER_ALGORITHMIC_PROBLEM;deleted", taskProperties.getProperty("remark.2.example"));
     }
 
     @Test
@@ -448,8 +462,8 @@ public class MutationGeneratorTest {
                 + "    }\n"
                 + "}\n",
     			result);
-    	assertEquals("deleted at 4", taskProperties.getProperty("rem1"));
-    	assertEquals("changed at 5", taskProperties.getProperty("rem2"));
+    	assertEquals("4;OTHER_ALGORITHMIC_PROBLEM;deleted", taskProperties.getProperty("remark.1.example"));
+    	assertEquals("5;OTHER_ALGORITHMIC_PROBLEM;changed", taskProperties.getProperty("remark.2.example"));
     }
 
 }

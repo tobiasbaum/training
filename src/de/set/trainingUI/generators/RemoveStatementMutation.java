@@ -2,7 +2,6 @@ package de.set.trainingUI.generators;
 
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 
@@ -38,7 +37,7 @@ final class RemoveStatementMutation extends Mutation {
     }
 
     @Override
-    public void createRemark(final int nbr, final Properties p) {
+    public void createRemark(final int nbr, final RemarkCreator p) {
         final Set<Integer> lines = new LinkedHashSet<>();
         addBeginToEnd(lines, this.parent);
         this.setRemark(nbr, p, lines, RemarkType.MISSING_CODE, ".+", this.n.toString() + " fehlt");

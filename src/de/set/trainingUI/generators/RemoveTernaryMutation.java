@@ -1,7 +1,6 @@
 package de.set.trainingUI.generators;
 
 import java.util.LinkedHashSet;
-import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 
@@ -30,7 +29,7 @@ public class RemoveTernaryMutation extends Mutation {
 	}
 
 	@Override
-	public void createRemark(int nbr, Properties p) {
+	public void createRemark(int nbr, RemarkCreator p) {
         final Set<Integer> lines = new LinkedHashSet<>();
         lines.add(this.expr.getBegin().get().line);
         lines.add(this.expr.getBegin().get().line + 1);
