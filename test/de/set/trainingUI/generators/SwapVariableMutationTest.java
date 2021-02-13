@@ -293,7 +293,7 @@ public class SwapVariableMutationTest {
     }
 
     private static RemarkCreator remarkCreator(Properties p) {
-		return new RemarkCreator(p);
+		return new RemarkCreator(p, LineMap.identity());
 	}
 
 	@Test

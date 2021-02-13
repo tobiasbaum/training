@@ -38,6 +38,7 @@ import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
 
+import de.set.trainingUI.generators.LineMap.LineMapBuilder;
 import de.set.trainingUI.generators.SwapCalledMethodMutation.SwapMethodData;
 import de.set.trainingUI.generators.SwapVariableExpressionMutation.SwapVariableData;
 
@@ -193,6 +194,7 @@ public class MutationGenerator extends Generator {
     		final List<Mutation> randomSubset = selectRandomSubset(withCorrectPos, remainingMutationCount, rand);
     		final Mutation toApply = pickTopmostMutation(randomSubset);
     		toApply.apply(rand);
+    		final LineMapBuilder lineMapBuilder = LineMap.buildFrom(ast);
     		CodeOptimization.optimizeUntilSteadyState(ast, optimizer);
     		final String nextFile = ast.toString();
     		// It might happen that a mutation changes code before its anchor line and that
@@ -201,7 +203,7 @@ public class MutationGenerator extends Generator {
     		final int firstChangedLine = findFirstChangedLine(curFile, nextFile);
     		if (firstChangedLine >= firstAllowedLine) {
     			appliedMutations.add(toApply);
-	    		toApply.createRemark(appliedMutations.size(), new RemarkCreator(taskProperties));
+	    		toApply.createRemark(appliedMutations.size(), new RemarkCreator(taskProperties, lineMapBuilder.snapshotNewCode()));
 
 	    		firstAllowedLine = findStartOfUnchangedSuffix(curFile, nextFile);
 	    		if (firstAllowedLine <= 0) {

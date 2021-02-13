@@ -152,6 +152,25 @@ public class MutationGeneratorTest {
 		};
 	}
 
+	private static final class DeleteOptimization implements CodeOptimization {
+
+		private final String marker;
+
+		public DeleteOptimization(String marker) {
+			this.marker = marker;
+		}
+
+		@Override
+		public boolean optimize(CompilationUnit cu) {
+			final List<Mutation> deletions = delete(this.marker).apply(cu);
+			for (final Mutation d : deletions) {
+				d.apply(new Random(123));
+			}
+			return !deletions.isEmpty();
+		}
+
+	}
+
 
 	private static Set<String> toSet(String... strings) {
 		final Set<String> toChange = new HashSet<>(Arrays.asList(strings));
@@ -464,6 +483,29 @@ public class MutationGeneratorTest {
     			result);
     	assertEquals("4;OTHER_ALGORITHMIC_PROBLEM;deleted", taskProperties.getProperty("remark.1.example"));
     	assertEquals("5;OTHER_ALGORITHMIC_PROBLEM;changed", taskProperties.getProperty("remark.2.example"));
+    }
+
+    @Test
+    public void testLineNumbersAreStillCorrectIfOptimizationDeletesLines() {
+    	final Properties taskProperties = new Properties();
+    	final String result = MutationGenerator.applyMutations(
+    			taskProperties,
+    			new Random(123),
+    			1,
+    			TESTCODE,
+    			change("test3"),
+    			new DeleteOptimization("test2"));
+    	assertEquals(
+                "class A {\n"
+                + "\n"
+                + "    public int a() {\n"
+                + "        String a1 = \"test1\";\n"
+                + "        String a3 = \"test3changed\";\n"
+                + "        return 42;\n"
+                + "    }\n"
+                + "}\n",
+    			result);
+    	assertEquals("5;OTHER_ALGORITHMIC_PROBLEM;changed", taskProperties.getProperty("remark.1.example"));
     }
 
 }
