@@ -19,9 +19,11 @@ import de.set.trainingUI.RemarkType;
 public class RemoveParenthesesMutation extends Mutation {
 
     private final EnclosedExpr expr;
+	private final Node parent;
 
 	public RemoveParenthesesMutation(EnclosedExpr expr) {
 		this.expr = expr;
+		this.parent = expr.getParentNode().get();
 	}
 
 	public static boolean isApplicable(EnclosedExpr expr) {
@@ -88,7 +90,7 @@ public class RemoveParenthesesMutation extends Mutation {
         final Set<Integer> lines = new LinkedHashSet<>();
         addBeginToEnd(lines, this.expr);
         final Set<RemarkType> types = EnumSet.of(RemarkType.MISSING_CODE);
-        this.addTypeOf(this.expr.getParentNode().get(), types);
+        this.addTypeOf(this.parent, types);
         this.addTypeOf(this.expr.getInner(), types);
         this.setRemark(nbr, p, lines, types, ".+", this.expr + " muss in Klammern stehen");
 	}

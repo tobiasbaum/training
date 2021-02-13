@@ -6,6 +6,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 
@@ -50,6 +51,9 @@ public class RemoveStatementMutationTest {
     	m.get(mutationIndex).apply(new Random(seed));
 
     	assertEquals(expectedSource, cu.toString());
+
+        // also smoke test that creating the remarks will not fail
+        m.get(mutationIndex).createRemark(1, new RemarkCreator(new Properties(), LineMap.identity()));
     }
 
     static void checkMutations(
