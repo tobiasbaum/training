@@ -38,7 +38,7 @@
         state: directory
 
     - name: start trainingUI
-      shell: nohup ~/trainingUI/trainingUI/bin/trainingUI ~/tasks/handcrafted ~/tasks/mutRev >~/trainingUI/trainingUI/trainingUi.log 2>&1 &
+      shell: nohup ~/trainingUI/trainingUI/bin/trainingUI ~/tasks/handcrafted ~/tasks/mutRev ~/tasks/understanding >~/trainingUI/trainingUI/trainingUi.log 2>&1 &
       environment:
         JAVA_HOME: "{{ansible_local.java.general.home}}"
         PATH: "{{ansible_env.PATH}}:{{ansible_local.java.general.home}}"
