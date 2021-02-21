@@ -67,4 +67,28 @@ public class RemoveUnnecessaryParenthesesOptimizationTest {
 			"    }\n" +
 			"}\n");
 	}
+
+	@Test
+	public void testRemoveInIf() {
+		check(
+			"class Foo {\n" +
+			"\n" +
+			"    public int bar(int x) {\n" +
+			"        if ((x == 5)) {\n" +
+			"            return 3;\n" +
+			"        }\n" +
+			"        return 6;\n" +
+			"    }\n" +
+			"}\n",
+			"class Foo {\n" +
+			"\n" +
+			"    public int bar(int x) {\n" +
+			"        if (x == 5) {\n" +
+			"            return 3;\n" +
+			"        }\n" +
+			"        return 6;\n" +
+			"    }\n" +
+			"}\n");
+	}
+
 }

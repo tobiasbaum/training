@@ -4,12 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.expr.EnclosedExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.LiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
+import com.github.javaparser.ast.stmt.DoStmt;
+import com.github.javaparser.ast.stmt.ForStmt;
+import com.github.javaparser.ast.stmt.IfStmt;
+import com.github.javaparser.ast.stmt.WhileStmt;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 public class RemoveUnnecessaryParenthesesOptimization implements CodeOptimization {
@@ -21,7 +26,7 @@ public class RemoveUnnecessaryParenthesesOptimization implements CodeOptimizatio
 			@Override
 			public void visit(EnclosedExpr expr, Void arg) {
 				super.visit(expr, arg);
-				if (isUnnecessaryFor(expr.getInner())) {
+				if (isUnnecessaryFor(expr.getInner()) || RemoveUnnecessaryParenthesesOptimization.this.isUnnecessaryIn(expr.getParentNode().get())) {
 					unnecessary.add(expr);
 				}
 			}
@@ -31,6 +36,13 @@ public class RemoveUnnecessaryParenthesesOptimization implements CodeOptimizatio
 			expr.replace(expr.getInner());
 		}
 		return !unnecessary.isEmpty();
+	}
+
+	protected boolean isUnnecessaryIn(Node parent) {
+		return parent instanceof IfStmt
+			|| parent instanceof WhileStmt
+			|| parent instanceof DoStmt
+			|| parent instanceof ForStmt;
 	}
 
 	private static boolean isUnnecessaryFor(Expression inner) {
