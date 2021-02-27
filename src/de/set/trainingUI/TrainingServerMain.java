@@ -48,7 +48,7 @@ public class TrainingServerMain {
     	for (final String id : authAlternatives) {
     		final String settings = getMandatoryProperty("trainingUi.auth.settings." + id);
     		final String[] parts = settings.split(",");
-    		this.auths.put(id, new OAuth(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5]));
+    		this.auths.put(id, new OAuth(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5], parts[6]));
     	}
     }
 
@@ -299,7 +299,7 @@ public class TrainingServerMain {
 
         final String log = request.queryParams("logContent");
         for (final String logLine : log.split("\n")) {
-            DataLog.log(u.getId(), "log from review;" + logLine);
+            DataLog.log(u.getId().encode(), "log from review;" + logLine);
         }
 
         final Trial trial = u.checkCurrentTrialAnswer(request);

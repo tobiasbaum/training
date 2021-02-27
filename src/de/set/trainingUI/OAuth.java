@@ -20,14 +20,23 @@ public class OAuth {
 	private final String submitUrl;
 	private final String clientId;
 	private final String clientSecret;
+	private final String accessTokenUrl;
 	private final String userInfoUrl;
 	private final String usernameField;
 
-	public OAuth(String name, String submitUrl, String clientId, String clientSecret, String userInfoUrl, String usernameField) {
+	public OAuth(
+			String name,
+			String submitUrl,
+			String clientId,
+			String clientSecret,
+			String accessTokenUrl,
+			String userInfoUrl,
+			String usernameField) {
 		this.name = name;
 		this.submitUrl = submitUrl;
 		this.clientId = clientId;
 		this.clientSecret = clientSecret;
+		this.accessTokenUrl = accessTokenUrl;
 		this.userInfoUrl = userInfoUrl;
 		this.usernameField = usernameField;
 	}
@@ -44,9 +53,9 @@ public class OAuth {
         final String code = request.queryParams("code");
         final String redirectUrl = request.cookie("savedRedirect");
 
-        final URL url = new URL("https://github.com/login/oauth/access_token");
+        final URL url = new URL(this.accessTokenUrl);
         final String postData = String.format(
-        		"client_id=%s&client_secret=%s&code=%s&redirect_uri=%s&state=%s",
+        		"client_id=%s&client_secret=%s&code=%s&redirect_uri=%s&state=%s&grant_type=authorization_code",
         		URLEncoder.encode(this.clientId, "UTF-8"),
         		URLEncoder.encode(this.clientSecret, "UTF-8"),
 				URLEncoder.encode(code, "UTF-8"),
@@ -78,14 +87,15 @@ public class OAuth {
 		final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
         connection.setRequestProperty("Accept", "application/json");
-        connection.setRequestProperty("Authorization", "token " + token);
+        connection.setRequestProperty("Authorization", "Bearer " + token);
         return this.readResponse(connection);
 	}
 
 	private JsonValue readResponse(final HttpURLConnection connection) throws IOException {
 		final int responseCode = connection.getResponseCode();
         if (responseCode / 100 != 2) {
-        	throw new IOException("invalid response: " + responseCode);
+        	final byte[] errorResponse = connection.getErrorStream().readAllBytes();
+        	throw new IOException("invalid response: " + responseCode + ": " + new String(errorResponse, "UTF-8"));
         }
         try (InputStream input = connection.getInputStream()) {
         	final byte[] content = input.readAllBytes();

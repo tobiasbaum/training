@@ -44,8 +44,9 @@
         JAVA_HOME: "{{ansible_local.java.general.home}}"
         PATH: "{{ansible_env.PATH}}:{{ansible_local.java.general.home}}"
         JDK_JAVA_OPTIONS: |
-          -DtrainingUi.auth.alternatives=github
-          -DtrainingUi.auth.settings.github=GitHub,https://github.com/login/oauth/authorize,e2a5802b4fb4398d7d51,{{oauthSecret}},https://api.github.com/user,login
+          -DtrainingUi.auth.alternatives=github,setAuth0
+          -DtrainingUi.auth.settings.github=GitHub,https://github.com/login/oauth/authorize,e2a5802b4fb4398d7d51,{{githubOauthSecret}},https://github.com/login/oauth/access_token,https://api.github.com/user,login
+          -DtrainingUi.auth.settings.setAuth0=SET-Auth0,https://set.eu.auth0.com/authorize,h7UeZto4xNXjyKjbUTt8tZARF0MrJuG8,{{auth0OauthSecret}},https://set.eu.auth0.com/oauth/token,https://set.eu.auth0.com/userinfo,nickname
 
     - name: wait for successful startup
       wait_for:

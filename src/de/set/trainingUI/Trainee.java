@@ -18,9 +18,47 @@ import spark.Request;
 
 public class Trainee {
 
+	public static class TraineeId {
+		private final String auth;
+		private final String user;
+
+		public TraineeId(String auth, String user) {
+			this.auth = auth;
+			this.user = user;
+		}
+
+		public TraineeId(String encodedId) {
+			final int splitIndex = encodedId.indexOf('_');
+			this.auth = encodedId.substring(0, splitIndex);
+			this.user = encodedId.substring(splitIndex + 1);
+		}
+
+		public String encode() {
+			return this.auth + "_" + this.user;
+		}
+
+		public String getUserName() {
+			return this.user;
+		}
+
+		@Override
+		public int hashCode() {
+			return this.user.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (!(o instanceof TraineeId)) {
+				return false;
+			}
+			final TraineeId other = (TraineeId) o;
+			return other.user.equals(this.user)
+				&& other.auth.equals(this.auth);
+		}
+	}
+
     private final File dir;
-    private final String id;
-    private final String name;
+    private final TraineeId id;
     private final List<Trial> trials = new ArrayList<>();
 	private Instant currentSessionStart;
 	private String sessionId;
@@ -29,23 +67,17 @@ public class Trainee {
 
     private Trainee(final File dir) {
         this.dir = dir;
-        this.id = dir.getName();
-        final int nameStartIndex = this.id.indexOf('_');
-        this.name = this.id.substring(nameStartIndex + 1);
+        this.id = new TraineeId(dir.getName());
     }
 
 	private Path getTrainingGoalFile() {
 		return this.dir.toPath().resolve("trainingGoal");
 	}
 
-    public static Trainee createNew(String authId, final String name, final File baseDir) {
-        final File f = new File(baseDir, toDirName(authId, name));
+    public static Trainee createNew(TraineeId id, final File baseDir) {
+        final File f = new File(baseDir, id.encode());
         f.mkdir();
         return new Trainee(f);
-    }
-
-    public static String toDirName(String authId, String userName) {
-    	return authId + "_" + userName;
     }
 
     public static Trainee load(final File traineeDir, TaskDB tasks) throws IOException {
@@ -66,12 +98,12 @@ public class Trainee {
     	return ret;
     }
 
-    public String getId() {
+    public TraineeId getId() {
         return this.id;
     }
 
     public String getName() {
-        return this.name;
+        return this.id.getUserName();
     }
 
     public synchronized Trial startNewTrial(final Task task) {
