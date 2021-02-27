@@ -10,8 +10,10 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -30,21 +32,35 @@ import spark.template.velocity.VelocityTemplateEngine;
 @SuppressWarnings("nls")
 public class TrainingServerMain {
 
+	private static final String AUTH_PROVIDER_COOKIE = "authProvider";
 	private static final String USER_SESSION_COOKIE = "userSession";
 	private static final String USER_NAME_COOKIE = "userName";
 
 	private static final String SHUTDOWN_PASS = "asdrsqer1223as";
 
 	private final SecureRandom random = new SecureRandom();
-	private final OAuth oAuth;
+	private final Map<String, OAuth> auths;
 
     public TrainingServerMain() throws IOException {
-    	this.oAuth = new OAuth(
-    			"e2a5802b4fb4398d7d51",
-    			System.getProperty("oauth.client.secret"));
+    	final String[] authAlternatives = getMandatoryProperty("trainingUi.auth.alternatives").split(",");
+
+    	this.auths = new LinkedHashMap<String, OAuth>();
+    	for (final String id : authAlternatives) {
+    		final String settings = getMandatoryProperty("trainingUi.auth.settings." + id);
+    		final String[] parts = settings.split(",");
+    		this.auths.put(id, new OAuth(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5]));
+    	}
     }
 
-    private void sendFile(final String target, final HttpServletResponse response) throws IOException {
+    private static String getMandatoryProperty(String key) {
+    	final String value = System.getProperty(key);
+    	if (value == null) {
+    		throw new IllegalArgumentException("system property " + key + " is not set");
+    	}
+    	return value;
+	}
+
+	private void sendFile(final String target, final HttpServletResponse response) throws IOException {
         this.setMimetype(target, response);
         final InputStream s = TrainingServerMain.class.getResourceAsStream(target);
         if (s == null) {
@@ -91,7 +107,7 @@ public class TrainingServerMain {
 
     public static void main(final String[] args) throws Exception {
     	try {
-	        if (TrainingServerMain.class.getResource("/index.html.static") == null) {
+	        if (TrainingServerMain.class.getResource("/index.html.vm") == null) {
 	            System.out.println("something is wrong with the classpath");
 	            System.exit(-1);
 	            return;
@@ -109,8 +125,6 @@ public class TrainingServerMain {
 	        System.out.println(new Date() + " Starting server ...");
 	        final TrainingServerMain m = new TrainingServerMain();
 	        Spark.before((final Request request, final Response response) -> DataLog.log(request.cookie(USER_NAME_COOKIE), "call " + request.url()));
-	        m.staticFile("/", "text/html", "/index.html.static");
-	        m.staticFile("/index.html", "text/html", "/index.html.static");
 	        m.staticFile("/experiment.js", "text/javascript");
 	        m.staticFile("/experiment.css", "text/css");
 	        m.staticFile("/codemirror.js", "text/javascript");
@@ -119,6 +133,8 @@ public class TrainingServerMain {
 	        m.staticFile("/jquery.min.js", "text/javascript");
 	        m.staticFile("/favicon.ico", "image/vnd.microsoft.icon");
 	        m.staticFile("/set_logo.png", "image/png");
+	        Spark.get("/", m::indexPage);
+	        Spark.get("/index.html", m::indexPage);
 	        Spark.get("/login", m::login);
 	        Spark.post("/login", m::login);
 	        Spark.post("/overview", m::overview);
@@ -152,10 +168,30 @@ public class TrainingServerMain {
     	StatisticsDB.getInstance().shutdown();
     }
 
-    private Object login(final Request request, final Response response) throws IOException {
-    	final String userName = this.oAuth.login(request);
+    private Object indexPage(final Request request, final Response response) throws IOException {
+    	final List<Map<String, String>> authData = new ArrayList<Map<String,String>>();
+        for (final Entry<String, OAuth> entry : this.auths.entrySet()) {
+        	final Map<String, String> map = new HashMap<>();
+        	map.put("id", entry.getKey());
+        	map.put("name", entry.getValue().getName());
+        	map.put("clientId", entry.getValue().getClientId());
+        	map.put("submitUrl", entry.getValue().getSubmitUrl());
+        	authData.add(map);
+        }
+        final Map<String, Object> data = new HashMap<>();
+        data.put("authData", authData);
+        return this.velocity(data, "/index.html.vm");
+    }
 
-        final Trainee u = UserDB.initUser(userName);
+    private Object login(final Request request, final Response response) throws IOException {
+    	final String authProviderId = request.cookie(AUTH_PROVIDER_COOKIE);
+		final OAuth authProvider = this.auths.get(authProviderId);
+    	if (authProvider == null) {
+    		throw new RuntimeException("unknown auth provider id " + authProviderId);
+    	}
+    	final String userName = authProvider.login(request);
+
+        final Trainee u = UserDB.initUser(authProviderId, userName);
 
         response.cookie(USER_NAME_COOKIE, userName);
         final String userSession = Long.toString(this.random.nextLong());
@@ -263,7 +299,7 @@ public class TrainingServerMain {
 
         final String log = request.queryParams("logContent");
         for (final String logLine : log.split("\n")) {
-            DataLog.log(u.getName(), "log from review;" + logLine);
+            DataLog.log(u.getId(), "log from review;" + logLine);
         }
 
         final Trial trial = u.checkCurrentTrialAnswer(request);
@@ -284,7 +320,7 @@ public class TrainingServerMain {
     }
 
     private Trainee getUserFromCookie(final Request request) {
-        final Trainee t = UserDB.getUser(request.cookie(USER_NAME_COOKIE));
+        final Trainee t = UserDB.getUser(request.cookie(AUTH_PROVIDER_COOKIE), request.cookie(USER_NAME_COOKIE));
         final String expectedSession = request.cookie(USER_SESSION_COOKIE);
         if (expectedSession == null || !expectedSession.equals(t.getSessionId())) {
         	throw new IllegalStateException("session ID is invalid");

@@ -21,7 +21,7 @@ public class ProblemLog {
 
 	public void registerProblem(Trainee trainee, String message) throws IOException {
 		final long time = System.currentTimeMillis();
-		final String traineeId = trainee.getName();
+		final String traineeId = trainee.getId();
 		final String taskId = trainee.getCurrentTrial().getTask().getId();
 
 		final File problemFile = new File(this.dir, String.format("%s.%s.problem", taskId, time));

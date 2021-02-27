@@ -16,15 +16,20 @@ import spark.Request;
 
 public class OAuth {
 
+	private final String name;
+	private final String submitUrl;
 	private final String clientId;
 	private final String clientSecret;
+	private final String userInfoUrl;
+	private final String usernameField;
 
-	public OAuth(String clientId, String clientSecret) {
+	public OAuth(String name, String submitUrl, String clientId, String clientSecret, String userInfoUrl, String usernameField) {
+		this.name = name;
+		this.submitUrl = submitUrl;
 		this.clientId = clientId;
 		this.clientSecret = clientSecret;
-		if (clientSecret == null) {
-			throw new IllegalArgumentException("oauth.client.secret not set");
-		}
+		this.userInfoUrl = userInfoUrl;
+		this.usernameField = usernameField;
 	}
 
 	public String login(Request request) throws IOException {
@@ -52,8 +57,8 @@ public class OAuth {
         if (token.isEmpty()) {
         	throw new IOException("returned token is invalid");
         }
-        final JsonValue userInfo = this.get(new URL("https://api.github.com/user"), token);
-		return userInfo.asObject().getString("login", "");
+        final JsonValue userInfo = this.get(new URL(this.userInfoUrl), token);
+		return userInfo.asObject().getString(this.usernameField, "");
 	}
 
 	private JsonValue post(final URL url, final String dataToSend)
@@ -86,6 +91,18 @@ public class OAuth {
         	final byte[] content = input.readAllBytes();
         	return Json.parse(new String(content, "UTF-8"));
         }
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public String getClientId() {
+		return this.clientId;
+	}
+
+	public String getSubmitUrl() {
+		return this.submitUrl;
 	}
 
 }

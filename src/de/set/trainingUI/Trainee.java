@@ -19,6 +19,7 @@ import spark.Request;
 public class Trainee {
 
     private final File dir;
+    private final String id;
     private final String name;
     private final List<Trial> trials = new ArrayList<>();
 	private Instant currentSessionStart;
@@ -28,17 +29,23 @@ public class Trainee {
 
     private Trainee(final File dir) {
         this.dir = dir;
-        this.name = dir.getName();
+        this.id = dir.getName();
+        final int nameStartIndex = this.id.indexOf('_');
+        this.name = this.id.substring(nameStartIndex + 1);
     }
 
 	private Path getTrainingGoalFile() {
 		return this.dir.toPath().resolve("trainingGoal");
 	}
 
-    public static Trainee createNew(final String name, final File baseDir) {
-        final File f = new File(baseDir, name);
+    public static Trainee createNew(String authId, final String name, final File baseDir) {
+        final File f = new File(baseDir, toDirName(authId, name));
         f.mkdir();
         return new Trainee(f);
+    }
+
+    public static String toDirName(String authId, String userName) {
+    	return authId + "_" + userName;
     }
 
     public static Trainee load(final File traineeDir, TaskDB tasks) throws IOException {
@@ -57,6 +64,10 @@ public class Trainee {
         	ret.trainingGoal = Integer.parseInt(Files.readString(trainingGoalFile, Charset.forName("UTF-8")));
         }
     	return ret;
+    }
+
+    public String getId() {
+        return this.id;
     }
 
     public String getName() {

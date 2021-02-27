@@ -1,4 +1,5 @@
 - name: include vaulted variables
+  gather_facts: no
   hosts: trainingUi
   tasks:
     - include_vars: ./vault_vars
@@ -42,7 +43,9 @@
       environment:
         JAVA_HOME: "{{ansible_local.java.general.home}}"
         PATH: "{{ansible_env.PATH}}:{{ansible_local.java.general.home}}"
-        JDK_JAVA_OPTIONS: "-Doauth.client.secret={{oauthSecret}}"
+        JDK_JAVA_OPTIONS: |
+          -DtrainingUi.auth.alternatives=github
+          -DtrainingUi.auth.settings.github=GitHub,https://github.com/login/oauth/authorize,e2a5802b4fb4398d7d51,{{oauthSecret}},https://api.github.com/user,login
 
     - name: wait for successful startup
       wait_for:

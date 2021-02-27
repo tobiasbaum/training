@@ -22,7 +22,9 @@
 	    $('#login').val(window.localStorage.getItem('trainingUserName')); 
 	}
 	
-	function saveLogin() {
+	function saveLogin(authProvider) {
+	    window.localStorage.setItem('trainingAuthProvider', authProvider); 
+	    document.cookie = 'authProvider=' + authProvider + ';max-age=3600;samesite=lax';
 	    window.localStorage.setItem('trainingUserName', $('#login').val()); 
 	}
 	</script>
@@ -30,12 +32,14 @@
 <body onload="init()">
    <p>Übe das Verstehen und Prüfen von Programm-Quelltext! Bei "Code Training" werden dir kleine Aufgaben gestellt, bei denen du die Funktion eines Programms
    nachvollziehen oder Fehler in Quellcode finden sollst. Regelmäßiges Training hilft dir dabei, mit der Zeit immer besser zu werden.</p>
-   <form action="https://github.com/login/oauth/authorize" method="get">
+   <form method="get">
       <input type="hidden" name="client_id" value="e2a5802b4fb4398d7d51"></input>
       <input type="hidden" name="redirect_uri" id="redirect_uri"></input>
       <input type="hidden" name="state" id="state"></input>
       Benutzer: <input type="text" name="login" id="login"></input><br/>
-      <button type="submit" onclick="saveLogin()">Login mit GitHub</button>
+#foreach ($titem in $!authData)
+      <button id="$titem.id" type="submit" name="client_id" value="$titem.clientId" formaction="$titem.submitUrl" onclick="saveLogin('$titem.id')">Login mit $titem.name</button>
+#end
    </form>
    <br/><br/><br/><br/>
    <p style="font-size: small;">Datenschutz-Hinweis: "Code Training" speichert deine Trainingsergebnisse und Interaktionen zu folgenden Zwecken:
