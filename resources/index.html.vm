@@ -32,7 +32,7 @@
 	
 	function saveLogin(authProvider) {
 	    window.localStorage.setItem('trainingAuthProvider', authProvider); 
-	    document.cookie = 'authProvider=' + authProvider + ';max-age=3600;samesite=lax';
+	    document.cookie = 'authProvider=' + authProvider + ';samesite=lax';
 	    window.localStorage.setItem('trainingUserName', $('#login').val()); 
 	}
 	
