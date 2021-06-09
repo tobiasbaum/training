@@ -13,6 +13,7 @@
 	<script type="text/javascript" src="/experiment.js"></script>
 </head>
 <body>
+   <p>Herzlich Willkommen $trainee.name !</p>
    <form action="overview" method="post">
       Wie viele Minuten möchtest du pro Woche trainieren?<br/>
       <input type="number" name="trainingGoal" min="5" max="900" value="60" list="commonChoices"></input> Minuten*<br/>

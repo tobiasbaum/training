@@ -213,6 +213,7 @@ public class TrainingServerMain {
 
     	if (!u.hasTrainingGoal()) {
             final Map<String, Object> data = new HashMap<>();
+            data.put("trainee", u);
             return this.velocity(data, "/chooseTrainingGoal.html.vm");
     	}
 
