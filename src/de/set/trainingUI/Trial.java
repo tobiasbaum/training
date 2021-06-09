@@ -76,6 +76,9 @@ public class Trial {
     }
 
     public long getNeededTime() {
+    	if (this.endTime == null) {
+    		return 0;
+    	}
         return this.startTime.until(this.endTime, ChronoUnit.SECONDS);
     }
 
