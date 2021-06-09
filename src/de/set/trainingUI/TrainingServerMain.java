@@ -272,7 +272,7 @@ public class TrainingServerMain {
 
         final Task task = u.getCurrentTrial().getTask();
         final Map<String, Object> data = new HashMap<>();
-        data.put("item", task);
+        data.put("task", task);
         task.addContextData(data);
         data.put("input", u.getCurrentSolution().formatInput());
         data.put("solution", u.getCurrentSolution().formatSolution());
@@ -310,6 +310,7 @@ public class TrainingServerMain {
         final Map<String, Object> data = new HashMap<>();
         data.put("trial", trial);
         data.put("stats", stats);
+        data.put("task", trial.getTask());
         data.put("solution", u.getCurrentSolution().formatSolution());
         data.put("trainee", u);
         this.setGoalStats(u, data);

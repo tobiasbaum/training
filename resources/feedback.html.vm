@@ -13,9 +13,26 @@
 	
 	<!-- Requires CodeMirror -->
 	<script type="text/javascript" src="/codemirror.js"></script>
+    <script type="text/javascript" src="/clike.js"></script>
 	<link type="text/css" rel="stylesheet" href="/codemirror.css" />
 	
 	<script type="text/javascript" src="/experiment.js"></script>
+	
+#if(! $trial.incorrect)
+	<script type="text/javascript">
+        $(document).ready(function () {
+			let cm = CodeMirror(document.getElementById('editor'), {
+			  value: '$task.contentEscaped',
+			  mode:  'text/x-java',
+			  readOnly: true,
+			  viewportMargin: Infinity,
+			  lineWrapping: true,
+			  lineNumbers: true,
+			  gutters: ["remarks", "CodeMirror-linenumbers"]
+			});
+		});
+	</script>
+#end
 </head>
 <body>
 #if( $trial.incorrect)
@@ -112,5 +129,12 @@ Trainingsziel erreicht!
     <form action="overview" method="post">
         <button type="submit">Zur Startseite</button>
     </form>
+    
+#if(! $trial.incorrect)
+    <br/>
+    <br/>
+	<div id="editor">
+	</div>
+#end
 </body>
 </html>

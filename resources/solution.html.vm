@@ -21,7 +21,7 @@
 	<script type="text/javascript">
         $(document).ready(function () {
 			let cm = CodeMirror(document.getElementById('editor'), {
-			  value: '$item.contentEscaped',
+			  value: '$task.contentEscaped',
 			  mode:  'text/x-java',
 			  readOnly: true,
 			  viewportMargin: Infinity,
@@ -29,7 +29,6 @@
 			  lineNumbers: true,
 			  gutters: ["remarks", "CodeMirror-linenumbers"]
 			});
-			cm.on("gutterClick", handleGutterClick);
 		});
 	</script>
 </head>
