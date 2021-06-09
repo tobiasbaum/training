@@ -26,7 +26,7 @@ var reviewEnded = false;
 var reviewRemarks = {};
 var remarkInputInstance = null;
 
-function handleGutterClick(instance, lineNumber, gutter, clickEvent) {
+function handleGutterClick(instance, lineNumber) {
     if (reviewEnded) {
         alert('Review has ended, remarks cannot be changed any more.');
         addToLog('gutterClickAfterReviewEnd;' + lineNumber);

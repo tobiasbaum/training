@@ -30,6 +30,9 @@
 			  gutters: ["remarks", "CodeMirror-linenumbers"]
 			});
 			cm.on("gutterClick", handleGutterClick);
+			cm.on('cursorActivity', function() {
+	        	handleGutterClick(cm, cm.doc.getCursor().line);
+			});
         	addToLog('view loaded,user agent=' + navigator.userAgent);
 			addToLog('window size ' + $(window).width() + ' x ' + $(window).height());
 			addToLog('screen size ' + screen.width + ' x ' + screen.height);
