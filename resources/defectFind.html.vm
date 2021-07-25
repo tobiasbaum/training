@@ -64,7 +64,7 @@
               <option value="$item.value" title="$item.description">$item.text</option>
             #end
             </select></td></tr>
-            <tr><td>Hinweis:</td><td><input type="text" name="remarkMessage" id="remarkMessage" onkeydown="if (event.keyCode === 13) $('#enterRemarkButton').click(); if (event.keyCode === 27) $('#abortRemarkButton').click();"></input></td></tr>
+            <tr><td>Hinweis:</td><td><input type="text" name="remarkMessage" id="remarkMessage" size="40" onkeydown="if (event.keyCode === 13) $('#enterRemarkButton').click(); if (event.keyCode === 27) $('#abortRemarkButton').click();"></input></td></tr>
             </table>
             <button type="button" onclick="handleRemarkInputOk()" id="enterRemarkButton">OK</button>
             <button type="button" onclick="handleRemarkInputCancel()" id="abortRemarkButton">Abbrechen</button>
