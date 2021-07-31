@@ -31,10 +31,30 @@ public class ReviewResultRatingTest {
 	}
 
 	@Test
-	public void testIsCorrectTypeMismatch() {
+	public void testIsCorrectOneTypeMismatchIsIgnoredIfLineMatchesExactly() {
 		final ReviewResultRating rrr = new ReviewResultRating(
 				Arrays.asList(new RemarkPattern("1;WRONG_CALCULATION;.+", "1;WRONG_CALCULATION;a defect")),
 				Arrays.asList(new Remark(1, RemarkType.MISSING_CODE, "ein Fehler")));
+		assertTrue(rrr.isCorrect());
+	}
+
+	@Test
+	public void testIsCorrectOneTypeMismatchIsNotIgnoredIfLineDoesNotMatchExactly() {
+		final ReviewResultRating rrr = new ReviewResultRating(
+				Arrays.asList(new RemarkPattern("1,2;WRONG_CALCULATION;.+", "2;WRONG_CALCULATION;a defect")),
+				Arrays.asList(new Remark(1, RemarkType.MISSING_CODE, "ein Fehler")));
+		assertFalse(rrr.isCorrect());
+	}
+
+	@Test
+	public void testIsCorrectTwoTypeMismatchesAreTooMuchEvenIfLineMatchesExactly() {
+		final ReviewResultRating rrr = new ReviewResultRating(
+				Arrays.asList(
+						new RemarkPattern("1;WRONG_CALCULATION;.+", "1;WRONG_CALCULATION;a defect"),
+						new RemarkPattern("2;WRONG_CALCULATION;.+", "2;WRONG_CALCULATION;a defect")),
+				Arrays.asList(
+						new Remark(1, RemarkType.MISSING_CODE, "ein Fehler"),
+						new Remark(2, RemarkType.MISSING_CODE, "ein Fehler")));
 		assertFalse(rrr.isCorrect());
 	}
 
@@ -76,6 +96,46 @@ public class ReviewResultRatingTest {
 				Arrays.asList(
 						new Remark(1, RemarkType.WRONG_CALCULATION, "ein Fehler"),
 						new Remark(2, RemarkType.MISSING_CODE, "noch ein Fehler")));
+		assertTrue(rrr.isCorrect());
+	}
+
+	@Test
+	public void testIsCorrectLimitOfManyAdditionalRemarks() {
+		final ReviewResultRating rrr = new ReviewResultRating(
+				Arrays.asList(
+						new RemarkPattern("1;WRONG_CALCULATION;.+", "1;WRONG_CALCULATION;a defect")),
+				Arrays.asList(
+						new Remark(1, RemarkType.WRONG_CALCULATION, "ein Fehler"),
+						new Remark(2, RemarkType.WRONG_CALCULATION, "ein Fehler"),
+						new Remark(3, RemarkType.WRONG_CALCULATION, "ein Fehler"),
+						new Remark(4, RemarkType.WRONG_CALCULATION, "ein Fehler")));
+		assertTrue(rrr.isCorrect());
+	}
+
+	@Test
+	public void testIsCorrectTooManyAdditionalRemarks() {
+		final ReviewResultRating rrr = new ReviewResultRating(
+				Arrays.asList(
+						new RemarkPattern("1;WRONG_CALCULATION;.+", "1;WRONG_CALCULATION;a defect")),
+				Arrays.asList(
+						new Remark(1, RemarkType.WRONG_CALCULATION, "ein Fehler"),
+						new Remark(2, RemarkType.WRONG_CALCULATION, "ein Fehler"),
+						new Remark(3, RemarkType.WRONG_CALCULATION, "ein Fehler"),
+						new Remark(4, RemarkType.WRONG_CALCULATION, "ein Fehler"),
+						new Remark(5, RemarkType.WRONG_CALCULATION, "ein Fehler")));
+		assertFalse(rrr.isCorrect());
+	}
+
+	@Test
+	public void testIsCorrectLimitOfAdditionalRemarksWithWrongTypeInRealMatch() {
+		final ReviewResultRating rrr = new ReviewResultRating(
+				Arrays.asList(
+						new RemarkPattern("1;WRONG_CALCULATION;.+", "1;WRONG_CALCULATION;a defect")),
+				Arrays.asList(
+						new Remark(1, RemarkType.WRONG_MESSAGE, "ein Fehler"),
+						new Remark(2, RemarkType.WRONG_CALCULATION, "ein Fehler"),
+						new Remark(3, RemarkType.WRONG_CALCULATION, "ein Fehler"),
+						new Remark(4, RemarkType.WRONG_CALCULATION, "ein Fehler")));
 		assertTrue(rrr.isCorrect());
 	}
 

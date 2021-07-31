@@ -51,6 +51,11 @@ public final class RemarkPattern {
             && this.allowedMessages.matcher(remark.getMessage()).find();
     }
 
+    boolean matchesExampleLineIgnoringType(final Remark remark) {
+    	return this.example.getLine() == remark.getLine()
+            && this.allowedMessages.matcher(remark.getMessage()).find();
+    }
+
 	Remark getExample() {
 		return this.example;
 	}

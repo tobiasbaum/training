@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class ReviewResultRating implements AnnotatedSolution {
 
-	private final int ADDITIONAL_REMARK_THRESHOLD = 5;
+	private final int ADDITIONAL_REMARK_THRESHOLD = 4;
 
 	private final List<RemarkPattern> expectedRemarks;
 	private final Set<RemarkPattern> unmatchedRemarks;
@@ -30,6 +30,17 @@ public class ReviewResultRating implements AnnotatedSolution {
 			}
 			this.unmatchedRemarks.remove(match);
 			this.annotatedInput.put(actual, match != null);
+		}
+		// When there is only one remark that is in the correct line but has
+		// the wrong type, we assume the reviewer "meant the correct thing" and
+		// count it as right.
+		for (final Remark actual : actualRemarks) {
+			if (this.unmatchedRemarks.size() == 1
+					&& this.unmatchedRemarks.iterator().next().matchesExampleLineIgnoringType(actual)) {
+				this.additionalRemarks--;
+				this.unmatchedRemarks.clear();
+				this.annotatedInput.put(actual, true);
+			}
 		}
 	}
 
