@@ -164,4 +164,105 @@ public class CopyPasteMethodMutationTest {
         assertEquals("3,4,5;DUPLICATE_CODE,OTHER_ALGORITHMIC_PROBLEM;.+", p.getProperty("remark.42.pattern"));
         assertEquals("4;DUPLICATE_CODE;a ist falsch implementiert. Copy-Paste?", p.getProperty("remark.42.example"));
     }
+
+    @Test
+    public void testPositionAndTypeOfMutation2() {
+        final String input =
+                "class A {\n"
+                + "\n"
+                + "    @Override\n"
+                + "    public void a(double d) {\n"
+                + "        System.out.println(\"1\");\n"
+                + "    }\n"
+                + "\n"
+                + "    public void b() {\n"
+                + "        System.out.println(\"2\");\n"
+                + "        System.out.println(\"3\");\n"
+                + "    }\n"
+                + "}\n";
+
+        final List<CopyPasteMethodMutation> list = determineMutations(input);
+        final CopyPasteMethodMutation mutation = list.get(0);
+        mutation.apply(new Random(123));
+        assertEquals(5, mutation.getAnchorLine());
+        final Properties p = new Properties();
+        mutation.createRemark(42, new RemarkCreator(p, LineMap.identity()));
+        assertEquals("3,4,5,6;DUPLICATE_CODE,OTHER_ALGORITHMIC_PROBLEM;.+", p.getProperty("remark.42.pattern"));
+        assertEquals("5;DUPLICATE_CODE;a ist falsch implementiert. Copy-Paste?", p.getProperty("remark.42.example"));
+    }
+
+    @Test
+    public void testPositionAndTypeOfMutation3() {
+        final String input =
+                "class A {\n"
+                + "\n"
+                + "    public void a(double d) {\n"
+                + "        System.out.println(\"1\");\n"
+                + "    }\n"
+                + "\n"
+                + "    @Override\n"
+                + "    public void b() {\n"
+                + "        System.out.println(\"2\");\n"
+                + "        System.out.println(\"3\");\n"
+                + "    }\n"
+                + "}\n";
+
+        final List<CopyPasteMethodMutation> list = determineMutations(input);
+        final CopyPasteMethodMutation mutation = list.get(0);
+        mutation.apply(new Random(123));
+        assertEquals(4, mutation.getAnchorLine());
+        final Properties p = new Properties();
+        mutation.createRemark(42, new RemarkCreator(p, LineMap.identity()));
+        assertEquals("3,4,5;DUPLICATE_CODE,OTHER_ALGORITHMIC_PROBLEM;.+", p.getProperty("remark.42.pattern"));
+        assertEquals("4;DUPLICATE_CODE;a ist falsch implementiert. Copy-Paste?", p.getProperty("remark.42.example"));
+    }
+
+    @Test
+    public void testPositionAndTypeOfMutation4() {
+        final String input =
+                "class A {\n"
+                + "\n"
+                + "    public abstract void a(double d);\n"
+                + "\n"
+                + "    @Override\n"
+                + "    public void b() {\n"
+                + "        System.out.println(\"2\");\n"
+                + "        System.out.println(\"3\");\n"
+                + "    }\n"
+                + "}\n";
+
+        final List<CopyPasteMethodMutation> list = determineMutations(input);
+        final CopyPasteMethodMutation mutation = list.get(0);
+        mutation.apply(new Random(123));
+        assertEquals(4, mutation.getAnchorLine());
+        final Properties p = new Properties();
+        mutation.createRemark(42, new RemarkCreator(p, LineMap.identity()));
+        assertEquals("3,4,5;DUPLICATE_CODE,OTHER_ALGORITHMIC_PROBLEM;.+", p.getProperty("remark.42.pattern"));
+        assertEquals("4;DUPLICATE_CODE;a ist falsch implementiert. Copy-Paste?", p.getProperty("remark.42.example"));
+    }
+
+    @Test
+    public void testPositionAndTypeOfMutation5() {
+        final String input =
+                "class A {\n"
+                + "\n"
+                + "    public void a(double d) {\n"
+                + "    }\n"
+                + "\n"
+                + "    @Override\n"
+                + "    public void b() {\n"
+                + "        System.out.println(\"2\");\n"
+                + "        System.out.println(\"3\");\n"
+                + "    }\n"
+                + "}\n";
+
+        final List<CopyPasteMethodMutation> list = determineMutations(input);
+        final CopyPasteMethodMutation mutation = list.get(0);
+        mutation.apply(new Random(123));
+        assertEquals(4, mutation.getAnchorLine());
+        final Properties p = new Properties();
+        mutation.createRemark(42, new RemarkCreator(p, LineMap.identity()));
+        assertEquals("3,4,5;DUPLICATE_CODE,OTHER_ALGORITHMIC_PROBLEM;.+", p.getProperty("remark.42.pattern"));
+        assertEquals("4;DUPLICATE_CODE;a ist falsch implementiert. Copy-Paste?", p.getProperty("remark.42.example"));
+    }
 }

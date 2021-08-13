@@ -19,10 +19,23 @@ import de.set.trainingUI.RemarkType;
 public class CopyPasteMethodMutation extends Mutation {
 
 	private final MethodDeclaration method;
+	private final int methodHeaderLength;
 	private int newBodyLength = -1;
 
 	public CopyPasteMethodMutation(MethodDeclaration method) {
 		this.method = method;
+		this.methodHeaderLength = this.determineHeaderLength(method);
+	}
+
+	private int determineHeaderLength(MethodDeclaration m) {
+		final int start = m.getBegin().get().line;
+		if (m.getBody().isEmpty()) {
+			return m.getEnd().get().line + 1 - start;
+		}
+		if (m.getBody().get().getStatements().isEmpty()) {
+			return m.getEnd().get().line - start;
+		}
+		return m.getBody().get().getStatement(0).getBegin().get().line - start;
 	}
 
 	public static boolean isApplicable(MethodDeclaration m) {
@@ -78,7 +91,7 @@ public class CopyPasteMethodMutation extends Mutation {
 	@Override
 	public void apply(Random r) {
 		final MethodDeclaration alternative = pickRandom(getAlternativeMethods(this.method), r);
-		this.newBodyLength = alternative.getEnd().get().line - alternative.getBegin().get().line;
+		this.newBodyLength = alternative.getEnd().get().line - alternative.getBegin().get().line - this.determineHeaderLength(alternative);
 		this.method.setBody(alternative.getBody().get().clone());
 		this.method.setAbstract(false);
 		this.method.setNative(false);
@@ -87,9 +100,9 @@ public class CopyPasteMethodMutation extends Mutation {
 	@Override
 	public void createRemark(int nbr, RemarkCreator p) {
         final Set<Integer> lines = new LinkedHashSet<>();
-        assert this.newBodyLength > 0;
+        assert this.newBodyLength >= 0;
         final int start = this.method.getBegin().get().line;
-        for (int i = start; i < start + this.newBodyLength; i++) {
+        for (int i = start; i < start + this.newBodyLength + this.methodHeaderLength; i++) {
         	lines.add(i);
         }
         final Set<RemarkType> types = EnumSet.of(
@@ -99,12 +112,7 @@ public class CopyPasteMethodMutation extends Mutation {
 
 	@Override
 	public int getAnchorLine() {
-		final int methodStart = this.method.getBegin().get().line;
-		if (this.newBodyLength > 0) {
-			return methodStart + 1;
-		} else {
-			return methodStart;
-		}
+		return this.method.getBegin().get().line + this.methodHeaderLength;
 	}
 
 }
