@@ -8,6 +8,7 @@ import java.util.Set;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.LiteralExpr;
+import com.github.javaparser.ast.expr.StringLiteralExpr;
 
 import de.set.trainingUI.RemarkType;
 
@@ -67,7 +68,16 @@ public class RemoveBinaryExprMutation extends Mutation {
         addBeginToEnd(lines, this.expr);
         final Set<RemarkType> types = EnumSet.of(RemarkType.MISSING_CODE);
         types.add(FlipOperatorMutation.determineTypeForOperator(this.expr.getOperator()));
+        if (this.isStringLiteralOperation()) {
+        	types.remove(RemarkType.WRONG_CALCULATION);
+        	types.add(RemarkType.WRONG_MESSAGE);
+        }
         this.setRemark(nbr, p, lines, types, ".+", "müsste " + this.expr + " sein");
+	}
+
+	private boolean isStringLiteralOperation() {
+		return this.expr.getLeft() instanceof StringLiteralExpr
+			|| this.expr.getRight() instanceof StringLiteralExpr;
 	}
 
 	@Override
