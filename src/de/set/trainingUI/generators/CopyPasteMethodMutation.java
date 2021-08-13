@@ -88,8 +88,8 @@ public class CopyPasteMethodMutation extends Mutation {
 	public void createRemark(int nbr, RemarkCreator p) {
         final Set<Integer> lines = new LinkedHashSet<>();
         assert this.newBodyLength > 0;
-        final int anchor = this.getAnchorLine();
-        for (int i = anchor; i < anchor + this.newBodyLength; i++) {
+        final int start = this.method.getBegin().get().line;
+        for (int i = start; i < start + this.newBodyLength; i++) {
         	lines.add(i);
         }
         final Set<RemarkType> types = EnumSet.of(
@@ -99,7 +99,12 @@ public class CopyPasteMethodMutation extends Mutation {
 
 	@Override
 	public int getAnchorLine() {
-		return this.method.getBegin().get().line;
+		final int methodStart = this.method.getBegin().get().line;
+		if (this.newBodyLength > 0) {
+			return methodStart + 1;
+		} else {
+			return methodStart;
+		}
 	}
 
 }

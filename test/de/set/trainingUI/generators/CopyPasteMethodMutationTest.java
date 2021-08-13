@@ -158,10 +158,10 @@ public class CopyPasteMethodMutationTest {
         final List<CopyPasteMethodMutation> list = determineMutations(input);
         final CopyPasteMethodMutation mutation = list.get(0);
         mutation.apply(new Random(123));
-        assertEquals(3, mutation.getAnchorLine());
+        assertEquals(4, mutation.getAnchorLine());
         final Properties p = new Properties();
         mutation.createRemark(42, new RemarkCreator(p, LineMap.identity()));
-        assertEquals("3,4,5;OTHER_ALGORITHMIC_PROBLEM,DUPLICATE_CODE;.+", p.getProperty("remark.42.pattern"));
-        assertEquals("3;OTHER_ALGORITHMIC_PROBLEM;a ist falsch implementiert. Copy-Paste?", p.getProperty("remark.42.example"));
+        assertEquals("3,4,5;DUPLICATE_CODE,OTHER_ALGORITHMIC_PROBLEM;.+", p.getProperty("remark.42.pattern"));
+        assertEquals("4;DUPLICATE_CODE;a ist falsch implementiert. Copy-Paste?", p.getProperty("remark.42.example"));
     }
 }
