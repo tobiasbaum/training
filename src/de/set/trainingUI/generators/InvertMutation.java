@@ -30,7 +30,8 @@ final class InvertMutation extends Mutation {
 
     @Override
     public void apply(final Random r) {
-    	if (this.ifStmt.getElseStmt().isPresent()) {
+    	if (this.ifStmt.getElseStmt().isPresent()
+    			&& !this.ifStmt.getElseStmt().get().isIfStmt()) {
     		final Statement t = this.ifStmt.getThenStmt();
     		final Statement e = this.ifStmt.getElseStmt().get();
     		this.ifStmt.setThenStmt(e);
