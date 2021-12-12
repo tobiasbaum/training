@@ -256,7 +256,8 @@ public class TrainingServerMain {
 		if (dataset.getColumnCount() <= 0) {
 			return 0;
 		}
-    	return dataset.getValue(0, dataset.getColumnCount() - 1).intValue();
+    	final Number val = dataset.getValue(0, dataset.getColumnCount() - 1);
+    	return val == null ? 0 : val.intValue();
 	}
 
 	private Object nextTask(final Request request, final Response response) {

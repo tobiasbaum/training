@@ -79,7 +79,11 @@ public class DiagramData {
 		final Map<Week, List<Trial>> trialsPerWeek = getTrialsPerWeek(t);
     	final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
     	for (final Entry<Week, List<Trial>> e : trialsPerWeek.entrySet()) {
-    		dataset.addValue(determineRelativeCorrectness(e.getValue()), "", e.getKey());
+    		if (!e.getValue().isEmpty()) {
+    			dataset.addValue(determineRelativeCorrectness(e.getValue()), "", e.getKey());
+    		} else {
+    			dataset.addValue(null, "", e.getKey());
+    		}
     	}
 		return dataset;
 	}
@@ -88,7 +92,11 @@ public class DiagramData {
 		final Map<Week, List<Trial>> trialsPerWeek = getTrialsPerWeek(t);
     	final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
     	for (final Entry<Week, List<Trial>> e : trialsPerWeek.entrySet()) {
-    		dataset.addValue(determineTrimmedMeanCorrectDuration(e.getValue()), "", e.getKey());
+    		if (!e.getValue().isEmpty()) {
+    			dataset.addValue(determineTrimmedMeanCorrectDuration(e.getValue()), "", e.getKey());
+    		} else {
+    			dataset.addValue(null, "", e.getKey());
+    		}
     	}
 		return dataset;
 	}
